@@ -1,5 +1,6 @@
 pub mod app;
 pub mod args;
+pub mod srcinfo;
 pub mod sub;
 
 pub fn main() {
@@ -7,3 +8,6 @@ pub fn main() {
 }
 
 pub use structopt_utilities::{self, clap, structopt};
+
+pub use num_bigint;
+pub use num_traits;
