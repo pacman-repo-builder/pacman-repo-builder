@@ -19,7 +19,6 @@ _strip-ansi() {
 '--help[Prints help information]' \
 '-V[Prints version information]' \
 '--version[Prints version information]' \
-'::TEXT -- Input text. Use stdin if not specified:_files' \
 && ret=0
     
 }
