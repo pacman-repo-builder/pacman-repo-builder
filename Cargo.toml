@@ -1,0 +1,45 @@
+[package]
+name = "pacman-repo-builder"
+description = "Build a custom pacman repository from a collection of PKGBUILD directories"
+version = "0.0.0"
+authors = ["khai96_ <hvksmr1996@gmail.com>"]
+edition = "2018"
+readme = "README.md"
+license = "MIT"
+documentation = "https://docs.rs/pacman-repo-builder"
+repository = "https://github.com/KSXGitHub/pacman-repo-builder.git"
+keywords = [
+  "pacman",
+  "arch",
+  "archlinux",
+  "pkgbuild",
+]
+categories = ["command-line-utilities"]
+include = [
+  "/src",
+  "/Cargo.toml",
+  "/README.md",
+  "/LICENSE.md",
+]
+
+[lib]
+name = "pacman_repo_builder"
+path = "src/lib.rs"
+
+[[bin]]
+name = "build-pacman-repo"
+path = "src/main.rs"
+
+[[bin]]
+name = "build-pacman-repo-completions"
+path = "src/sub/completions/main.rs"
+
+[dependencies]
+structopt = "^0.3.17"
+structopt-utilities = "^0.0.7"
+pipe-trait = "^0.2.0"
+serde_yaml = "^0.8.13"
+
+[dependencies.serde]
+version = "^1.0.116"
+features = ["derive"]
