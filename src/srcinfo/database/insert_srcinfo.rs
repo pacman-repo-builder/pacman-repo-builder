@@ -34,10 +34,10 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
             let pkgname = PkgName(pkgname);
 
             names_value.insert(pkgname);
-            self.bases.insert(pkgname, pkgbase);
+            self.name_to_base.insert(pkgname, pkgbase);
 
             for dependency in srcinfo.all_required_dependencies() {
-                let bases = &self.bases;
+                let bases = &self.name_to_base;
                 let dependency_pkgbase = dependency
                     .name()
                     .pipe(PkgName)
@@ -50,7 +50,7 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
             }
         }
 
-        let removed_names = self.names.insert(pkgbase, names_value);
+        let removed_names = self.base_to_name.insert(pkgbase, names_value);
 
         Ok(match (removed_srcinfo, removed_names) {
             (None, None) => None,

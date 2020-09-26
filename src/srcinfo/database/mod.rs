@@ -16,8 +16,8 @@ where
     PkgName: AsRef<str> + Hash + Eq + Clone,
     SrcInfoContent: AsRef<str>,
 {
-    names: HashMap<PkgBase, HashSet<PkgName>>,
-    bases: HashMap<PkgName, PkgBase>,
+    base_to_name: HashMap<PkgBase, HashSet<PkgName>>,
+    name_to_base: HashMap<PkgName, PkgBase>,
     infos: HashMap<PkgBase, SrcInfo<SrcInfoContent>>,
     dependencies: HashMap<PkgBase, HashSet<PkgBase>>,
     build_order: PackageBuildOrder,
