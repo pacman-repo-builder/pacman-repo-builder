@@ -63,6 +63,7 @@ jobs:
           command: cargo test
 
       - name: Enable reading of cache
+        continue-on-error: true
         uses: ./ci/github-actions/arch-run
         with:
           command: chmod -R a+rwX $HOME/.cargo
