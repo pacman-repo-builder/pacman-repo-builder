@@ -25,9 +25,10 @@ fn partial_eq() {
         Version::new("0.0.0", "1", "0") == Version::new("0.0.0", "1", ""),
         Version::new("0.0.0", "1", "0") == Version::new("0.0.0", "1", "0"),
         Version::new("0.0.0", "1", "0") == Version::new("0.0.0", "01", "0"),
+        Version::new("0.1.0", "1", "0") == Version::new("0.0.0", "1", "0"),
     ];
 
-    let expected = [true, true, true];
+    let expected = [true, true, true, false];
 
     assert_eq!(actual, expected);
 }
