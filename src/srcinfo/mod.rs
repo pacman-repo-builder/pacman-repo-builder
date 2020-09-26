@@ -1,6 +1,8 @@
+pub mod dependency;
 pub mod utils;
 pub mod version;
 
+use dependency::Dependency;
 use std::str::Lines;
 use utils::extract_value_from_line;
 use version::Version;
@@ -10,7 +12,7 @@ pub struct SrcInfo<Text: AsRef<str>>(pub Text);
 
 macro_rules! line_extractor {
     ($prefix:expr) => {
-        |line| extract_value_from_line($prefix, line)
+        move |line| extract_value_from_line($prefix, line)
     };
 }
 
@@ -41,5 +43,19 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
             pkgrel,
             epoch,
         })
+    }
+
+    fn get_dependencies(&self, key: &'static str) -> impl Iterator<Item = Dependency<&str>> {
+        self.lines()
+            .filter_map(line_extractor!(key))
+            .map(Dependency)
+    }
+
+    pub fn depends(&self) -> impl Iterator<Item = Dependency<&str>> {
+        self.get_dependencies("depends")
+    }
+
+    pub fn makedepends(&self) -> impl Iterator<Item = Dependency<&str>> {
+        self.get_dependencies("makedepends")
     }
 }
