@@ -26,8 +26,8 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
         self.lines().find_map(line_extractor!("pkgbase"))
     }
 
-    pub fn pkgname(&self) -> Option<&str> {
-        self.lines().find_map(line_extractor!("pkgname"))
+    pub fn pkgname(&self) -> impl Iterator<Item = &str> {
+        self.lines().filter_map(line_extractor!("pkgname"))
     }
 
     pub fn version(&self) -> Result<Version<&str, &str, &str>, &'static str> {

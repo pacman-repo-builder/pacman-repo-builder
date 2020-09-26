@@ -46,24 +46,27 @@ impl<'a> Database<&'a str, &'a str, &'a str> {
     pub fn insert_srcinfo(
         &'a mut self,
         srcinfo: &'a SrcInfo<&'a str>,
-    ) -> Result<Option<SrcInfo<&'a str>>, String> {
-        let pkgname = srcinfo
-            .pkgname()
-            .ok_or_else(|| "missing pkgname".to_string())?;
+    ) -> Result<HashMap<&'a str, SrcInfo<&'a str>>, String> {
+        let mut removed = HashMap::new();
 
-        let removed = self.infos.insert(&pkgname, *srcinfo);
+        for pkgname in srcinfo.pkgname() {
+            if let Some(removed_srcinfo) = self.infos.insert(&pkgname, *srcinfo) {
+                removed.insert(pkgname, removed_srcinfo);
+            }
 
-        let dependency_list = if let Some(dependency_list) = self.dependencies.get_mut(&pkgname) {
-            dependency_list
-        } else {
-            self.dependencies.insert(&pkgname, Default::default());
-            self.dependencies.get_mut(&pkgname).unwrap()
-        };
+            let dependency_list = if let Some(dependency_list) = self.dependencies.get_mut(&pkgname)
+            {
+                dependency_list
+            } else {
+                self.dependencies.insert(&pkgname, Default::default());
+                self.dependencies.get_mut(&pkgname).unwrap()
+            };
 
-        for dependency in srcinfo.all_required_dependencies() {
-            dependency_list.insert(dependency);
-            self.list
-                .insert(pkgname.to_string(), dependency.name().to_string());
+            for dependency in srcinfo.all_required_dependencies() {
+                dependency_list.insert(dependency);
+                self.list
+                    .insert(pkgname.to_string(), dependency.name().to_string());
+            }
         }
 
         Ok(removed)
