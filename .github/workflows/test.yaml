@@ -59,10 +59,14 @@ jobs:
           default: 'true'
 
       - name: Build
-        run: cargo build --locked
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: cargo build --locked
 
       - name: Test
-        run: cargo test
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: cargo test
 
   clippy_check:
     name: Clippy

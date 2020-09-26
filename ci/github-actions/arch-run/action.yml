@@ -1,0 +1,8 @@
+name: Run command in Arch Linux environment
+inputs:
+  command:
+    description: Command to run
+    required: true
+runs:
+  using: docker
+  image: Dockerfile
