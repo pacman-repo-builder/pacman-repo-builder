@@ -48,9 +48,9 @@ where
 
 impl<PkgVer, PkgRel, Epoch> PartialOrd for Version<PkgVer, PkgRel, Epoch>
 where
-    PkgVer: AsRef<str> + PartialOrd,
-    PkgRel: AsRef<str> + PartialOrd,
-    Epoch: AsRef<str> + PartialOrd,
+    PkgVer: AsRef<str> + PartialEq,
+    PkgRel: AsRef<str> + PartialEq,
+    Epoch: AsRef<str> + PartialEq,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         let (left, right) = match (self.try_to_string(), other.try_to_string()) {
