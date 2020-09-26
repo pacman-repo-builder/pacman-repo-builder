@@ -66,4 +66,8 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
             .filter_map(line_extractor!("optdepends"))
             .map(OptionalDependency::new)
     }
+
+    pub fn all_required_dependencies(&self) -> impl Iterator<Item = Dependency<&str>> {
+        self.depends().chain(self.makedepends())
+    }
 }
