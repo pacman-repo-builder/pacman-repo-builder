@@ -1,4 +1,4 @@
-use super::super::utils::extract_pkgname_prefix;
+use super::super::utils::{extract_pkgname_prefix, split_str_once};
 use super::unreasoned::UnreasonedDependency;
 use pipe_trait::*;
 
@@ -54,9 +54,13 @@ where
 
 impl<'a> ReasonedDependency<&'a str, &'a str, &'a str> {
     pub fn new(text: &'a str) -> Self {
-        let mut parts = text.splitn(2, ':');
-        let (name, range) = parts.next().unwrap().pipe(extract_pkgname_prefix);
-        let reason = parts.next().map(|x| x.trim());
+        let (name_range, reason) = split_str_once(text, |x, _| x == ':');
+        let (name, range) = extract_pkgname_prefix(name_range);
+        let reason = if reason.is_empty() {
+            None
+        } else {
+            reason[1..].trim().pipe(Some)
+        };
         ReasonedDependency {
             name,
             range,
