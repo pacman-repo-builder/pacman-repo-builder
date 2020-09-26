@@ -33,6 +33,14 @@ where
         Default::default()
     }
 
+    pub fn base_to_name(&self) -> &HashMap<PkgBase, HashSet<PkgName>> {
+        &self.base_to_name
+    }
+
+    pub fn name_to_base(&self) -> &HashMap<PkgName, PkgBase> {
+        &self.name_to_base
+    }
+
     pub fn infos(&self) -> &HashMap<PkgBase, SrcInfo<SrcInfoContent>> {
         &self.infos
     }
