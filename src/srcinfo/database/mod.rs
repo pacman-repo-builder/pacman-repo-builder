@@ -51,13 +51,13 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
     pub fn insert_srcinfo(
         &'a mut self,
         srcinfo: &'a SrcInfo<&'a str>,
-    ) -> Result<Option<SrcInfo<&'a str>>, String> {
+    ) -> Result<Option<(SrcInfo<&'a str>, HashSet<PkgName>)>, String> {
         let pkgbase = srcinfo
             .pkgbase()
             .ok_or_else(|| "missing pkgbase".to_string())?
             .pipe(PkgBase);
 
-        let removed = self.infos.insert(pkgbase, *srcinfo);
+        let removed_srcinfo = self.infos.insert(pkgbase, *srcinfo);
 
         let dependency_list = if let Some(dependency_list) = self.dependencies.get_mut(&pkgbase) {
             dependency_list
@@ -88,8 +88,15 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
             }
         }
 
-        self.names.insert(pkgbase, names_value);
+        let removed_names = self.names.insert(pkgbase, names_value);
 
-        Ok(removed)
+        Ok(match (removed_srcinfo, removed_names) {
+            (None, None) => None,
+            (Some(srcinfo), Some(names)) => Some((srcinfo, names)),
+            (srcinfo, ref names) => {
+                dbg!(srcinfo, names);
+                panic!("impossible state reached: {:?} {:?}", srcinfo, names);
+            }
+        })
     }
 }
