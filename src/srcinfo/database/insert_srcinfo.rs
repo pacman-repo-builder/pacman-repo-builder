@@ -57,7 +57,7 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
             (Some(srcinfo), Some(names)) => Some(RemovedInfo { srcinfo, names }),
             (srcinfo, ref names) => {
                 dbg!(srcinfo, names);
-                panic!("impossible state reached: {:?} {:?}", srcinfo, names);
+                panic!("impossible state reached");
             }
         })
     }
