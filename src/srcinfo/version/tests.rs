@@ -3,14 +3,10 @@ use super::Version;
 #[test]
 fn try_to_string_success() {
     let actual = [
-        Version::new("0.0.0", "1", "0"),
-        Version::new("0.1.2", "3", "4"),
-        Version::new("1.2.3", "4.5", "6"),
-    ]
-    .iter()
-    .map(Version::try_to_string)
-    .collect::<Result<Vec<_>, _>>()
-    .unwrap();
+        Version::new("0.0.0", "1", "0").try_to_string().unwrap(),
+        Version::new("0.1.2", "3", "4").try_to_string().unwrap(),
+        Version::new("1.2.3", "4.5", "6").try_to_string().unwrap(),
+    ];
 
     let expected = [
         "0.0.0-1".to_string(),
