@@ -54,7 +54,7 @@ where
 
 impl<'a> ReasonedDependency<&'a str, &'a str, &'a str> {
     pub fn new(text: &'a str) -> Self {
-        let mut parts = text.splitn(1, ':');
+        let mut parts = text.splitn(2, ':');
         let (name, range) = parts.next().unwrap().pipe(extract_pkgname_prefix);
         let reason = parts.next().map(|x| x.trim());
         ReasonedDependency {
