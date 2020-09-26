@@ -20,6 +20,19 @@ fn try_to_string_success() {
 }
 
 #[test]
+fn partial_eq() {
+    let actual = [
+        Version::new("0.0.0", "1", "0") == Version::new("0.0.0", "1", ""),
+        Version::new("0.0.0", "1", "0") == Version::new("0.0.0", "1", "0"),
+        Version::new("0.0.0", "1", "0") == Version::new("0.0.0", "01", "0"),
+    ];
+
+    let expected = [true, true, true];
+
+    assert_eq!(actual, expected);
+}
+
+#[test]
 fn partial_cmp() {
     let actual = [
         Version::new("0.0.0", "1", "0") > Version::new("0.0.0", "1", "0"),
