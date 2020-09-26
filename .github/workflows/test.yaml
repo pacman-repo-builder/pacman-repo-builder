@@ -52,12 +52,6 @@ jobs:
             ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
             ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-${{ runner.os }}-
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          override: 'true'
-          default: 'true'
-
       - name: Build
         uses: ./ci/github-actions/arch-run
         with:
