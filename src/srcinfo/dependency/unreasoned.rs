@@ -1,4 +1,4 @@
-use super::reasoned_dependency::ReasonedDependency;
+use super::reasoned::ReasonedDependency;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct UnreasonedDependency<Name: AsRef<str>>(pub Name);

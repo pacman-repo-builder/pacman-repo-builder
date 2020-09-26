@@ -1,4 +1,4 @@
-use super::unreasoned_dependency::UnreasonedDependency;
+use super::unreasoned::UnreasonedDependency;
 
 #[derive(Debug, Copy, Clone)]
 pub struct ReasonedDependency<Name, Reason>

@@ -1,11 +1,9 @@
-pub mod reasoned_dependency;
-pub mod unreasoned_dependency;
+pub mod dependency;
 pub mod utils;
 pub mod version;
 
-use reasoned_dependency::ReasonedDependency;
+use dependency::{reasoned::ReasonedDependency, unreasoned::UnreasonedDependency};
 use std::str::Lines;
-use unreasoned_dependency::UnreasonedDependency;
 use utils::extract_value_from_line;
 use version::Version;
 
