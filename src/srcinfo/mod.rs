@@ -49,27 +49,29 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
     fn get_dependencies(
         &self,
         key: &'static str,
-    ) -> impl Iterator<Item = UnreasonedDependency<&str>> {
+    ) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
         self.lines()
             .filter_map(line_extractor!(key))
-            .map(UnreasonedDependency)
+            .map(UnreasonedDependency::new)
     }
 
-    pub fn depends(&self) -> impl Iterator<Item = UnreasonedDependency<&str>> {
+    pub fn depends(&self) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
         self.get_dependencies("depends")
     }
 
-    pub fn makedepends(&self) -> impl Iterator<Item = UnreasonedDependency<&str>> {
+    pub fn makedepends(&self) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
         self.get_dependencies("makedepends")
     }
 
-    pub fn optdepends(&self) -> impl Iterator<Item = ReasonedDependency<&str, &str>> {
+    pub fn optdepends(&self) -> impl Iterator<Item = ReasonedDependency<&str, &str, &str>> {
         self.lines()
             .filter_map(line_extractor!("optdepends"))
             .map(ReasonedDependency::new)
     }
 
-    pub fn all_required_dependencies(&self) -> impl Iterator<Item = UnreasonedDependency<&str>> {
+    pub fn all_required_dependencies(
+        &self,
+    ) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
         self.depends().chain(self.makedepends())
     }
 }

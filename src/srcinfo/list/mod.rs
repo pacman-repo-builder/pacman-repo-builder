@@ -8,19 +8,21 @@ use std::{
 };
 
 #[derive(Debug, Default)]
-pub struct List<PkgName, SrcInfoContent>
+pub struct List<PkgName, Range, SrcInfoContent>
 where
     PkgName: AsRef<str> + Hash + Eq + Clone,
+    Range: AsRef<str>,
     SrcInfoContent: AsRef<str>,
 {
     packages: HashMap<PkgName, SrcInfo<SrcInfoContent>>,
-    dependencies: HashMap<PkgName, HashSet<Dependency<PkgName>>>,
+    dependencies: HashMap<PkgName, HashSet<Dependency<PkgName, Range>>>,
     orders: PackageOrder,
 }
 
-impl<PkgName, SrcInfoContent> List<PkgName, SrcInfoContent>
+impl<PkgName, Range, SrcInfoContent> List<PkgName, Range, SrcInfoContent>
 where
     PkgName: AsRef<str> + Default + Hash + Eq + Clone,
+    Range: AsRef<str> + Default,
     SrcInfoContent: AsRef<str> + Default,
 {
     pub fn new() -> Self {
@@ -31,7 +33,7 @@ where
         &self.packages
     }
 
-    pub fn dependencies(&self) -> &HashMap<PkgName, HashSet<Dependency<PkgName>>> {
+    pub fn dependencies(&self) -> &HashMap<PkgName, HashSet<Dependency<PkgName, Range>>> {
         &self.dependencies
     }
 
@@ -40,7 +42,7 @@ where
     }
 }
 
-impl<'a> List<&'a str, &'a str> {
+impl<'a> List<&'a str, &'a str, &'a str> {
     pub fn insert_srcinfo(
         &'a mut self,
         srcinfo: &'a SrcInfo<&'a str>,
