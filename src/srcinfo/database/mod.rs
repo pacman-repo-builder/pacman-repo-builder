@@ -1,9 +1,9 @@
 pub mod insert_srcinfo;
-pub mod package_list;
+pub mod package_build_order;
 pub mod text_wrapper;
 
 use super::SrcInfo;
-use package_list::PackageList;
+use package_build_order::PackageBuildOrder;
 use std::{
     collections::{HashMap, HashSet},
     hash::Hash,
@@ -20,7 +20,7 @@ where
     bases: HashMap<PkgName, PkgBase>,
     infos: HashMap<PkgBase, SrcInfo<SrcInfoContent>>,
     dependencies: HashMap<PkgBase, HashSet<PkgBase>>,
-    list: PackageList,
+    build_order: PackageBuildOrder,
 }
 
 impl<PkgBase, PkgName, SrcInfoContent> Database<PkgBase, PkgName, SrcInfoContent>
@@ -41,7 +41,7 @@ where
         &self.dependencies
     }
 
-    pub fn list(&self) -> &PackageList {
-        &self.list
+    pub fn build_order(&self) -> &PackageBuildOrder {
+        &self.build_order
     }
 }
