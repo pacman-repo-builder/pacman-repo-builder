@@ -1,6 +1,6 @@
-pub fn split_str_once(text: &str, when: impl Fn(char) -> bool) -> (&str, &str) {
+pub fn split_str_once(text: &str, when: impl Fn(char, usize) -> bool) -> (&str, &str) {
     for (index, current_char) in text.char_indices() {
-        if when(current_char) {
+        if when(current_char, index) {
             return (&text[0..index], &text[index..]);
         }
     }
@@ -21,7 +21,7 @@ pub fn extract_value_from_line<'a>(prefix: &str, line: &'a str) -> Option<&'a st
 }
 
 pub fn extract_pkgname_prefix(text: &str) -> (&str, &str) {
-    split_str_once(text, |current_char| match current_char {
+    split_str_once(text, |current_char, _| match current_char {
         'a'..='z' | 'A'..='Z' | '@' | '.' | '_' | '+' | '-' => false,
         _ => true,
     })
