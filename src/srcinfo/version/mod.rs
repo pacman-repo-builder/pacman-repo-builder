@@ -1,7 +1,6 @@
-use num_bigint::{BigInt, BigUint};
+use num_bigint::BigUint;
 use num_traits::Zero;
-use pipe_trait::*;
-use std::{cmp::Ordering, fmt::Write, process::Command};
+use std::{cmp::Ordering, fmt::Write};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct Version<PkgVer, PkgRel, Epoch>
@@ -78,23 +77,7 @@ where
             (Ok(left), Ok(right)) => (left, right),
             _ => return None,
         };
-        let output = Command::new("vercmp")
-            .arg(left)
-            .arg(right)
-            .output()
-            .expect("execute vercmp");
-        if output.status.success() {
-            output
-                .stdout
-                .pipe_ref(|x| String::from_utf8_lossy(x))
-                .pipe_ref(|x| x.trim())
-                .parse::<BigInt>()
-                .expect("parse stdout of vercmp as an integer")
-                .cmp(&BigInt::zero())
-                .pipe(Some)
-        } else {
-            None
-        }
+        Some(alpm::vercmp(left, right))
     }
 }
 
