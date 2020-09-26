@@ -2,22 +2,22 @@ use std::fmt::{self, Debug, Formatter};
 use topological_sort::TopologicalSort;
 
 #[derive(Clone)]
-pub struct PackageOrder(pub TopologicalSort<String>);
+pub struct PackageList(pub TopologicalSort<String>);
 
-impl PackageOrder {
+impl PackageList {
     pub fn insert(&mut self, dependant: String, dependency: String) {
         self.0.add_dependency(dependency, dependant);
     }
 }
 
-impl Debug for PackageOrder {
+impl Debug for PackageList {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "PackageOrder")
     }
 }
 
-impl Default for PackageOrder {
+impl Default for PackageList {
     fn default() -> Self {
-        PackageOrder(TopologicalSort::new())
+        PackageList(TopologicalSort::new())
     }
 }

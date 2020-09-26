@@ -1,7 +1,7 @@
-pub mod package_order;
+pub mod package_list;
 
 use super::{dependency::unreasoned::UnreasonedDependency as Dependency, SrcInfo};
-use package_order::PackageOrder;
+use package_list::PackageList;
 use std::{
     collections::{HashMap, HashSet},
     hash::Hash,
@@ -16,7 +16,7 @@ where
 {
     packages: HashMap<PkgName, SrcInfo<SrcInfoContent>>,
     dependencies: HashMap<PkgName, HashSet<Dependency<PkgName, Range>>>,
-    orders: PackageOrder,
+    list: PackageList,
 }
 
 impl<PkgName, Range, SrcInfoContent> List<PkgName, Range, SrcInfoContent>
@@ -37,8 +37,8 @@ where
         &self.dependencies
     }
 
-    pub fn orders(&self) -> &PackageOrder {
-        &self.orders
+    pub fn list(&self) -> &PackageList {
+        &self.list
     }
 }
 
@@ -62,7 +62,7 @@ impl<'a> List<&'a str, &'a str, &'a str> {
 
         for dependency in srcinfo.all_required_dependencies() {
             dependency_list.insert(dependency);
-            self.orders
+            self.list
                 .insert(pkgname.to_string(), dependency.name().to_string());
         }
 
