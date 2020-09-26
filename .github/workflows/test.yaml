@@ -24,7 +24,7 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true
         with:
-          path: ~/work/_temp/_github_home/registry
+          path: ~/work/_temp/_github_home/.cargo/registry
           key: ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
@@ -35,7 +35,7 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true
         with:
-          path: ~/work/_temp/_github_home/git
+          path: ~/work/_temp/_github_home/.cargo/git
           key: ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
