@@ -10,7 +10,7 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
     pub fn insert_srcinfo(
         &'a mut self,
         srcinfo: &'a SrcInfo<&'a str>,
-    ) -> Result<Option<(SrcInfo<&'a str>, HashSet<PkgName>)>, String> {
+    ) -> Result<Option<RemovedInfo>, String> {
         let pkgbase = srcinfo
             .pkgbase()
             .ok_or_else(|| "missing pkgbase".to_string())?
@@ -51,11 +51,17 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
 
         Ok(match (removed_srcinfo, removed_names) {
             (None, None) => None,
-            (Some(srcinfo), Some(names)) => Some((srcinfo, names)),
+            (Some(srcinfo), Some(names)) => Some(RemovedInfo { srcinfo, names }),
             (srcinfo, ref names) => {
                 dbg!(srcinfo, names);
                 panic!("impossible state reached: {:?} {:?}", srcinfo, names);
             }
         })
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct RemovedInfo<'a> {
+    pub srcinfo: SrcInfo<&'a str>,
+    pub names: HashSet<PkgName<'a>>,
 }
