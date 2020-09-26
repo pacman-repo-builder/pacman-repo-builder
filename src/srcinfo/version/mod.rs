@@ -40,9 +40,9 @@ where
             Err(error) => return Err(format!("invalid epoch: {}", error.to_string())),
             Ok(value) => {
                 if value.is_zero() {
-                    format!("{}:", value)
-                } else {
                     String::new()
+                } else {
+                    format!("{}:", value)
                 }
             }
         };
