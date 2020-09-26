@@ -19,6 +19,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache Rust Toolchains
+        uses: actions/cache@v2
+        timeout-minutes: 1
+        continue-on-error: true
+        with:
+          path: |
+            ~/work/_temp/_github_home/.rustup/toolchains
+            ~/work/_temp/_github_home/.rustup/update-hashes
+
       - name: Cache Rust Cargo Registry
         uses: actions/cache@v2
         timeout-minutes: 1
