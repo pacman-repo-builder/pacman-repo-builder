@@ -2,7 +2,7 @@ use super::super::utils::extract_pkgname_prefix;
 use super::unreasoned::UnreasonedDependency;
 use pipe_trait::*;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub struct ReasonedDependency<Name, Range, Reason>
 where
     Name: AsRef<str>,
@@ -63,4 +63,37 @@ impl<'a> ReasonedDependency<&'a str, &'a str, &'a str> {
             reason,
         }
     }
+}
+
+#[test]
+fn test_new() {
+    let actual = [
+        ReasonedDependency::new("foo>=3: Install for fun"),
+        ReasonedDependency::new("foo>=3"),
+        ReasonedDependency::new("foo: Install for fun"),
+        ReasonedDependency::new("foo"),
+    ];
+    let expected = [
+        ReasonedDependency {
+            name: "foo",
+            range: ">=3",
+            reason: Some("Install for fun"),
+        },
+        ReasonedDependency {
+            name: "foo",
+            range: ">=3",
+            reason: None,
+        },
+        ReasonedDependency {
+            name: "foo",
+            range: "",
+            reason: Some("Install for fun"),
+        },
+        ReasonedDependency {
+            name: "foo",
+            range: "",
+            reason: None,
+        },
+    ];
+    assert_eq!(actual, expected);
 }
