@@ -1,8 +1,10 @@
 pub mod dependency;
+pub mod optional_dependency;
 pub mod utils;
 pub mod version;
 
 use dependency::Dependency;
+use optional_dependency::OptionalDependency;
 use std::str::Lines;
 use utils::extract_value_from_line;
 use version::Version;
@@ -57,5 +59,11 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
 
     pub fn makedepends(&self) -> impl Iterator<Item = Dependency<&str>> {
         self.get_dependencies("makedepends")
+    }
+
+    pub fn optdepends(&self) -> impl Iterator<Item = OptionalDependency<&str, &str>> {
+        self.lines()
+            .filter_map(line_extractor!("optdepends"))
+            .map(OptionalDependency::new)
     }
 }
