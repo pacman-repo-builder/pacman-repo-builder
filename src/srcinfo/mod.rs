@@ -22,6 +22,10 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
         self.0.as_ref().lines()
     }
 
+    pub fn pkgbase(&self) -> Option<&str> {
+        self.lines().find_map(line_extractor!("pkgbase"))
+    }
+
     pub fn pkgname(&self) -> Option<&str> {
         self.lines().find_map(line_extractor!("pkgname"))
     }
