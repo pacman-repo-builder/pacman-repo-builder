@@ -1,4 +1,4 @@
-mod package_order;
+pub mod package_order;
 
 use super::{dependency::unreasoned::UnreasonedDependency as Dependency, SrcInfo};
 use package_order::PackageOrder;
