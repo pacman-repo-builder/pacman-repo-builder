@@ -2,7 +2,7 @@ use num_bigint::BigUint;
 use num_traits::Zero;
 use std::{cmp::Ordering, fmt::Write};
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Version<PkgVer, PkgRel, Epoch>
 where
     PkgVer: AsRef<str>,
@@ -66,11 +66,22 @@ where
     }
 }
 
+impl<PkgVer, PkgRel, Epoch> PartialEq for Version<PkgVer, PkgRel, Epoch>
+where
+    PkgVer: AsRef<str>,
+    PkgRel: AsRef<str>,
+    Epoch: AsRef<str>,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.partial_cmp(other) == Some(Ordering::Equal)
+    }
+}
+
 impl<PkgVer, PkgRel, Epoch> PartialOrd for Version<PkgVer, PkgRel, Epoch>
 where
-    PkgVer: AsRef<str> + PartialEq,
-    PkgRel: AsRef<str> + PartialEq,
-    Epoch: AsRef<str> + PartialEq,
+    PkgVer: AsRef<str>,
+    PkgRel: AsRef<str>,
+    Epoch: AsRef<str>,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         match (self.try_to_string(), other.try_to_string()) {
