@@ -1,6 +1,8 @@
+pub mod insert_srcinfo;
 pub mod package_list;
+pub mod text_wrapper;
 
-use super::{dependency::unreasoned::UnreasonedDependency as Dependency, SrcInfo};
+use super::SrcInfo;
 use package_list::PackageList;
 use std::{
     collections::{HashMap, HashSet},
@@ -8,64 +10,38 @@ use std::{
 };
 
 #[derive(Debug, Default)]
-pub struct Database<PkgName, Range, SrcInfoContent>
+pub struct Database<PkgBase, PkgName, SrcInfoContent>
 where
+    PkgBase: AsRef<str> + Hash + Eq + Clone,
     PkgName: AsRef<str> + Hash + Eq + Clone,
-    Range: AsRef<str>,
     SrcInfoContent: AsRef<str>,
 {
-    infos: HashMap<PkgName, SrcInfo<SrcInfoContent>>,
-    dependencies: HashMap<PkgName, HashSet<Dependency<PkgName, Range>>>,
+    names: HashMap<PkgBase, HashSet<PkgName>>,
+    bases: HashMap<PkgName, PkgBase>,
+    infos: HashMap<PkgBase, SrcInfo<SrcInfoContent>>,
+    dependencies: HashMap<PkgBase, HashSet<PkgBase>>,
     list: PackageList,
 }
 
-impl<PkgName, Range, SrcInfoContent> Database<PkgName, Range, SrcInfoContent>
+impl<PkgBase, PkgName, SrcInfoContent> Database<PkgBase, PkgName, SrcInfoContent>
 where
+    PkgBase: AsRef<str> + Default + Hash + Eq + Clone,
     PkgName: AsRef<str> + Default + Hash + Eq + Clone,
-    Range: AsRef<str> + Default,
     SrcInfoContent: AsRef<str> + Default,
 {
     pub fn new() -> Self {
         Default::default()
     }
 
-    pub fn infos(&self) -> &HashMap<PkgName, SrcInfo<SrcInfoContent>> {
+    pub fn infos(&self) -> &HashMap<PkgBase, SrcInfo<SrcInfoContent>> {
         &self.infos
     }
 
-    pub fn dependencies(&self) -> &HashMap<PkgName, HashSet<Dependency<PkgName, Range>>> {
+    pub fn dependencies(&self) -> &HashMap<PkgBase, HashSet<PkgBase>> {
         &self.dependencies
     }
 
     pub fn list(&self) -> &PackageList {
         &self.list
-    }
-}
-
-impl<'a> Database<&'a str, &'a str, &'a str> {
-    pub fn insert_srcinfo(
-        &'a mut self,
-        srcinfo: &'a SrcInfo<&'a str>,
-    ) -> Result<Option<SrcInfo<&'a str>>, String> {
-        let pkgname = srcinfo
-            .pkgname()
-            .ok_or_else(|| "missing pkgname".to_string())?;
-
-        let removed = self.infos.insert(&pkgname, *srcinfo);
-
-        let dependency_list = if let Some(dependency_list) = self.dependencies.get_mut(&pkgname) {
-            dependency_list
-        } else {
-            self.dependencies.insert(&pkgname, Default::default());
-            self.dependencies.get_mut(&pkgname).unwrap()
-        };
-
-        for dependency in srcinfo.all_required_dependencies() {
-            dependency_list.insert(dependency);
-            self.list
-                .insert(pkgname.to_string(), dependency.name().to_string());
-        }
-
-        Ok(removed)
     }
 }
