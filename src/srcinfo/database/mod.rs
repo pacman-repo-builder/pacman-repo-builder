@@ -8,7 +8,7 @@ use std::{
 };
 
 #[derive(Debug, Default)]
-pub struct List<PkgName, Range, SrcInfoContent>
+pub struct Database<PkgName, Range, SrcInfoContent>
 where
     PkgName: AsRef<str> + Hash + Eq + Clone,
     Range: AsRef<str>,
@@ -19,7 +19,7 @@ where
     list: PackageList,
 }
 
-impl<PkgName, Range, SrcInfoContent> List<PkgName, Range, SrcInfoContent>
+impl<PkgName, Range, SrcInfoContent> Database<PkgName, Range, SrcInfoContent>
 where
     PkgName: AsRef<str> + Default + Hash + Eq + Clone,
     Range: AsRef<str> + Default,
@@ -42,7 +42,7 @@ where
     }
 }
 
-impl<'a> List<&'a str, &'a str, &'a str> {
+impl<'a> Database<&'a str, &'a str, &'a str> {
     pub fn insert_srcinfo(
         &'a mut self,
         srcinfo: &'a SrcInfo<&'a str>,
