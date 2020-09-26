@@ -87,6 +87,7 @@ where
             output
                 .stdout
                 .pipe_ref(|x| String::from_utf8_lossy(x))
+                .pipe_ref(|x| x.trim())
                 .parse::<BigInt>()
                 .expect("parse stdout of vercmp as an integer")
                 .cmp(&BigInt::zero())
