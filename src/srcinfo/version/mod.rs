@@ -36,13 +36,18 @@ where
             epoch,
         } = self;
 
-        let mut result = match epoch.as_ref().parse::<BigUint>() {
-            Err(error) => return Err(format!("invalid epoch: {}", error.to_string())),
-            Ok(value) => {
-                if value.is_zero() {
-                    String::new()
-                } else {
-                    format!("{}:", value)
+        let epoch = epoch.as_ref();
+        let mut result = if epoch.is_empty() {
+            String::new()
+        } else {
+            match epoch.parse::<BigUint>() {
+                Err(error) => return Err(format!("invalid epoch: {}", error.to_string())),
+                Ok(value) => {
+                    if value.is_zero() {
+                        String::new()
+                    } else {
+                        format!("{}:", value)
+                    }
                 }
             }
         };
