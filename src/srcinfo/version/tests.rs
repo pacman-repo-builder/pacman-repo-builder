@@ -18,3 +18,17 @@ fn try_to_string_success() {
 
     assert_eq!(actual, expected);
 }
+
+#[test]
+fn partial_cmp() {
+    let actual = [
+        Version::new("0.0.0", "1", "0") > Version::new("0.0.0", "1", "0"),
+        Version::new("1.2.3", "4", "0") > Version::new("0.1.2", "3", "0"),
+        Version::new("0.0.0", "1", "0") < Version::new("0.0.0", "1", "0"),
+        Version::new("0.1.2", "3", "0") < Version::new("1.2.3", "4", "0"),
+    ];
+
+    let expected = [false, true, false, true];
+
+    assert_eq!(actual, expected);
+}
