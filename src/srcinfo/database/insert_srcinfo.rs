@@ -4,16 +4,19 @@ use super::{
     Database,
 };
 use pipe_trait::*;
-use std::collections::HashSet;
+use std::{
+    collections::HashSet,
+    fmt::{self, Display, Formatter},
+};
 
 impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
     pub fn insert_srcinfo(
         &'a mut self,
         srcinfo: &'a SrcInfo<&'a str>,
-    ) -> Result<Option<RemovedInfo>, String> {
+    ) -> Result<Option<RemovedInfo>, InsertionError> {
         let pkgbase = srcinfo
             .pkgbase()
-            .ok_or_else(|| "missing pkgbase".to_string())?
+            .ok_or(InsertionError::MissingPkgBase)?
             .pipe(PkgBase);
 
         let removed_srcinfo = self.infos.insert(pkgbase, *srcinfo);
@@ -64,4 +67,17 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
 pub struct RemovedInfo<'a> {
     pub srcinfo: SrcInfo<&'a str>,
     pub names: HashSet<PkgName<'a>>,
+}
+
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+pub enum InsertionError {
+    MissingPkgBase,
+}
+
+impl Display for InsertionError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            InsertionError::MissingPkgBase => write!(f, "missing pkgbase"),
+        }
+    }
 }
