@@ -25,10 +25,10 @@ jobs:
         continue-on-error: true
         with:
           path: ~/work/_temp/_github_home/.cargo/registry # ~/.cargo/registry inside docker
-          key: ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-ArchLinux-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-arch-run-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-ArchLinux-${{ hashFiles('**/Cargo.lock') }}
-            ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-ArchLinux-
+            ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-arch-run-${{ hashFiles('**/Cargo.lock') }}
+            ${{ github.job }}-cargo-registry-${{ hashFiles('rust-toolchain') }}-arch-run-
 
       - name: Cache Rust Cargo Index
         uses: actions/cache@v2
@@ -36,10 +36,10 @@ jobs:
         continue-on-error: true
         with:
           path: ~/work/_temp/_github_home/.cargo/git # ~/.cargo/registry inside docker
-          key: ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-ArchLinux-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-arch-run-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-ArchLinux-${{ hashFiles('**/Cargo.lock') }}
-            ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-ArchLinux-
+            ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-arch-run-${{ hashFiles('**/Cargo.lock') }}
+            ${{ github.job }}-cargo-index-${{ hashFiles('rust-toolchain') }}-arch-run-
 
       - name: Cache Rust Build
         uses: actions/cache@v2
@@ -47,10 +47,10 @@ jobs:
         continue-on-error: true
         with:
           path: target
-          key: ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-ArchLinux-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-arch-run-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-ArchLinux-${{ hashFiles('**/Cargo.lock') }}
-            ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-ArchLinux-
+            ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-arch-run-${{ hashFiles('**/Cargo.lock') }}
+            ${{ github.job }}-build-${{ hashFiles('rust-toolchain') }}-arch-run-
 
       - name: Build
         uses: ./ci/github-actions/arch-run
