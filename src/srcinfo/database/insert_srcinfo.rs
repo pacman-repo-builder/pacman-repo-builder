@@ -28,12 +28,12 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
             self.dependencies.get_mut(&pkgbase).unwrap()
         };
 
-        let mut names_value = HashSet::<PkgName>::new();
+        let mut new_names = HashSet::<PkgName>::new();
 
         for pkgname in srcinfo.pkgname() {
             let pkgname = PkgName(pkgname);
 
-            names_value.insert(pkgname);
+            new_names.insert(pkgname);
             self.name_to_base.insert(pkgname, pkgbase);
 
             for dependency in srcinfo.all_required_dependencies() {
@@ -50,7 +50,7 @@ impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
             }
         }
 
-        let removed_names = self.base_to_name.insert(pkgbase, names_value);
+        let removed_names = self.base_to_name.insert(pkgbase, new_names);
 
         Ok(match (removed_srcinfo, removed_names) {
             (None, None) => None,
