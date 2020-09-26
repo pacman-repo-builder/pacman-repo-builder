@@ -8,6 +8,7 @@ use std::{
     collections::{HashMap, HashSet},
     hash::Hash,
 };
+use text_wrapper::{PkgBase, PkgName};
 
 #[derive(Debug, Default)]
 pub struct Database<PkgBase, PkgName, SrcInfoContent>
@@ -53,3 +54,5 @@ where
         &self.build_order
     }
 }
+
+pub type SimpleDatabase<'a> = Database<PkgBase<'a>, PkgName<'a>, &'a str>;

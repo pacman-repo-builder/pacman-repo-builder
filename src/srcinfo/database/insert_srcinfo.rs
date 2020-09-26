@@ -1,7 +1,7 @@
 use super::super::SrcInfo;
 use super::{
     text_wrapper::{PkgBase, PkgName},
-    Database,
+    SimpleDatabase,
 };
 use pipe_trait::*;
 use std::{
@@ -9,7 +9,7 @@ use std::{
     fmt::{self, Display, Formatter},
 };
 
-impl<'a> Database<PkgBase<'a>, PkgName<'a>, &'a str> {
+impl<'a> SimpleDatabase<'a> {
     pub fn insert_srcinfo(
         &'a mut self,
         srcinfo: &'a SrcInfo<&'a str>,
