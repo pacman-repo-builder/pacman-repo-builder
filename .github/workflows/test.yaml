@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Cargo and Rust Build
+      - name: Cache
         uses: actions/cache@v2
         timeout-minutes: 1
         continue-on-error: true
@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Cargo and Rust Build
+      - name: Cache
         uses: actions/cache@v2
         timeout-minutes: 1
         continue-on-error: true
