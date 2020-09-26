@@ -22,14 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          components: clippy, rustfmt
-          override: 'true'
-          default: 'true'
-
       - name: Build
         uses: ./ci/github-actions/arch-run
         with:
@@ -41,12 +33,14 @@ jobs:
           command: cargo test
 
       - name: Check formatting
-        if: runner.os == 'Linux'
-        run: ./fmt.sh
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: ./fmt.sh
 
       - name: Clippy check
-        if: runner.os == 'Linux'
-        run: ./clippy.sh
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: ./clippy.sh
 
   build_linux:
     name: Build
