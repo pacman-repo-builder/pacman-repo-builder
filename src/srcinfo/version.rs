@@ -52,6 +52,14 @@ where
 
         Ok(result)
     }
+
+    pub fn as_str(&self) -> Version<&str, &str, &str> {
+        Version {
+            pkgver: self.pkgver.as_ref(),
+            pkgrel: self.pkgrel.as_ref(),
+            epoch: self.epoch.as_ref(),
+        }
+    }
 }
 
 impl<PkgVer, PkgRel, Epoch> PartialOrd for Version<PkgVer, PkgRel, Epoch>
