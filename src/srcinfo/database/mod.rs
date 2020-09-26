@@ -14,7 +14,7 @@ where
     Range: AsRef<str>,
     SrcInfoContent: AsRef<str>,
 {
-    packages: HashMap<PkgName, SrcInfo<SrcInfoContent>>,
+    infos: HashMap<PkgName, SrcInfo<SrcInfoContent>>,
     dependencies: HashMap<PkgName, HashSet<Dependency<PkgName, Range>>>,
     list: PackageList,
 }
@@ -29,8 +29,8 @@ where
         Default::default()
     }
 
-    pub fn packages(&self) -> &HashMap<PkgName, SrcInfo<SrcInfoContent>> {
-        &self.packages
+    pub fn infos(&self) -> &HashMap<PkgName, SrcInfo<SrcInfoContent>> {
+        &self.infos
     }
 
     pub fn dependencies(&self) -> &HashMap<PkgName, HashSet<Dependency<PkgName, Range>>> {
@@ -51,7 +51,7 @@ impl<'a> List<&'a str, &'a str, &'a str> {
             .pkgname()
             .ok_or_else(|| "missing pkgname".to_string())?;
 
-        let removed = self.packages.insert(&pkgname, *srcinfo);
+        let removed = self.infos.insert(&pkgname, *srcinfo);
 
         let dependency_list = if let Some(dependency_list) = self.dependencies.get_mut(&pkgname) {
             dependency_list
