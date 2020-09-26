@@ -1,11 +1,11 @@
-pub mod dependency;
-pub mod optional_dependency;
+pub mod reasoned_dependency;
+pub mod unreasoned_dependency;
 pub mod utils;
 pub mod version;
 
-use dependency::Dependency;
-use optional_dependency::OptionalDependency;
+use reasoned_dependency::ReasonedDependency;
 use std::str::Lines;
+use unreasoned_dependency::UnreasonedDependency;
 use utils::extract_value_from_line;
 use version::Version;
 
@@ -47,27 +47,30 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
         })
     }
 
-    fn get_dependencies(&self, key: &'static str) -> impl Iterator<Item = Dependency<&str>> {
+    fn get_dependencies(
+        &self,
+        key: &'static str,
+    ) -> impl Iterator<Item = UnreasonedDependency<&str>> {
         self.lines()
             .filter_map(line_extractor!(key))
-            .map(Dependency)
+            .map(UnreasonedDependency)
     }
 
-    pub fn depends(&self) -> impl Iterator<Item = Dependency<&str>> {
+    pub fn depends(&self) -> impl Iterator<Item = UnreasonedDependency<&str>> {
         self.get_dependencies("depends")
     }
 
-    pub fn makedepends(&self) -> impl Iterator<Item = Dependency<&str>> {
+    pub fn makedepends(&self) -> impl Iterator<Item = UnreasonedDependency<&str>> {
         self.get_dependencies("makedepends")
     }
 
-    pub fn optdepends(&self) -> impl Iterator<Item = OptionalDependency<&str, &str>> {
+    pub fn optdepends(&self) -> impl Iterator<Item = ReasonedDependency<&str, &str>> {
         self.lines()
             .filter_map(line_extractor!("optdepends"))
-            .map(OptionalDependency::new)
+            .map(ReasonedDependency::new)
     }
 
-    pub fn all_required_dependencies(&self) -> impl Iterator<Item = Dependency<&str>> {
+    pub fn all_required_dependencies(&self) -> impl Iterator<Item = UnreasonedDependency<&str>> {
         self.depends().chain(self.makedepends())
     }
 }

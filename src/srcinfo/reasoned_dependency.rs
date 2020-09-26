@@ -1,7 +1,7 @@
-use super::dependency::Dependency;
+use super::unreasoned_dependency::UnreasonedDependency;
 
 #[derive(Debug, Copy, Clone)]
-pub struct OptionalDependency<Name, Reason>
+pub struct ReasonedDependency<Name, Reason>
 where
     Name: AsRef<str>,
     Reason: AsRef<str>,
@@ -10,17 +10,17 @@ where
     pub reason: Option<Reason>,
 }
 
-impl<Name, Reason> OptionalDependency<Name, Reason>
+impl<Name, Reason> ReasonedDependency<Name, Reason>
 where
     Name: AsRef<str>,
     Reason: AsRef<str>,
 {
-    pub fn into_dependency(self) -> Dependency<Name> {
-        Dependency(self.name)
+    pub fn into_unreasoned_dependency(self) -> UnreasonedDependency<Name> {
+        UnreasonedDependency(self.name)
     }
 
-    pub fn as_str(&self) -> OptionalDependency<&str, &str> {
-        OptionalDependency {
+    pub fn as_str(&self) -> ReasonedDependency<&str, &str> {
+        ReasonedDependency {
             name: self.name(),
             reason: self.reason(),
         }
@@ -39,11 +39,11 @@ where
     }
 }
 
-impl<'a> OptionalDependency<&'a str, &'a str> {
+impl<'a> ReasonedDependency<&'a str, &'a str> {
     pub fn new(text: &'a str) -> Self {
         let mut parts = text.splitn(1, ':');
         let name = parts.next().unwrap();
         let reason = parts.next().map(|x| x.trim());
-        OptionalDependency { name, reason }
+        ReasonedDependency { name, reason }
     }
 }
