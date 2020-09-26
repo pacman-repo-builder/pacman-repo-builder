@@ -21,6 +21,14 @@ where
     PkgRel: AsRef<str>,
     Epoch: AsRef<str>,
 {
+    pub fn new(pkgver: PkgVer, pkgrel: PkgRel, epoch: Epoch) -> Self {
+        Version {
+            pkgver,
+            pkgrel,
+            epoch,
+        }
+    }
+
     pub fn try_to_string(&self) -> Result<String, String> {
         let Version {
             pkgver,
