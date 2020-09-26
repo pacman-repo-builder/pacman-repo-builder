@@ -1,7 +1,7 @@
 from archlinux/base
 
 run pacman -Syu --noconfirm
-run pacman -S --noconfirm --needed --overwrite '*' bash rustup gcc
+run pacman -S --noconfirm --needed --overwrite '*' bash rustup gcc llvm
 
 copy run.bash /run.bash
 
