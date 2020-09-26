@@ -10,9 +10,9 @@ where
     PkgRel: AsRef<str>,
     Epoch: AsRef<str>,
 {
-    pkgver: PkgVer,
-    pkgrel: PkgRel,
-    epoch: Epoch,
+    pub pkgver: PkgVer,
+    pub pkgrel: PkgRel,
+    pub epoch: Epoch,
 }
 
 impl<PkgVer, PkgRel, Epoch> Version<PkgVer, PkgRel, Epoch>
