@@ -62,6 +62,11 @@ jobs:
         with:
           command: cargo test
 
+      - name: Enable reading of cache
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: chmod -R a+rwX $HOME/.cargo
+
   clippy_check:
     name: Clippy
 
