@@ -1,6 +1,6 @@
 use super::reasoned::ReasonedDependency;
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
 pub struct UnreasonedDependency<Name: AsRef<str>>(pub Name);
 
 impl<Name: AsRef<str>> UnreasonedDependency<Name> {
