@@ -73,11 +73,10 @@ where
     Epoch: AsRef<str> + PartialEq,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        let (left, right) = match (self.try_to_string(), other.try_to_string()) {
-            (Ok(left), Ok(right)) => (left, right),
-            _ => return None,
-        };
-        Some(alpm::vercmp(left, right))
+        match (self.try_to_string(), other.try_to_string()) {
+            (Ok(left), Ok(right)) => Some(alpm::vercmp(left, right)),
+            _ => None,
+        }
     }
 }
 
