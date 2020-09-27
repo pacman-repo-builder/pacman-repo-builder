@@ -1,7 +1,7 @@
-pub mod list;
+pub mod sort;
 
 use argh::*;
-use list::ListArgs;
+use sort::SortArgs;
 
 #[derive(Debug, FromArgs)]
 #[argh(description = "Build a custom pacman repository from a collection of PKGBUILD directories")]
@@ -13,5 +13,5 @@ pub struct Args {
 #[derive(Debug, FromArgs)]
 #[argh(subcommand)]
 pub enum Command {
-    List(ListArgs),
+    List(SortArgs),
 }
