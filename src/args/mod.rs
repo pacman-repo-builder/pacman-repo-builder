@@ -14,5 +14,5 @@ pub struct Args {
 #[derive(Debug, FromArgs)]
 #[argh(subcommand)]
 pub enum Command {
-    List(SortArgs),
+    Sort(SortArgs),
 }
