@@ -3,6 +3,7 @@ pub mod args;
 pub mod makepkg;
 pub mod srcinfo;
 pub mod sub;
+pub mod utils;
 
 pub fn main() {
     unimplemented!()

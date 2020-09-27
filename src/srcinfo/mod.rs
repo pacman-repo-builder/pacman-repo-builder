@@ -1,11 +1,10 @@
 pub mod database;
 pub mod dependency;
-pub mod utils;
 pub mod version;
 
+use super::utils::extract_value_from_line;
 use dependency::{reasoned::ReasonedDependency, unreasoned::UnreasonedDependency};
 use std::str::Lines;
-use utils::extract_value_from_line;
 use version::Version;
 
 #[derive(Debug, Copy, Clone)]

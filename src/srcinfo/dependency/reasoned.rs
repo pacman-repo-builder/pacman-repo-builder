@@ -1,4 +1,4 @@
-use super::super::utils::{extract_pkgname_prefix, split_str_once};
+use super::super::super::utils::{extract_pkgname_prefix, split_str_once};
 use super::unreasoned::UnreasonedDependency;
 use pipe_trait::*;
 

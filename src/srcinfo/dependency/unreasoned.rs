@@ -1,4 +1,4 @@
-use super::super::utils::extract_pkgname_prefix;
+use super::super::super::utils::extract_pkgname_prefix;
 use super::reasoned::ReasonedDependency;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
