@@ -1,3 +1,4 @@
+pub mod manifest;
 pub mod print_config;
 pub mod sort;
 

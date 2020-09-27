@@ -1,5 +1,5 @@
+use super::manifest::Manifest;
 use argh::*;
-use std::path::PathBuf;
 
 #[derive(Debug, FromArgs)]
 #[argh(
@@ -9,5 +9,5 @@ use std::path::PathBuf;
 )]
 pub struct SortArgs {
     #[argh(option, short = 'C', description = "path to manifest file")]
-    pub config: PathBuf,
+    pub config: Manifest,
 }
