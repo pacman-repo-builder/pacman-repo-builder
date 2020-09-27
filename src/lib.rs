@@ -8,8 +8,6 @@ pub fn main() {
     unimplemented!()
 }
 
-pub use structopt_utilities::{self, clap, structopt};
-
 pub use alpm;
 pub use num_bigint;
 pub use num_traits;
