@@ -1,6 +1,8 @@
+pub mod print_config;
 pub mod sort;
 
 use argh::*;
+use print_config::PrintConfig;
 use sort::SortArgs;
 
 #[derive(Debug, FromArgs)]
@@ -14,4 +16,5 @@ pub struct Args {
 #[argh(subcommand)]
 pub enum Command {
     Sort(SortArgs),
+    PrintConfig(PrintConfig),
 }
