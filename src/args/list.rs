@@ -1,4 +1,5 @@
 use argh::*;
+use std::ffi::OsString;
 
 #[derive(Debug, FromArgs)]
 #[argh(
@@ -6,4 +7,7 @@ use argh::*;
     name = "list",
     description = "List packages in build order"
 )]
-pub struct ListArgs {}
+pub struct ListArgs {
+    #[argh(positional, description = "paths to build directories")]
+    pub directories: Vec<OsString>,
+}
