@@ -1,4 +1,4 @@
-use super::manifest::Manifest;
+use super::manifest_loader::ManifestLoader;
 use argh::*;
 
 #[derive(Debug, FromArgs)]
@@ -9,5 +9,5 @@ use argh::*;
 )]
 pub struct SortArgs {
     #[argh(option, short = 'C', description = "path to manifest file")]
-    pub config: Manifest,
+    pub config: ManifestLoader,
 }

@@ -1,4 +1,4 @@
-pub mod manifest;
+pub mod manifest_loader;
 pub mod print_config;
 pub mod sort;
 
