@@ -1,5 +1,4 @@
 pub mod sort;
-pub mod srcinfo;
 
 use argh::*;
 use sort::SortArgs;
