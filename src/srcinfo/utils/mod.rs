@@ -22,7 +22,7 @@ pub fn extract_value_from_line<'a>(prefix: &str, line: &'a str) -> Option<&'a st
 
 pub fn extract_pkgname_prefix(text: &str) -> (&str, &str) {
     split_str_once(text, |current_char, _| match current_char {
-        'a'..='z' | 'A'..='Z' | '@' | '.' | '_' | '+' | '-' => false,
+        'a'..='z' | 'A'..='Z' | '0'..='9' | '@' | '.' | '_' | '+' | '-' => false,
         _ => true,
     })
 }
