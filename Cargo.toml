@@ -30,10 +30,6 @@ path = "src/lib.rs"
 name = "build-pacman-repo"
 path = "src/main.rs"
 
-[[bin]]
-name = "build-pacman-repo-completions"
-path = "src/sub/completions/main.rs"
-
 [dependencies]
 structopt = "^0.3.17"
 structopt-utilities = "^0.0.7"
