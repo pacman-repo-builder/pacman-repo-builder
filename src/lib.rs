@@ -1,6 +1,7 @@
 pub mod app;
 pub mod args;
 pub mod makepkg;
+pub mod manifest;
 pub mod srcinfo;
 pub mod utils;
 
