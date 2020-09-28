@@ -13,6 +13,7 @@ pub fn main() {
 
 pub use alpm;
 pub use argh;
+pub use indexmap;
 pub use num_bigint;
 pub use num_traits;
 pub use topological_sort;

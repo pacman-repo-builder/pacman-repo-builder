@@ -3,11 +3,9 @@ use super::{
     text_wrapper::{PkgBase, PkgName},
     SimpleDatabase,
 };
+use indexmap::IndexSet;
 use pipe_trait::*;
-use std::{
-    collections::HashSet,
-    fmt::{self, Display, Formatter},
-};
+use std::fmt::{self, Display, Formatter};
 
 impl<'a> SimpleDatabase<'a> {
     pub fn insert_srcinfo(
@@ -28,7 +26,7 @@ impl<'a> SimpleDatabase<'a> {
             self.dependencies.get_mut(&pkgbase).unwrap()
         };
 
-        let mut new_names = HashSet::<PkgName>::new();
+        let mut new_names = IndexSet::<PkgName>::new();
 
         for pkgname in srcinfo.pkgname() {
             let pkgname = PkgName(pkgname);
@@ -66,7 +64,7 @@ impl<'a> SimpleDatabase<'a> {
 #[derive(Debug, Clone)]
 pub struct RemovedInfo<'a> {
     pub srcinfo: SrcInfo<&'a str>,
-    pub names: HashSet<PkgName<'a>>,
+    pub names: IndexSet<PkgName<'a>>,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]

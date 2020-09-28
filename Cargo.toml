@@ -38,6 +38,7 @@ num-bigint = "^0.3.0"
 num-traits = "^0.2.12"
 alpm = "^0.10.1"
 topological-sort = "^0.1.0"
+indexmap = "^1.6.0"
 
 [dependencies.serde]
 version = "^1.0.116"

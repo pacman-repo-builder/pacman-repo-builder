@@ -3,11 +3,9 @@ pub mod package_build_order;
 pub mod text_wrapper;
 
 use super::SrcInfo;
+use indexmap::{IndexMap, IndexSet};
 use package_build_order::PackageBuildOrder;
-use std::{
-    collections::{HashMap, HashSet},
-    hash::Hash,
-};
+use std::hash::Hash;
 use text_wrapper::{PkgBase, PkgName};
 
 #[derive(Debug, Default)]
@@ -17,10 +15,10 @@ where
     PkgName: AsRef<str> + Hash + Eq + Clone,
     SrcInfoContent: AsRef<str>,
 {
-    base_to_name: HashMap<PkgBase, HashSet<PkgName>>,
-    name_to_base: HashMap<PkgName, PkgBase>,
-    infos: HashMap<PkgBase, SrcInfo<SrcInfoContent>>,
-    dependencies: HashMap<PkgBase, HashSet<PkgBase>>,
+    base_to_name: IndexMap<PkgBase, IndexSet<PkgName>>,
+    name_to_base: IndexMap<PkgName, PkgBase>,
+    infos: IndexMap<PkgBase, SrcInfo<SrcInfoContent>>,
+    dependencies: IndexMap<PkgBase, IndexSet<PkgBase>>,
     build_order: PackageBuildOrder,
 }
 
@@ -34,19 +32,19 @@ where
         Default::default()
     }
 
-    pub fn base_to_name(&self) -> &HashMap<PkgBase, HashSet<PkgName>> {
+    pub fn base_to_name(&self) -> &IndexMap<PkgBase, IndexSet<PkgName>> {
         &self.base_to_name
     }
 
-    pub fn name_to_base(&self) -> &HashMap<PkgName, PkgBase> {
+    pub fn name_to_base(&self) -> &IndexMap<PkgName, PkgBase> {
         &self.name_to_base
     }
 
-    pub fn infos(&self) -> &HashMap<PkgBase, SrcInfo<SrcInfoContent>> {
+    pub fn infos(&self) -> &IndexMap<PkgBase, SrcInfo<SrcInfoContent>> {
         &self.infos
     }
 
-    pub fn dependencies(&self) -> &HashMap<PkgBase, HashSet<PkgBase>> {
+    pub fn dependencies(&self) -> &IndexMap<PkgBase, IndexSet<PkgBase>> {
         &self.dependencies
     }
 
