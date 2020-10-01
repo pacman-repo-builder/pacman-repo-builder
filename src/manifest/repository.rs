@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
-use std::ffi::OsString;
+use std::path::PathBuf;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub enum Repository {
-    Single(OsString),
-    Multiple(Vec<OsString>),
+    Single(PathBuf),
+    Multiple(Vec<PathBuf>),
 }
 
 impl Repository {
