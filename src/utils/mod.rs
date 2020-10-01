@@ -38,7 +38,7 @@ pub fn serialize_iter_yaml(values: impl IntoIterator<Item = impl Serialize>) -> 
         .join("\n")
 }
 
-pub fn deserialize_yaml_multi_docs<'a, Value>(
+pub fn deserialize_multi_docs_yaml<'a, Value>(
     yaml: &'a str,
 ) -> impl Iterator<Item = Result<Value, serde_yaml::Error>> + 'a
 where
