@@ -3,7 +3,7 @@ use pacman_repo_builder::{
         build_metadata::BuildMetadata, global_settings::GlobalSettings, member::Member,
         repository::Repository, Manifest,
     },
-    utils::serialize_iter_yaml,
+    utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
 use pipe_trait::*;
 use std::path::PathBuf;
@@ -74,4 +74,14 @@ fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
 fn serialize() {
     let yaml = serialize_iter_yaml(manifest_list());
     assert_eq!(yaml.trim(), manifest_list_yaml());
+}
+
+#[test]
+fn deserialize() {
+    let actual = manifest_list_yaml()
+        .pipe(deserialize_multi_docs_yaml::<Manifest<PathBuf>>)
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap();
+    let expected: Vec<_> = manifest_list().collect();
+    assert_eq!(&actual, &expected);
 }
