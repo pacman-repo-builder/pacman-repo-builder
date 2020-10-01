@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use serde::Serialize;
+use serde::{de::DeserializeOwned, Serialize};
 
 pub fn split_str_once(text: &str, when: impl Fn(char, usize) -> bool) -> (&str, &str) {
     for (index, current_char) in text.char_indices() {
@@ -36,6 +36,17 @@ pub fn serialize_iter_yaml(values: impl IntoIterator<Item = impl Serialize>) -> 
         .map(|value| serde_yaml::to_string(&value))
         .map(Result::unwrap)
         .join("\n")
+}
+
+pub fn deserialize_yaml_multi_docs<'a, Value>(
+    yaml: &'a str,
+) -> impl Iterator<Item = Result<Value, serde_yaml::Error>> + 'a
+where
+    Value: DeserializeOwned + 'a,
+{
+    yaml.split("\n---\n")
+        .filter(|part| !part.trim().is_empty())
+        .map(serde_yaml::from_str::<Value>)
 }
 
 #[cfg(test)]
