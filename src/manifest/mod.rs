@@ -1,6 +1,7 @@
 pub mod build_metadata;
 pub mod global_settings;
 pub mod member;
+pub mod repository;
 
 use global_settings::GlobalSettings;
 use member::Member;

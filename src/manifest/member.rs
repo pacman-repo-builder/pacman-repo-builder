@@ -1,4 +1,4 @@
-use super::build_metadata::BuildMetadata;
+use super::{build_metadata::BuildMetadata, repository::Repository};
 use serde::{Deserialize, Serialize};
 use std::ffi::OsString;
 
@@ -7,4 +7,5 @@ use std::ffi::OsString;
 pub struct Member {
     pub directory: OsString,
     pub read_build_metadata: Option<BuildMetadata>,
+    pub repository: Option<Repository>,
 }
