@@ -85,3 +85,14 @@ fn deserialize() {
     let expected: Vec<_> = manifest_list().collect();
     assert_eq!(&actual, &expected);
 }
+
+#[test]
+fn as_path() {
+    let manifest_list: Vec<_> = manifest_list().collect();
+    let actual = manifest_list
+        .iter()
+        .map(Manifest::as_path)
+        .pipe(serialize_iter_yaml);
+    let expected = serialize_iter_yaml(&manifest_list);
+    assert_eq!(&actual, &expected);
+}
