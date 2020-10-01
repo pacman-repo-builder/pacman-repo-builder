@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "kebab-case")]
-pub enum Repository {
-    Single(PathBuf),
-    Multiple(Vec<PathBuf>),
+pub enum Repository<P: AsRef<Path>> {
+    Single(P),
+    Multiple(Vec<P>),
 }
 
-impl Repository {
+impl<P: AsRef<Path>> Repository<P> {
     pub fn concat(self, other: Self) -> Self {
         use Repository::*;
         Multiple(match (self, other) {
@@ -30,7 +30,10 @@ impl Repository {
     }
 }
 
-pub fn concat_options(left: Option<Repository>, right: Option<Repository>) -> Option<Repository> {
+pub fn concat_options<P: AsRef<Path>>(
+    left: Option<Repository<P>>,
+    right: Option<Repository<P>>,
+) -> Option<Repository<P>> {
     match (left, right) {
         (None, None) => None,
         (None, right) => right,
