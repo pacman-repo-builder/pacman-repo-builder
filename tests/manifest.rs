@@ -6,7 +6,7 @@ use pacman_repo_builder::manifest::{
 use pipe_trait::*;
 use std::path::PathBuf;
 
-fn manifest_list() -> &'static str {
+fn manifest_list_yaml() -> &'static str {
     include_str!("./assets/manifest-list.yaml").trim()
 }
 
@@ -73,5 +73,5 @@ fn serialize() {
     })
     .join("\n");
 
-    assert_eq!(yaml.trim(), manifest_list());
+    assert_eq!(yaml.trim(), manifest_list_yaml());
 }
