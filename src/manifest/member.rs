@@ -6,7 +6,9 @@ use std::path::{Path, PathBuf};
 #[serde(rename_all = "kebab-case")]
 pub struct Member<P: AsRef<Path>> {
     pub directory: P,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub read_build_metadata: Option<BuildMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub repository: Option<Repository<P>>,
 }
 
