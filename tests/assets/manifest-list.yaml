@@ -1,0 +1,44 @@
+---
+members:
+  - directory: foo
+  - directory: bar
+    read-build-metadata: pkgbuild
+    repository: single-repo
+  - directory: baz
+    read-build-metadata: srcinfo
+    repository:
+      - repo1
+      - repo2
+      - repo3
+---
+global-settings: {}
+members:
+  - directory: foo
+  - directory: bar
+    read-build-metadata: pkgbuild
+    repository: single-repo
+  - directory: baz
+    read-build-metadata: srcinfo
+    repository:
+      - repo1
+      - repo2
+      - repo3
+---
+global-settings:
+  container: container
+  read-build-metadata: either
+  repository:
+    - abc
+    - def
+    - ghi
+members:
+  - directory: foo
+  - directory: bar
+    read-build-metadata: pkgbuild
+    repository: single-repo
+  - directory: baz
+    read-build-metadata: srcinfo
+    repository:
+      - repo1
+      - repo2
+      - repo3

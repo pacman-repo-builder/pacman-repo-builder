@@ -43,3 +43,6 @@ indexmap = "^1.6.0"
 [dependencies.serde]
 version = "^1.0.116"
 features = ["derive"]
+
+[dev-dependencies]
+itertools = "^0.9.0"
