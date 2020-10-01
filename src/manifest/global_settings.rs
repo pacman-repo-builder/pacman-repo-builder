@@ -2,7 +2,7 @@ use super::{build_metadata::BuildMetadata, repository::Repository};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct GlobalSettings<P: AsRef<Path>> {
     #[serde(skip_serializing_if = "Option::is_none")]

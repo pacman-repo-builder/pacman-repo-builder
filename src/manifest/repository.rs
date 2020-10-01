@@ -2,7 +2,7 @@ use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case", untagged)]
 pub enum Repository<P: AsRef<Path>> {
     Single(P),

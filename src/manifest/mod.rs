@@ -8,7 +8,7 @@ use member::Member;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct Manifest<P: AsRef<Path>> {
     #[serde(skip_serializing_if = "Option::is_none")]

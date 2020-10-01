@@ -2,7 +2,7 @@ use super::{build_metadata::BuildMetadata, repository::Repository};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct Member<P: AsRef<Path>> {
     pub directory: P,
