@@ -45,7 +45,7 @@ impl Repository<PathBuf> {
     }
 }
 
-pub fn concat_options<P: AsRef<Path>>(
+pub fn concat_repository_options<P: AsRef<Path>>(
     left: Option<Repository<P>>,
     right: Option<Repository<P>>,
 ) -> Option<Repository<P>> {
