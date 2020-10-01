@@ -4,6 +4,7 @@ use pacman_repo_builder::manifest::{
     repository::Repository, Manifest,
 };
 use pipe_trait::*;
+use serde::Serialize;
 use std::path::PathBuf;
 
 fn manifest_list_yaml() -> &'static str {
@@ -68,11 +69,16 @@ fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
     })
 }
 
+fn serialize_iter(values: impl IntoIterator<Item = impl Serialize>) -> String {
+    values
+        .into_iter()
+        .map(|value| serde_yaml::to_string(&value))
+        .map(Result::unwrap)
+        .join("\n")
+}
+
 #[test]
 fn serialize() {
-    let yaml = manifest_list()
-        .map(|manifest| manifest.pipe_ref(serde_yaml::to_string).unwrap())
-        .join("\n");
-
+    let yaml = serialize_iter(manifest_list());
     assert_eq!(yaml.trim(), manifest_list_yaml());
 }
