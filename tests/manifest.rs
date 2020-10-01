@@ -10,8 +10,7 @@ fn manifest_list_yaml() -> &'static str {
     include_str!("./assets/manifest-list.yaml").trim()
 }
 
-#[test]
-fn serialize() {
+fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
     let make_members = || {
         vec![
             Member {
@@ -40,7 +39,7 @@ fn serialize() {
         ]
     };
 
-    let yaml = [
+    [
         || None,
         || {
             Some(GlobalSettings {
@@ -63,15 +62,17 @@ fn serialize() {
         },
     ]
     .iter()
-    .map(|make_global_settings| {
-        Manifest {
-            global_settings: make_global_settings(),
-            members: make_members(),
-        }
-        .pipe_ref(serde_yaml::to_string)
-        .unwrap()
+    .map(move |make_global_settings| Manifest {
+        global_settings: make_global_settings(),
+        members: make_members(),
     })
-    .join("\n");
+}
+
+#[test]
+fn serialize() {
+    let yaml = manifest_list()
+        .map(|manifest| manifest.pipe_ref(serde_yaml::to_string).unwrap())
+        .join("\n");
 
     assert_eq!(yaml.trim(), manifest_list_yaml());
 }
