@@ -87,7 +87,7 @@ fn deserialize() {
 }
 
 #[test]
-fn as_path() {
+fn as_path_serialize() {
     let manifest_list: Vec<_> = manifest_list().collect();
     let actual = manifest_list
         .iter()
