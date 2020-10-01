@@ -1,10 +1,11 @@
-use itertools::Itertools;
-use pacman_repo_builder::manifest::{
-    build_metadata::BuildMetadata, global_settings::GlobalSettings, member::Member,
-    repository::Repository, Manifest,
+use pacman_repo_builder::{
+    manifest::{
+        build_metadata::BuildMetadata, global_settings::GlobalSettings, member::Member,
+        repository::Repository, Manifest,
+    },
+    utils::serialize_iter_yaml,
 };
 use pipe_trait::*;
-use serde::Serialize;
 use std::path::PathBuf;
 
 fn manifest_list_yaml() -> &'static str {
@@ -69,16 +70,8 @@ fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
     })
 }
 
-fn serialize_iter(values: impl IntoIterator<Item = impl Serialize>) -> String {
-    values
-        .into_iter()
-        .map(|value| serde_yaml::to_string(&value))
-        .map(Result::unwrap)
-        .join("\n")
-}
-
 #[test]
 fn serialize() {
-    let yaml = serialize_iter(manifest_list());
+    let yaml = serialize_iter_yaml(manifest_list());
     assert_eq!(yaml.trim(), manifest_list_yaml());
 }
