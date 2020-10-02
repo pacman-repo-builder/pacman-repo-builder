@@ -9,7 +9,7 @@ pub use member::Member;
 pub use repository::{concat_repository_options, Repository};
 
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
@@ -19,10 +19,10 @@ pub struct Manifest<P: AsRef<Path>> {
     pub members: Vec<Member<P>>,
 }
 
-impl Manifest<PathBuf> {
+impl<P: AsRef<Path>> Manifest<P> {
     pub fn as_path(&self) -> Manifest<&Path> {
         Manifest {
-            global_settings: self.global_settings.as_ref().map(|x| x.as_path()),
+            global_settings: self.global_settings.as_ref().map(GlobalSettings::as_path),
             members: self.members.iter().map(Member::as_path).collect(),
         }
     }
