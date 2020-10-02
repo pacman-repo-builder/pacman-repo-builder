@@ -1,6 +1,6 @@
 use super::{BuildMetadata, Repository};
 use serde::{Deserialize, Serialize};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
@@ -19,6 +19,18 @@ impl<P: AsRef<Path>> GlobalSettings<P> {
             container: self.container.as_ref().map(AsRef::as_ref),
             read_build_metadata: self.read_build_metadata,
             repository: self.repository.as_ref().map(Repository::as_path),
+        }
+    }
+
+    pub fn to_path_buf(&self) -> GlobalSettings<PathBuf> {
+        GlobalSettings {
+            container: self
+                .container
+                .as_ref()
+                .map(AsRef::as_ref)
+                .map(Path::to_path_buf),
+            read_build_metadata: self.read_build_metadata,
+            repository: self.repository.as_ref().map(Repository::to_path_buf),
         }
     }
 }
