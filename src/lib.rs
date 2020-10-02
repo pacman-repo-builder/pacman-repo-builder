@@ -6,7 +6,8 @@ pub mod srcinfo;
 pub mod utils;
 
 pub fn main() {
-    app::App::from_env().run()
+    use pipe_trait::*;
+    app::App::from_env().run().pipe(std::process::exit)
 }
 
 pub use alpm;
