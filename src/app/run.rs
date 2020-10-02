@@ -47,43 +47,42 @@ fn print_config(args: PrintConfigArgs) -> i32 {
 
     let mut members = Vec::new();
     for container in containers {
-        match read_dir(&container) {
+        let list = match read_dir(&container) {
             Err(error) => {
                 eprintln!("cannot read directory {:?}: {}", &container, error);
                 error_count += 1;
                 continue;
             }
-            Ok(list) => {
-                for entry in list {
-                    let directory = match entry {
-                        Err(error) => {
-                            eprintln!("cannot read an entry of {:?}: {}", &container, error);
-                            error_count += 1;
-                            continue;
-                        }
-                        Ok(entry) => entry,
+            Ok(list) => list,
+        };
+        for entry in list {
+            let directory = match entry {
+                Err(error) => {
+                    eprintln!("cannot read an entry of {:?}: {}", &container, error);
+                    error_count += 1;
+                    continue;
+                }
+                Ok(entry) => entry,
+            }
+            .path()
+            .pipe(|name| container.join(name));
+            match metadata(&directory) {
+                Err(error) => {
+                    eprintln!("cannot stat {:?}: {}", &directory, error);
+                    error_count += 1;
+                    continue;
+                }
+                Ok(metadata) => {
+                    if !metadata.is_dir() {
+                        continue;
                     }
-                    .path()
-                    .pipe(|name| container.join(name));
-                    match metadata(&directory) {
-                        Err(error) => {
-                            eprintln!("cannot stat {:?}: {}", &directory, error);
-                            error_count += 1;
-                            continue;
-                        }
-                        Ok(metadata) => {
-                            if !metadata.is_dir() {
-                                continue;
-                            }
-                        }
-                    }
-                    members.push(Member {
-                        repository: None,
-                        read_build_metadata: None,
-                        directory,
-                    });
                 }
             }
+            members.push(Member {
+                repository: None,
+                read_build_metadata: None,
+                directory,
+            });
         }
     }
     let members: Vec<_> = members.iter().map(Member::as_path).collect();
