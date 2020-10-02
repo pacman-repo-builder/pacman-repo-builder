@@ -15,4 +15,11 @@ pub struct PrintConfigArgs {
         description = "containers of build directories"
     )]
     pub containers: Vec<PathBuf>,
+    #[argh(
+        option,
+        long = "repository",
+        short = 'T',
+        description = "paths to repository files"
+    )]
+    pub repositories: Vec<PathBuf>,
 }
