@@ -69,7 +69,7 @@ fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
 
 #[test]
 fn serialize() {
-    let yaml = serialize_iter_yaml(manifest_list());
+    let yaml = serialize_iter_yaml(manifest_list()).unwrap();
     assert_eq!(yaml.trim(), manifest_list_yaml());
 }
 
@@ -89,8 +89,9 @@ fn as_path_serialize() {
     let actual = manifest_list
         .iter()
         .map(Manifest::as_path)
-        .pipe(serialize_iter_yaml);
-    let expected = serialize_iter_yaml(&manifest_list);
+        .pipe(serialize_iter_yaml)
+        .unwrap();
+    let expected = serialize_iter_yaml(&manifest_list).unwrap();
     assert_eq!(&actual, &expected);
 }
 
@@ -98,7 +99,8 @@ fn as_path_serialize() {
 fn resolve_members() {
     let actual = manifest_list()
         .map(|x| x.resolve_members().collect::<Vec<_>>())
-        .pipe(serialize_iter_yaml);
+        .pipe(serialize_iter_yaml)
+        .unwrap();
     let expected = include_str!("./assets/resolved-members.yaml");
     assert_eq!(actual.trim(), expected.trim());
 }

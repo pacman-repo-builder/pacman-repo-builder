@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use serde::{de::DeserializeOwned, Serialize};
 
 pub fn split_str_once(text: &str, when: impl Fn(char, usize) -> bool) -> (&str, &str) {
@@ -30,12 +29,17 @@ pub fn extract_pkgname_prefix(text: &str) -> (&str, &str) {
     })
 }
 
-pub fn serialize_iter_yaml(values: impl IntoIterator<Item = impl Serialize>) -> String {
-    values
-        .into_iter()
-        .map(|value| serde_yaml::to_string(&value))
-        .map(Result::unwrap)
-        .join("\n")
+pub fn serialize_iter_yaml(
+    values: impl IntoIterator<Item = impl Serialize>,
+) -> Result<String, serde_yaml::Error> {
+    let mut result = String::new();
+
+    for value in values {
+        result += serde_yaml::to_string(&value)?.as_str();
+        result += "\n";
+    }
+
+    Ok(result)
 }
 
 pub fn deserialize_multi_docs_yaml<'a, Value>(
