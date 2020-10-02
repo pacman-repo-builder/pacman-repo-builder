@@ -4,7 +4,11 @@ use super::super::{
 };
 use super::App;
 use pipe_trait::*;
-use std::{fs::read_dir, io::stdout, path::Path};
+use std::{
+    fs::{metadata, read_dir},
+    io::stdout,
+    path::Path,
+};
 
 impl App {
     pub fn run(self) -> i32 {
@@ -51,18 +55,32 @@ fn print_config(args: PrintConfigArgs) -> i32 {
             }
             Ok(list) => {
                 for entry in list {
-                    let entry = match entry {
+                    let directory = match entry {
                         Err(error) => {
                             eprintln!("cannot read an entry of {:?}: {}", &container, error);
                             error_count += 1;
                             continue;
                         }
                         Ok(entry) => entry,
-                    };
+                    }
+                    .path()
+                    .pipe(|name| container.join(name));
+                    match metadata(&directory) {
+                        Err(error) => {
+                            eprintln!("cannot stat {:?}: {}", &directory, error);
+                            error_count += 1;
+                            continue;
+                        }
+                        Ok(metadata) => {
+                            if !metadata.is_dir() {
+                                continue;
+                            }
+                        }
+                    }
                     members.push(Member {
                         repository: None,
                         read_build_metadata: None,
-                        directory: container.join(entry.path()),
+                        directory,
                     });
                 }
             }
