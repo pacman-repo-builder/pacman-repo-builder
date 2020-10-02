@@ -1,0 +1,45 @@
+---
+- directory: foo
+- directory: bar
+  read-build-metadata: pkgbuild
+  repository: single-repo
+- directory: baz
+  read-build-metadata: srcinfo
+  repository:
+    - repo1
+    - repo2
+    - repo3
+---
+- directory: foo
+- directory: bar
+  read-build-metadata: pkgbuild
+  repository: single-repo
+- directory: baz
+  read-build-metadata: srcinfo
+  repository:
+    - repo1
+    - repo2
+    - repo3
+---
+- directory: container/foo
+  read-build-metadata: either
+  repository:
+    - abc
+    - def
+    - ghi
+- directory: container/bar
+  read-build-metadata: pkgbuild
+  repository:
+    - single-repo
+    - abc
+    - def
+    - ghi
+- directory: container/baz
+  read-build-metadata: srcinfo
+  repository:
+    - repo1
+    - repo2
+    - repo3
+    - abc
+    - def
+    - ghi

@@ -93,3 +93,12 @@ fn as_path_serialize() {
     let expected = serialize_iter_yaml(&manifest_list);
     assert_eq!(&actual, &expected);
 }
+
+#[test]
+fn resolve_members() {
+    let actual = manifest_list()
+        .map(|x| x.resolve_members().collect::<Vec<_>>())
+        .pipe(serialize_iter_yaml);
+    let expected = include_str!("./assets/resolved-members.yaml");
+    assert_eq!(actual.trim(), expected.trim());
+}
