@@ -1,8 +1,5 @@
 use pacman_repo_builder::{
-    manifest::{
-        build_metadata::BuildMetadata, global_settings::GlobalSettings, member::Member,
-        repository::Repository, Manifest,
-    },
+    manifest::{BuildMetadata, GlobalSettings, Manifest, Member, Repository},
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
 use pipe_trait::*;

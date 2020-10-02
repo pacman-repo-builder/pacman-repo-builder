@@ -1,4 +1,4 @@
-use super::manifest_loader::ManifestLoader;
+use super::ManifestLoader;
 use argh::*;
 
 #[derive(Debug, FromArgs)]

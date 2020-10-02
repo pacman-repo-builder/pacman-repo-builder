@@ -1,2 +1,5 @@
-pub mod reasoned;
-pub mod unreasoned;
+mod reasoned;
+mod unreasoned;
+
+pub use reasoned::ReasonedDependency;
+pub use unreasoned::UnreasonedDependency;

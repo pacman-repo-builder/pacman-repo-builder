@@ -3,7 +3,7 @@ pub mod dependency;
 pub mod version;
 
 use super::utils::extract_value_from_line;
-use dependency::{reasoned::ReasonedDependency, unreasoned::UnreasonedDependency};
+use dependency::{ReasonedDependency, UnreasonedDependency};
 use std::str::Lines;
 use version::Version;
 

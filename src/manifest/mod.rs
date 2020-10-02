@@ -1,10 +1,13 @@
-pub mod build_metadata;
-pub mod global_settings;
-pub mod member;
-pub mod repository;
+mod build_metadata;
+mod global_settings;
+mod member;
+mod repository;
 
-use global_settings::GlobalSettings;
-use member::Member;
+pub use build_metadata::BuildMetadata;
+pub use global_settings::GlobalSettings;
+pub use member::Member;
+pub use repository::{concat_repository_options, Repository};
+
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 

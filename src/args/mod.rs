@@ -1,10 +1,12 @@
-pub mod manifest_loader;
-pub mod print_config;
-pub mod sort;
+mod manifest_loader;
+mod print_config;
+mod sort;
+
+pub use manifest_loader::ManifestLoader;
+pub use print_config::PrintConfig;
+pub use sort::SortArgs;
 
 use argh::*;
-use print_config::PrintConfig;
-use sort::SortArgs;
 
 #[derive(Debug, FromArgs)]
 #[argh(description = "Build a custom pacman repository from a collection of PKGBUILD directories")]

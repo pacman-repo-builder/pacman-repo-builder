@@ -1,4 +1,4 @@
-use super::{build_metadata::BuildMetadata, repository::Repository};
+use super::{BuildMetadata, Repository};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
