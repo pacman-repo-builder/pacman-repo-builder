@@ -8,6 +8,6 @@ use std::path::PathBuf;
     description = "Generate manifest YAML from a list of directories"
 )]
 pub struct PrintConfigArgs {
-    #[argh(positional, description = "containers of build directories")]
+    #[argh(option, description = "containers of build directories")]
     pub containers: Vec<PathBuf>,
 }
