@@ -51,18 +51,19 @@ fn print_config(args: PrintConfigArgs) -> i32 {
             }
             Ok(list) => {
                 for entry in list {
-                    match entry {
+                    let entry = match entry {
                         Err(error) => {
                             eprintln!("cannot read an entry of {:?}: {}", &container, error);
                             error_count += 1;
                             continue;
                         }
-                        Ok(entry) => members.push(Member {
-                            repository: None,
-                            read_build_metadata: None,
-                            directory: container.join(entry.path()),
-                        }),
+                        Ok(entry) => entry,
                     };
+                    members.push(Member {
+                        repository: None,
+                        read_build_metadata: None,
+                        directory: container.join(entry.path()),
+                    });
                 }
             }
         }
