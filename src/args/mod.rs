@@ -3,7 +3,7 @@ mod print_config;
 mod sort;
 
 pub use manifest_loader::ManifestLoader;
-pub use print_config::PrintConfig;
+pub use print_config::PrintConfigArgs;
 pub use sort::SortArgs;
 
 use argh::*;
@@ -19,5 +19,5 @@ pub struct Args {
 #[argh(subcommand)]
 pub enum Command {
     Sort(SortArgs),
-    PrintConfig(PrintConfig),
+    PrintConfig(PrintConfigArgs),
 }
