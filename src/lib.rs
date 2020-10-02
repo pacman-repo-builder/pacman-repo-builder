@@ -6,9 +6,7 @@ pub mod srcinfo;
 pub mod utils;
 
 pub fn main() {
-    let args: args::Args = argh::from_env();
-    dbg!(args);
-    unimplemented!()
+    app::App::from_env().run()
 }
 
 pub use alpm;
