@@ -27,14 +27,19 @@ impl<P: AsRef<Path>> Manifest<P> {
         }
     }
 
-    pub fn resolve_members(&self) -> Vec<Member<PathBuf>> {
-        if let Some(global_settings) = &self.global_settings {
-            self.members
-                .iter()
-                .map(|x| x.resolve(&global_settings))
-                .collect()
-        } else {
-            self.members.iter().map(Member::to_path_buf).collect()
+    pub fn resolve_members(&self) -> impl Iterator<Item = Member<PathBuf>> + '_ {
+        macro_rules! box_fn {
+            ($function:expr) => {
+                Box::new($function) as Box<dyn Fn(_) -> _>
+            };
         }
+
+        self.members
+            .iter()
+            .map(if let Some(global_settings) = &self.global_settings {
+                box_fn!(move |x: &Member<P>| x.resolve(global_settings))
+            } else {
+                box_fn!(move |x: &Member<P>| x.to_path_buf())
+            })
     }
 }
