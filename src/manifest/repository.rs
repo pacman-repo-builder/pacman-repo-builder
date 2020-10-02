@@ -1,6 +1,6 @@
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case", untagged)]
@@ -37,6 +37,19 @@ impl<P: AsRef<Path>> Repository<P> {
             Multiple(paths) => paths
                 .iter()
                 .map(AsRef::as_ref)
+                .collect::<Vec<_>>()
+                .pipe(Multiple),
+        }
+    }
+
+    pub fn to_path_buf(&self) -> Repository<PathBuf> {
+        use Repository::*;
+        match self {
+            Single(path) => path.as_ref().to_path_buf().pipe(Single),
+            Multiple(paths) => paths
+                .iter()
+                .map(AsRef::as_ref)
+                .map(Path::to_path_buf)
                 .collect::<Vec<_>>()
                 .pipe(Multiple),
         }
