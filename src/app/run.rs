@@ -1,16 +1,7 @@
-use super::args::{Args, Command};
-
-pub struct App {
-    pub args: Args,
-}
+use super::super::args::{Args, Command};
+use super::App;
 
 impl App {
-    pub fn from_env() -> Self {
-        App {
-            args: argh::from_env(),
-        }
-    }
-
     pub fn run(self) {
         let Args { command } = self.args;
         match command {
