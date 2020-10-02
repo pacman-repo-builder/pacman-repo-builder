@@ -21,6 +21,14 @@ impl<P: AsRef<Path>> Member<P> {
         }
     }
 
+    pub fn to_path_buf(&self) -> Member<PathBuf> {
+        Member {
+            directory: self.directory.as_ref().to_path_buf(),
+            read_build_metadata: self.read_build_metadata,
+            repository: self.repository.as_ref().map(Repository::to_path_buf),
+        }
+    }
+
     pub fn resolve<Q: AsRef<Path>>(&self, global_settings: &GlobalSettings<Q>) -> Member<PathBuf> {
         Member {
             directory: if let Some(container) = &global_settings.container {
