@@ -9,7 +9,7 @@ use std::fmt::{self, Display, Formatter};
 
 impl<'a> SimpleDatabase<'a> {
     pub fn insert_srcinfo(
-        &'a mut self,
+        &mut self,
         srcinfo: &'a SrcInfo<&'a str>,
     ) -> Result<Option<RemovedInfo>, InsertionError> {
         let pkgbase = srcinfo
