@@ -1,6 +1,6 @@
 use super::super::{
     args::{Args, Command},
-    cmd::print_config,
+    cmd::{print_config, sort},
 };
 use super::App;
 
@@ -9,7 +9,7 @@ impl App {
         let Args { command } = self.args;
         match command {
             Command::PrintConfig(args) => print_config(args),
-            Command::Sort(_) => unimplemented!(),
+            Command::Sort(args) => sort(args),
         }
     }
 }
