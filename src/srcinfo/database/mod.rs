@@ -51,6 +51,10 @@ where
     pub fn build_order(&self) -> &PackageBuildOrder {
         &self.build_order
     }
+
+    pub fn into_build_order(self) -> PackageBuildOrder {
+        self.build_order
+    }
 }
 
 pub type SimpleDatabase<'a> = Database<PkgBase<'a>, PkgName<'a>, &'a str>;
