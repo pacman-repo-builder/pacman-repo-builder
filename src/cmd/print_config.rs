@@ -15,6 +15,8 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
     let PrintConfigArgs {
         containers,
         repositories,
+        require_pkgbuild,
+        require_srcinfo,
     } = args;
 
     let repository: Option<Repository<&Path>> = match &repositories[..] {
@@ -66,6 +68,16 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
                         continue;
                     }
                 }
+            }
+            let file_exists = |name: &'static str| match directory.join(name).pipe(metadata) {
+                Ok(metadata) => metadata.is_file(),
+                Err(_) => false,
+            };
+            if require_pkgbuild && !file_exists("PKGBUILD") {
+                continue;
+            }
+            if require_srcinfo && !file_exists(".SRCINFO") {
+                continue;
             }
             members.push(Member {
                 repository: None,

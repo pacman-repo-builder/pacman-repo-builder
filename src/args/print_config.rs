@@ -22,4 +22,14 @@ pub struct PrintConfigArgs {
         description = "paths to repository files"
     )]
     pub repositories: Vec<PathBuf>,
+    #[argh(
+        switch,
+        description = "skip if directory does not contains build script"
+    )]
+    pub require_pkgbuild: bool,
+    #[argh(
+        switch,
+        description = "skip if directory does not contains package info file"
+    )]
+    pub require_srcinfo: bool,
 }
