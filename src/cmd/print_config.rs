@@ -74,6 +74,7 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
             });
         }
     }
+    members.sort_by(|a, b| a.directory.cmp(&b.directory));
     let members: Vec<_> = members.iter().map(Member::as_path).collect();
 
     let manifest = Manifest {
