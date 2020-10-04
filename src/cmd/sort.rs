@@ -21,7 +21,7 @@ pub fn sort(args: SortArgs) -> i32 {
             ..
         } = member;
 
-        let srcinfo_result = match read_build_metadata.unwrap_or(BuildMetadata::Either) {
+        let srcinfo_result = match read_build_metadata.unwrap_or_default() {
             BuildMetadata::Either => unimplemented!(),
             BuildMetadata::PkgBuild => unimplemented!(),
             BuildMetadata::SrcInfo => directory

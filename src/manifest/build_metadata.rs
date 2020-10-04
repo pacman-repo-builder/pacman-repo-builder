@@ -7,3 +7,9 @@ pub enum BuildMetadata {
     PkgBuild,
     Either,
 }
+
+impl Default for BuildMetadata {
+    fn default() -> Self {
+        BuildMetadata::Either
+    }
+}
