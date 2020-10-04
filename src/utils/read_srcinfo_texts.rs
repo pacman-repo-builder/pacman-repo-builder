@@ -96,7 +96,7 @@ fn read_srcinfo_file(file: PathBuf) -> Result<String, String> {
         .and_then(|content| {
             content.pipe(String::from_utf8).map_err(|error| {
                 format!(
-                    "cannot convert content of file {:?} into a UTF-8 text: {}",
+                    "cannot convert content of file {:?} to UTF-8: {}",
                     file, error
                 )
             })
