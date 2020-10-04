@@ -28,8 +28,8 @@ pub fn sort(args: SortArgs) -> i32 {
         }
     }
 
-    for item in database.into_build_order().0 {
-        println!("{}", item);
+    for pkgbase in database.into_build_order().0 {
+        println!("{}", pkgbase);
     }
 
     if error_count == 0 {
