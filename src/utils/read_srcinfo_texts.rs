@@ -5,7 +5,7 @@ use std::{fs::read, path::PathBuf};
 
 fn read_srcinfo_file(file: PathBuf) -> Result<String, String> {
     file.pipe_ref(read)
-        .map_err(|error| format!("cannot read file {:?}: {}", file, error,))
+        .map_err(|error| format!("cannot read file {:?}: {}", file, error))
         .and_then(|content| {
             content.pipe(String::from_utf8).map_err(|error| {
                 format!(
