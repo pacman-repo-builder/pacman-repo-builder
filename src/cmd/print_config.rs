@@ -1,6 +1,6 @@
 use super::super::{
     args::PrintConfigArgs,
-    manifest::{GlobalSettings, Manifest, Member, Repository},
+    manifest::{BuildMetadata, GlobalSettings, Manifest, Member, Repository},
 };
 use pipe_trait::*;
 use std::{
@@ -30,9 +30,15 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
             .pipe(Some),
     };
 
+    let read_build_metadata = Some(match (args.require_pkgbuild, args.require_srcinfo) {
+        (false, false) => BuildMetadata::Either,
+        (false, true) => BuildMetadata::SrcInfo,
+        (true, _) => BuildMetadata::PkgBuild,
+    });
+
     let global_settings = Some(GlobalSettings {
         container: None,
-        read_build_metadata: None,
+        read_build_metadata,
         repository,
     });
 
