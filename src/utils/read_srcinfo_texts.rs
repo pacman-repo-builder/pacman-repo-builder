@@ -2,7 +2,7 @@ use super::super::manifest::{BuildMetadata, Manifest, Member};
 use super::Pair;
 use pipe_trait::*;
 use std::{
-    fs::read,
+    fs::{metadata, read},
     path::{Path, PathBuf},
     process::Command,
 };
@@ -20,7 +20,7 @@ pub fn read_srcinfo_texts(
         } = member;
 
         let srcinfo_result = match read_build_metadata.unwrap_or_default() {
-            BuildMetadata::Either => unimplemented!(),
+            BuildMetadata::Either => read_either(&directory),
             BuildMetadata::PkgBuild => read_build_dir(&directory),
             BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
         };
@@ -35,6 +35,27 @@ pub fn read_srcinfo_texts(
     }
 
     result
+}
+
+fn read_either(directory: &Path) -> Result<String, String> {
+    let srcinfo_file = directory.join(".SRCINFO");
+    let pkgbuild_file = directory.join("PKGBUILD");
+
+    let file_exists = |file: &Path| match metadata(file) {
+        Ok(metadata) => metadata.is_file(),
+        Err(_) => false,
+    };
+
+    if file_exists(&srcinfo_file) {
+        read_srcinfo_file(srcinfo_file)
+    } else if file_exists(&pkgbuild_file) {
+        read_build_dir(directory)
+    } else {
+        Err(format!(
+            "directory {:?} contains neither .SRCINFO nor PKGBUILD",
+            directory,
+        ))
+    }
 }
 
 fn read_build_dir(directory: &Path) -> Result<String, String> {
