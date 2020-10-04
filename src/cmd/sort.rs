@@ -2,6 +2,7 @@ use super::super::{
     args::{ManifestLoader, SortArgs},
     manifest::{BuildMetadata, Member},
     srcinfo::{database::SimpleDatabase, SrcInfo},
+    utils::Pair,
 };
 use pipe_trait::*;
 use std::fs::read;
@@ -11,30 +12,6 @@ pub fn sort(args: SortArgs) -> i32 {
 
     let SortArgs { config } = args;
     let ManifestLoader(manifest) = config;
-
-    #[derive(Copy, Clone)]
-    struct Tracker<X, D> {
-        pub value: X,
-        pub directory: D,
-    }
-
-    impl<X, D> Tracker<X, D> {
-        fn new(directory: D, value: X) -> Self {
-            Tracker { directory, value }
-        }
-
-        fn map<Y>(self, f: impl FnOnce(X) -> Y) -> Tracker<Y, D> {
-            let Tracker { directory, value } = self;
-            Tracker {
-                directory,
-                value: f(value),
-            }
-        }
-
-        fn to_ref(&self) -> Tracker<&X, &D> {
-            Tracker::new(&self.directory, &self.value)
-        }
-    }
 
     let mut srcinfo_texts = Vec::new();
     for member in manifest.resolve_members() {
@@ -69,7 +46,7 @@ pub fn sort(args: SortArgs) -> i32 {
         };
 
         match srcinfo_result {
-            Ok(content) => srcinfo_texts.push(Tracker::new(directory, content)),
+            Ok(content) => srcinfo_texts.push(Pair::new(content, directory)),
             Err(error) => {
                 eprintln!("{}", error);
                 error_count += 1;
@@ -83,8 +60,9 @@ pub fn sort(args: SortArgs) -> i32 {
         .map(|x| x.to_ref().map(String::as_str).map(SrcInfo))
         .collect();
     let mut database = SimpleDatabase::default();
-    for Tracker { directory, value } in &srcinfo_collection {
-        if let Err(error) = database.insert_srcinfo(value) {
+    for pair in &srcinfo_collection {
+        let (srcinfo, directory) = pair.to_ref().into_tuple();
+        if let Err(error) = database.insert_srcinfo(srcinfo) {
             eprintln!("error in directory {:?}: {}", directory, error);
             error_count += 1;
         }
