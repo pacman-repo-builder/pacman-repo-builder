@@ -1,11 +1,8 @@
 use super::super::{
     args::{ManifestLoader, SortArgs},
-    manifest::{BuildMetadata, Member},
     srcinfo::{database::SimpleDatabase, SrcInfo},
-    utils::Pair,
+    utils::read_srcinfo_texts,
 };
-use pipe_trait::*;
-use std::fs::read;
 
 pub fn sort(args: SortArgs) -> i32 {
     let mut error_count = 0u32;
@@ -13,47 +10,10 @@ pub fn sort(args: SortArgs) -> i32 {
     let SortArgs { config } = args;
     let ManifestLoader(manifest) = config;
 
-    let mut srcinfo_texts = Vec::new();
-    for member in manifest.resolve_members() {
-        let Member {
-            directory,
-            read_build_metadata,
-            ..
-        } = member;
-
-        let srcinfo_result = match read_build_metadata.unwrap_or_default() {
-            BuildMetadata::Either => unimplemented!(),
-            BuildMetadata::PkgBuild => unimplemented!(),
-            BuildMetadata::SrcInfo => directory
-                .join(".SRCINFO")
-                .pipe_ref(read)
-                .map_err(|error| {
-                    format!(
-                        "cannot read file {:?}: {}",
-                        directory.join(".SRCINFO"),
-                        error,
-                    )
-                })
-                .and_then(|content| {
-                    content.pipe(String::from_utf8).map_err(|error| {
-                        format!(
-                            "cannot convert content of file {:?} into a UTF-8 text: {}",
-                            directory.join(".SRCINFO"),
-                            error
-                        )
-                    })
-                }),
-        };
-
-        match srcinfo_result {
-            Ok(content) => srcinfo_texts.push(Pair::new(content, directory)),
-            Err(error) => {
-                eprintln!("{}", error);
-                error_count += 1;
-                continue;
-            }
-        };
-    }
+    let srcinfo_texts = read_srcinfo_texts(&manifest, |error| {
+        eprintln!("{}", error);
+        error_count += 1;
+    });
 
     let srcinfo_collection: Vec<_> = srcinfo_texts
         .iter()
