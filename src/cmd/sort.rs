@@ -9,7 +9,13 @@ pub fn sort(args: SortArgs) -> i32 {
     let mut error_count = 0u32;
 
     let SortArgs {} = args;
-    let manifest = Manifest::from_env().unwrap_or_default();
+    let manifest = match Manifest::from_env() {
+        Ok(manifest) => manifest,
+        Err(error) => {
+            eprintln!("{}", error);
+            return 2;
+        }
+    };
 
     let srcinfo_texts = read_srcinfo_texts(&manifest, |error| {
         eprintln!("{}", error);

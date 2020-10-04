@@ -12,6 +12,7 @@ use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 use std::{
     fs::File,
+    io::ErrorKind,
     path::{Path, PathBuf},
 };
 
@@ -56,10 +57,15 @@ impl Manifest<PathBuf> {
     }
 
     pub fn from_file(file: &Path) -> Result<Self, String> {
-        file.pipe(File::open)
-            .map_err(|error| format!("cannot open {:?} as a file: {}", file, error))?
-            .pipe(serde_yaml::from_reader::<_, Manifest<PathBuf>>)
-            .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
-            .pipe(Ok)
+        match File::open(file) {
+            Ok(content) => content
+                .pipe(serde_yaml::from_reader::<_, Manifest<PathBuf>>)
+                .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
+                .pipe(Ok),
+            Err(error) => match error.kind() {
+                ErrorKind::NotFound => Ok(Manifest::default()),
+                _ => Err(format!("cannot open {:?} as a file: {}", file, error)),
+            },
+        }
     }
 }
