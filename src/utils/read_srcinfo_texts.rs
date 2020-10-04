@@ -1,7 +1,43 @@
 use super::super::manifest::{BuildMetadata, Manifest, Member};
 use super::Pair;
 use pipe_trait::*;
-use std::{fs::read, path::PathBuf};
+use std::{
+    fs::read,
+    path::{Path, PathBuf},
+    process::Command,
+};
+
+fn read_build_dir(directory: &Path) -> Result<String, String> {
+    let output = Command::new("makepkg")
+        .current_dir(directory)
+        .arg("--printsrcinfo")
+        .output()
+        .map_err(|error| {
+            format!(
+                "fail to execute 'makepkg --printsrcinfo' in directory {:?}: {}",
+                directory, error,
+            )
+        })?;
+
+    if output.status.success() {
+        output
+            .stdout
+            .pipe(String::from_utf8)
+            .map_err(|error| {
+                format!(
+                "fail to convert output of 'makepkg --printsrcinfo' in directory {:?} to UTF-8: {}",
+                directory, error,
+            )
+            })?
+            .pipe(Ok)
+    } else {
+        Err(format!(
+            "execution of 'makepkg --printsrcinfo' in directory {:?} exits with code {:?}",
+            directory,
+            output.status.code(),
+        ))
+    }
+}
 
 fn read_srcinfo_file(file: PathBuf) -> Result<String, String> {
     file.pipe_ref(read)
@@ -30,7 +66,7 @@ pub fn read_srcinfo_texts(
 
         let srcinfo_result = match read_build_metadata.unwrap_or_default() {
             BuildMetadata::Either => unimplemented!(),
-            BuildMetadata::PkgBuild => unimplemented!(),
+            BuildMetadata::PkgBuild => read_build_dir(&directory),
             BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
         };
 
