@@ -31,9 +31,9 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
     };
 
     let read_build_metadata = Some(match (args.require_pkgbuild, args.require_srcinfo) {
-        (false, false) => BuildMetadata::Either,
+        (false, false) | (true, true) => BuildMetadata::Either,
         (false, true) => BuildMetadata::SrcInfo,
-        (true, _) => BuildMetadata::PkgBuild,
+        (true, false) => BuildMetadata::PkgBuild,
     });
 
     let global_settings = Some(GlobalSettings {
