@@ -8,8 +8,14 @@ pub use global_settings::GlobalSettings;
 pub use member::Member;
 pub use repository::{concat_repository_options, Repository};
 
+use pipe_trait::*;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
+};
+
+pub const MANIFEST_BASENAME: &str = "build-pacman-repo.yaml";
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
@@ -41,5 +47,19 @@ impl<P: AsRef<Path>> Manifest<P> {
             } else {
                 box_fn!(move |x: &Member<P>| x.to_path_buf())
             })
+    }
+}
+
+impl Manifest<PathBuf> {
+    pub fn from_env() -> Result<Self, String> {
+        Manifest::from_file(MANIFEST_BASENAME.as_ref())
+    }
+
+    pub fn from_file(file: &Path) -> Result<Self, String> {
+        file.pipe(File::open)
+            .map_err(|error| format!("cannot open {:?} as a file: {}", file, error))?
+            .pipe(serde_yaml::from_reader::<_, Manifest<PathBuf>>)
+            .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
+            .pipe(Ok)
     }
 }

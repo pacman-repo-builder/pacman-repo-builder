@@ -1,8 +1,6 @@
-mod manifest_loader;
 mod print_config;
 mod sort;
 
-pub use manifest_loader::ManifestLoader;
 pub use print_config::PrintConfigArgs;
 pub use sort::SortArgs;
 

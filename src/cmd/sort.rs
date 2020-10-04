@@ -1,5 +1,6 @@
 use super::super::{
-    args::{ManifestLoader, SortArgs},
+    args::SortArgs,
+    manifest::Manifest,
     srcinfo::{database::SimpleDatabase, SrcInfo},
     utils::read_srcinfo_texts,
 };
@@ -7,8 +8,8 @@ use super::super::{
 pub fn sort(args: SortArgs) -> i32 {
     let mut error_count = 0u32;
 
-    let SortArgs { config } = args;
-    let ManifestLoader(manifest) = config;
+    let SortArgs {} = args;
+    let manifest = Manifest::from_env().unwrap_or_default();
 
     let srcinfo_texts = read_srcinfo_texts(&manifest, |error| {
         eprintln!("{}", error);
