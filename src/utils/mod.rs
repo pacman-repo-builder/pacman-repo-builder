@@ -11,6 +11,3 @@ pub use extract_value_from_line::extract_value_from_line;
 pub use pair::Pair;
 pub use serialize_iter_yaml::serialize_iter_yaml;
 pub use split_str_once::split_str_once;
-
-#[cfg(test)]
-mod tests;
