@@ -2,8 +2,10 @@ pub mod database;
 pub mod dependency;
 pub mod version;
 
-use super::utils::extract_value_from_line;
+use super::utils::{extract_value_from_line, PackageFileName};
 use dependency::{ReasonedDependency, UnreasonedDependency};
+use itertools::Itertools;
+use pipe_trait::*;
 use std::str::Lines;
 use version::Version;
 
@@ -27,6 +29,10 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
 
     pub fn pkgname(&self) -> impl Iterator<Item = &str> {
         self.lines().filter_map(line_extractor!("pkgname"))
+    }
+
+    pub fn arch(&self) -> impl Iterator<Item = &str> {
+        self.lines().filter_map(line_extractor!("arch"))
     }
 
     pub fn version(&self) -> Result<Version<&str, &str, &str>, &'static str> {
@@ -76,5 +82,19 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
         &self,
     ) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
         self.depends().chain(self.makedepends())
+    }
+
+    pub fn package_file_base_names(&self) -> Result<impl Iterator<Item = String> + '_, String> {
+        let version = self.version().map_err(String::from)?.try_to_string()?;
+
+        self.pkgname()
+            .cartesian_product(self.arch().collect::<Vec<_>>())
+            .map(move |(pkgname, arch)| PackageFileName {
+                pkgname,
+                arch,
+                version: version.clone(),
+            })
+            .map(|x| format!("{}", x))
+            .pipe(Ok)
     }
 }

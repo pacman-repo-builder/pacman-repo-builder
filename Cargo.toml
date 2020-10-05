@@ -39,6 +39,7 @@ num-traits = "^0.2.12"
 alpm = "^0.10.1"
 topological-sort = "^0.1.0"
 indexmap = "^1.6.0"
+itertools = "^0.9.0"
 
 [dependencies.serde]
 version = "^1.0.116"
