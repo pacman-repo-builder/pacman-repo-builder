@@ -1,5 +1,6 @@
 use std::fmt::{self, Display, Formatter};
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct PackageFileName<PkgName, Version, Arch>
 where
     PkgName: Display,
