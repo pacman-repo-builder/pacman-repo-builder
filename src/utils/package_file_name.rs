@@ -39,15 +39,13 @@ where
 }
 
 #[test]
-fn test_fmt() {
-    let actual = format!(
-        "{}",
-        PackageFileName {
-            pkgname: "foo",
-            version: "0.1.2-3",
-            arch: "x86_64",
-        },
-    );
+fn test_to_string() {
+    let actual = PackageFileName {
+        pkgname: "foo",
+        version: "0.1.2-3",
+        arch: "x86_64",
+    }
+    .to_string();
     let expected = "foo-0.1.2-3-x86_64.pkg.tar.zst";
     assert_eq!(actual, expected);
 }
