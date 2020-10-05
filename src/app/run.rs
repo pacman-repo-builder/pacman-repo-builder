@@ -1,6 +1,6 @@
 use super::super::{
     args::{Args, Command},
-    cmd::{print_config, sort},
+    cmd::{outdated, print_config, sort},
 };
 use super::App;
 
@@ -10,6 +10,7 @@ impl App {
         match command {
             Command::PrintConfig(args) => print_config(args),
             Command::Sort(args) => sort(args),
+            Command::Outdated(args) => outdated(args),
         }
     }
 }

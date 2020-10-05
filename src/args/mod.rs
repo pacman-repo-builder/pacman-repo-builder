@@ -1,6 +1,8 @@
+mod outdated;
 mod print_config;
 mod sort;
 
+pub use outdated::OutdatedArgs;
 pub use print_config::PrintConfigArgs;
 pub use sort::SortArgs;
 
@@ -18,4 +20,5 @@ pub struct Args {
 pub enum Command {
     Sort(SortArgs),
     PrintConfig(PrintConfigArgs),
+    Outdated(OutdatedArgs),
 }
