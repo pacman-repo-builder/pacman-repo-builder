@@ -1,5 +1,6 @@
 pub mod insert_srcinfo;
 pub mod package_build_order;
+pub mod package_file_base_names;
 pub mod text_wrapper;
 
 use super::SrcInfo;
