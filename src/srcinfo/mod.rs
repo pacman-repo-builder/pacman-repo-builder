@@ -84,7 +84,9 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
         self.depends().chain(self.makedepends())
     }
 
-    pub fn package_file_base_names(&self) -> Result<impl Iterator<Item = String> + '_, String> {
+    pub fn package_file_base_names(
+        &self,
+    ) -> Result<impl Iterator<Item = PackageFileName<&str, String, &str>> + '_, String> {
         let version = self.version().map_err(String::from)?.try_to_string()?;
 
         self.pkgname()
@@ -94,7 +96,6 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
                 arch,
                 version: version.clone(),
             })
-            .map(|x| format!("{}", x))
             .pipe(Ok)
     }
 }

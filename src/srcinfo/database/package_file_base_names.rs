@@ -1,3 +1,4 @@
+use super::super::super::utils::PackageFileName;
 use super::super::SrcInfo;
 use super::Database;
 use pipe_trait::*;
@@ -11,7 +12,9 @@ where
 {
     pub fn package_file_base_names(
         &self,
-    ) -> impl Iterator<Item = Result<String, Error<PkgBase, SrcInfoContent>>> + '_ {
+    ) -> impl Iterator<
+        Item = Result<PackageFileName<&str, String, &str>, Error<PkgBase, SrcInfoContent>>,
+    > + '_ {
         self.infos()
             .iter()
             .flat_map(|(pkgbase, srcinfo)| -> Box<dyn Iterator<Item = _>> {
