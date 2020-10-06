@@ -1,40 +1,28 @@
 use super::super::{
     args::OutdatedArgs,
-    manifest::{Manifest, Repository},
-    srcinfo::{database::SimpleDatabase, SrcInfo},
-    utils::{outdated_packages, read_srcinfo_texts, PackageFileName},
+    manifest::Repository,
+    utils::{outdated_packages, DbInit, DbInitValue, PackageFileName},
 };
 use std::fs::read_dir;
 
 pub fn outdated(args: OutdatedArgs) -> i32 {
-    let mut error_count = 0u32;
-
     let OutdatedArgs {} = args;
-    let manifest = match Manifest::from_env() {
-        Err(error) => {
-            eprintln!("{}", error);
-            return 2;
-        }
-        Ok(manifest) => manifest,
+
+    let mut srcinfo_texts = Default::default();
+    let mut srcinfo_collection = Default::default();
+    let DbInitValue {
+        manifest,
+        database,
+        mut error_count,
+    } = match (DbInit {
+        srcinfo_texts: &mut srcinfo_texts,
+        srcinfo_collection: &mut srcinfo_collection,
+    })
+    .init()
+    {
+        Err(error) => return error.code(),
+        Ok(value) => value,
     };
-
-    let srcinfo_texts = read_srcinfo_texts(&manifest, |error| {
-        eprintln!("{}", error);
-        error_count += 1;
-    });
-
-    let srcinfo_collection: Vec<_> = srcinfo_texts
-        .iter()
-        .map(|x| x.to_ref().map(String::as_str).map(SrcInfo))
-        .collect();
-    let mut database = SimpleDatabase::default();
-    for pair in &srcinfo_collection {
-        let (srcinfo, directory) = pair.to_ref().into_tuple();
-        if let Err(error) = database.insert_srcinfo(srcinfo) {
-            eprintln!("error in directory {:?}: {}", directory, error);
-            error_count += 1;
-        }
-    }
 
     let repositories = manifest
         .resolve_members()

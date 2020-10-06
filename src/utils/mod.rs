@@ -1,3 +1,4 @@
+mod db_init;
 mod deserialize_multi_docs_yaml;
 mod extract_pkgname_prefix;
 mod extract_value_from_line;
@@ -8,6 +9,7 @@ mod read_srcinfo_texts;
 mod serialize_iter_yaml;
 mod split_str_once;
 
+pub use db_init::{DbInit, DbInitError, DbInitValue};
 pub use deserialize_multi_docs_yaml::deserialize_multi_docs_yaml;
 pub use extract_pkgname_prefix::extract_pkgname_prefix;
 pub use extract_value_from_line::extract_value_from_line;
