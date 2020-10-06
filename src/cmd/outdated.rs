@@ -54,7 +54,6 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         })
         .collect();
 
-    let mut current_packages = Vec::new();
     for repository in repositories {
         let directory = if let Some(parent) = repository.parent() {
             parent
@@ -73,6 +72,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             Ok(entries) => entries,
         };
 
+        let mut current_packages = Vec::new();
         for entry in entries {
             let file_name = match entry {
                 Err(error) => {
@@ -93,22 +93,24 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
                 error_count += 1;
             }
         }
-    }
 
-    for (
-        file_name,
-        PackageFileName {
-            pkgname,
-            version,
-            arch,
-        },
-    ) in outdated_packages(latest_packages, &current_packages)
-    {
-        println!("---");
-        println!("file-name: {}", file_name);
-        println!("pkgname: {}", pkgname);
-        println!("version: {}", version);
-        println!("arch: {}", arch);
+        for (
+            ref file_name,
+            PackageFileName {
+                pkgname,
+                version,
+                arch,
+            },
+        ) in outdated_packages(&latest_packages, &current_packages)
+        {
+            println!("---");
+            println!("repository-file: {}", repository.to_string_lossy());
+            println!("repository-directory: {}", directory.to_string_lossy());
+            println!("file-name: {}", file_name);
+            println!("pkgname: {}", pkgname);
+            println!("version: {}", version);
+            println!("arch: {}", arch);
+        }
     }
 
     if error_count == 0 {
