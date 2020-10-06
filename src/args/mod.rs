@@ -2,7 +2,7 @@ mod outdated;
 mod print_config;
 mod sort;
 
-pub use outdated::OutdatedArgs;
+pub use outdated::{OutdatedArgs, OutdatedDetails};
 pub use print_config::PrintConfigArgs;
 pub use sort::SortArgs;
 
