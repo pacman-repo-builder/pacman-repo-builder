@@ -9,18 +9,12 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
     let OutdatedArgs { details } = args;
     let details = details.unwrap_or_default();
 
-    let mut srcinfo_texts = Default::default();
-    let mut srcinfo_collection = Default::default();
+    let mut db_init = DbInit::default();
     let DbInitValue {
         manifest,
         database,
         mut error_count,
-    } = match (DbInit {
-        srcinfo_texts: &mut srcinfo_texts,
-        srcinfo_collection: &mut srcinfo_collection,
-    })
-    .init()
-    {
+    } = match db_init.init() {
         Err(error) => return error.code(),
         Ok(value) => value,
     };

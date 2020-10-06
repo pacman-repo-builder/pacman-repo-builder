@@ -5,17 +5,17 @@ use super::super::{
 use super::{read_srcinfo_texts, Pair};
 use std::path::PathBuf;
 
+#[derive(Debug, Default)]
 pub struct DbInit<'a> {
-    pub srcinfo_texts: &'a mut Vec<Pair<String, PathBuf>>,
-    pub srcinfo_collection: &'a mut Vec<Pair<SrcInfo<&'a str>, &'a PathBuf>>,
+    pub srcinfo_texts: Vec<Pair<String, PathBuf>>,
+    pub srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a PathBuf>>,
 }
 
 impl<'a> DbInit<'a> {
-    pub fn init(self) -> Result<DbInitValue<'a>, DbInitError> {
+    pub fn init(&'a mut self) -> Result<DbInitValue<'a>, DbInitError> {
         let DbInit {
             srcinfo_texts,
             srcinfo_collection,
-            ..
         } = self;
 
         let mut error_count = 0u32;
