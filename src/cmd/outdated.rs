@@ -42,6 +42,18 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             Repository::Multiple(paths) => paths,
         });
 
+    let latest_packages: Vec<_> = database
+        .package_file_base_names()
+        .filter_map(|item| match item {
+            Err(error) => {
+                eprintln!("error in pkgbase of {}: {}", error.pkgbase, error.message);
+                error_count += 1;
+                None
+            }
+            Ok(value) => Some(value),
+        })
+        .collect();
+
     let mut current_packages = Vec::new();
     for repository in repositories {
         let directory = if let Some(parent) = repository.parent() {
@@ -82,18 +94,6 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             }
         }
     }
-
-    let latest_packages: Vec<_> = database
-        .package_file_base_names()
-        .filter_map(|item| match item {
-            Err(error) => {
-                eprintln!("error in pkgbase of {}: {}", error.pkgbase, error.message);
-                error_count += 1;
-                None
-            }
-            Ok(value) => Some(value),
-        })
-        .collect();
 
     for (
         file_name,
