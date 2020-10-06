@@ -4,5 +4,5 @@ use argh::*;
 #[argh(subcommand, name = "outdated", description = "List outdated packages")]
 pub struct OutdatedArgs {
     #[argh(switch, description = "print greater details in yaml")]
-    details: bool,
+    pub details: bool,
 }
