@@ -6,7 +6,7 @@ use super::super::{
 use std::fs::read_dir;
 
 pub fn outdated(args: OutdatedArgs) -> i32 {
-    let OutdatedArgs {} = args;
+    let OutdatedArgs { details } = args;
 
     let mut srcinfo_texts = Default::default();
     let mut srcinfo_collection = Default::default();
@@ -103,13 +103,17 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             },
         ) in outdated_packages(&latest_packages, &current_packages)
         {
-            println!("---");
-            println!("repository-file: {}", repository.to_string_lossy());
-            println!("repository-directory: {}", directory.to_string_lossy());
-            println!("file-name: {}", file_name);
-            println!("pkgname: {}", pkgname);
-            println!("version: {}", version);
-            println!("arch: {}", arch);
+            if details {
+                println!("---");
+                println!("repository-file: {}", repository.to_string_lossy());
+                println!("repository-directory: {}", directory.to_string_lossy());
+                println!("file-name: {}", file_name);
+                println!("pkgname: {}", pkgname);
+                println!("version: {}", version);
+                println!("arch: {}", arch);
+            } else {
+                println!("{}", directory.join(file_name).to_string_lossy());
+            }
         }
     }
 
