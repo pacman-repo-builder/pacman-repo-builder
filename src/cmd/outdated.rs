@@ -31,7 +31,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         })
         .collect();
 
-    let repositories = manifest
+    for repository in manifest
         .resolve_members()
         .filter_map(|member| {
             if let Some(repository) = member.repository {
@@ -47,9 +47,8 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         .flat_map(|repository| match repository {
             Repository::Single(path) => vec![path],
             Repository::Multiple(paths) => paths,
-        });
-
-    for repository in repositories {
+        })
+    {
         let directory = if let Some(parent) = repository.parent() {
             parent
         } else {
