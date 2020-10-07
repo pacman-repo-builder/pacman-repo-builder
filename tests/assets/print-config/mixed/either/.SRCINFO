@@ -1,0 +1,5 @@
+pkgbase = either
+	pkgver = 0.0.0
+	pkgrel = 1
+
+pkgname = either

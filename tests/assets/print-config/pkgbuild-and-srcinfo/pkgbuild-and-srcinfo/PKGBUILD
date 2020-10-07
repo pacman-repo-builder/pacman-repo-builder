@@ -1,0 +1,7 @@
+pkgname='pkgbuild-and-srcinfo'
+pkgver='0.0.0'
+pkgrel='1'
+
+package() {
+  true
+}

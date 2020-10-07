@@ -1,0 +1,5 @@
+pkgbase = srcinfo
+	pkgver = 0.0.0
+	pkgrel = 1
+
+pkgname = srcinfo
