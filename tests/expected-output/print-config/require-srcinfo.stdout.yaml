@@ -1,0 +1,8 @@
+---
+global-settings:
+  read-build-metadata: srcinfo
+members:
+  - directory: mixed/either
+  - directory: mixed/srcinfo
+  - directory: pkgbuild-and-srcinfo/pkgbuild-and-srcinfo
+  - directory: srcinfo-only/srcinfo-only
