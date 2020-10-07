@@ -61,8 +61,7 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
                 }
                 Ok(entry) => entry,
             }
-            .path()
-            .pipe(|name| container.join(name));
+            .path();
             match metadata(&directory) {
                 Err(error) => {
                     eprintln!("cannot stat {:?}: {}", &directory, error);
