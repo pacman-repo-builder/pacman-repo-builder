@@ -19,24 +19,6 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         Ok(value) => value,
     };
 
-    let repositories = manifest
-        .resolve_members()
-        .filter_map(|member| {
-            if let Some(repository) = member.repository {
-                Some(repository)
-            } else {
-                eprintln!(
-                    "(warning) a member with directory {:?} has no repositories",
-                    member.directory
-                );
-                None
-            }
-        })
-        .flat_map(|repository| match repository {
-            Repository::Single(path) => vec![path],
-            Repository::Multiple(paths) => paths,
-        });
-
     let latest_packages: Vec<_> = database
         .package_file_base_names()
         .filter_map(|item| match item {
@@ -48,6 +30,24 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             Ok(value) => Some(value),
         })
         .collect();
+
+    let repositories = manifest
+        .resolve_members()
+        .filter_map(|member| {
+            if let Some(repository) = member.repository {
+                Some(repository)
+            } else {
+                eprintln!(
+                    "(warning) a member with directory {:?} has no repositories",
+                    member.directory,
+                );
+                None
+            }
+        })
+        .flat_map(|repository| match repository {
+            Repository::Single(path) => vec![path],
+            Repository::Multiple(paths) => paths,
+        });
 
     for repository in repositories {
         let directory = if let Some(parent) = repository.parent() {
