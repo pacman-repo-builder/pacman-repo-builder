@@ -1,0 +1,5 @@
+pkgbase = top-level-single
+	pkgver = 0.0.0
+	pkgrel = 1
+
+pkgname = top-level-single

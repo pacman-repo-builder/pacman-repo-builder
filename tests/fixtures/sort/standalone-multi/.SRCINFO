@@ -1,0 +1,9 @@
+pkgbase = standalone-multi
+	pkgver = 0.0.0
+	pkgrel = 1
+
+pkgname = standalone-multi-foo
+
+pkgname = standalone-multi-bar
+
+pkgname = standalone-multi-baz

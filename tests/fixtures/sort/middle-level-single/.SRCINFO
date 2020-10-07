@@ -1,0 +1,7 @@
+pkgbase = middle-level-single
+	pkgver = 0.0.0
+	pkgrel = 1
+	depends = top-level-multi-bar
+	depends = top-level-single
+
+pkgname = middle-level-single

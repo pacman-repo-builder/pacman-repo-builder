@@ -1,0 +1,10 @@
+members:
+  # order of members is intentionally chaotic
+  - directory: standalone-multi
+  - directory: standalone-single
+  - directory: bottom-level-multi
+  - directory: top-level-multi
+  - directory: middle-level-multi
+  - directory: middle-level-single
+  - directory: bottom-level-single
+  - directory: top-level-single

@@ -1,0 +1,9 @@
+pkgbase = top-level-multi
+	pkgver = 0.0.0
+	pkgrel = 1
+
+pkgname = top-level-multi-foo
+
+pkgname = top-level-multi-bar
+
+pkgname = top-level-multi-baz

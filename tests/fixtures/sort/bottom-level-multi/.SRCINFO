@@ -1,0 +1,11 @@
+pkgbase = bottom-level-multi
+	pkgver = 0.0.0
+	pkgrel = 1
+	depends = middle-level-multi-foo
+	depends = middle-level-single
+
+pkgname = bottom-level-multi-foo
+
+pkgname = bottom-level-multi-bar
+
+pkgname = bottom-level-multi-baz
