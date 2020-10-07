@@ -7,8 +7,8 @@ use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct DbInit<'a> {
-    pub srcinfo_texts: Vec<Pair<String, PathBuf>>,
-    pub srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a PathBuf>>,
+    srcinfo_texts: Vec<Pair<String, PathBuf>>,
+    srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a PathBuf>>,
 }
 
 impl<'a> DbInit<'a> {
