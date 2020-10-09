@@ -8,3 +8,9 @@ members:
   - directory: middle-level-single
   - directory: bottom-level-single
   - directory: top-level-single
+  - directory: pkgbuild-bottom
+  - directory: require-external-bottom
+  - directory: pkgbuild-middle
+  - directory: require-external-top
+  - directory: require-external-middle
+  - directory: pkgbuild-top

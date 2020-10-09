@@ -1,0 +1,8 @@
+pkgname='pkgbuild-bottom'
+pkgver='0.0.0'
+pkgrel='1'
+depends=('pkgbuild-middle' 'pkgbuild-top')
+
+package() {
+  true
+}

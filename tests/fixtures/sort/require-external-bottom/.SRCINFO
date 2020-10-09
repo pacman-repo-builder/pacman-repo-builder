@@ -1,0 +1,8 @@
+pkgbase = require-external-bottom
+	pkgver = 0.0.0
+	pkgrel = 1
+	depends = require-external-top
+	depends = require-external-middle
+	depends = pacman
+
+pkgname = require-external-bottom

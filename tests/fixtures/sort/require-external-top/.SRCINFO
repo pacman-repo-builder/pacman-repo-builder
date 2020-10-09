@@ -1,0 +1,8 @@
+pkgbase = require-external-top
+	pkgver = 0.0.0
+	pkgrel = 1
+	depends = linux
+	depends = bash
+	depends = gnome-shell
+
+pkgname = require-external-top

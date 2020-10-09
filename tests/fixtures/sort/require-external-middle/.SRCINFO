@@ -1,0 +1,7 @@
+pkgbase = require-external-middle
+	pkgver = 0.0.0
+	pkgrel = 1
+	depends = require-external-top
+	depends = cargo
+
+pkgname = require-external-middle
