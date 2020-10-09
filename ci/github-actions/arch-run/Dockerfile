@@ -5,4 +5,7 @@ run pacman -S --noconfirm --needed --overwrite '*' bash rustup gcc llvm
 
 copy run.bash /run.bash
 
+# force makepkg to allow running as root
+copy patches/makepkg /usr/bin/makepkg
+
 entrypoint ["/run.bash"]
