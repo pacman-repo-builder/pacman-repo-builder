@@ -47,7 +47,9 @@ macro_rules! test_case {
     ($name:ident, $typename:ident, $filter:expr, $expected:expr) => {
         #[test]
         fn $name() {
-            let (stdout, _, _) = output(&mut init());
+            let (stdout, stderr, _) = output(&mut init());
+            eprintln!("    ==> command stdout\n{}", &stdout);
+            eprintln!("    ==> command stderr\n{}", &stderr);
             let actual: $typename<_> = collect(&stdout, $filter);
             let expected: $typename<_> = $expected;
             assert_eq!(actual, expected);
