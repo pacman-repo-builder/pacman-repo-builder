@@ -1,6 +1,6 @@
 global-settings:
   container: build
-  repository: repo
+  repository: repo/repo.db
 members:
   - directory: out-of-date-by-epoch
   - directory: out-of-date-by-pkgrel
