@@ -3,7 +3,7 @@ use super::super::{
     manifest::Repository,
     utils::{outdated_packages, DbInit, DbInitValue, PackageFileName},
 };
-use std::fs::read_dir;
+use std::{fs::read_dir, path::PathBuf};
 
 pub fn outdated(args: OutdatedArgs) -> i32 {
     let OutdatedArgs { details } = args;
@@ -55,6 +55,15 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             eprintln!("repository cannot be a directory: {:?}", repository);
             error_count += 1;
             continue;
+        };
+
+        // PROBLEM: read_dir cannot read "" as a directory
+        // WORKAROUND: replace it with "."
+        let valid_current_directory = PathBuf::from(".");
+        let directory = if directory.as_os_str().is_empty() {
+            &valid_current_directory
+        } else {
+            directory
         };
 
         let entries = match read_dir(directory) {
