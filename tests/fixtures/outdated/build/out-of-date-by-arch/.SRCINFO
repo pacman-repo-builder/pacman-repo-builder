@@ -1,0 +1,8 @@
+pkgbase = out-of-date-by-arch
+	pkgver = 1.2.3
+	pkgrel = 1
+	arch = x86_64
+	arch = i686
+	arch = arm
+
+pkgname = out-of-date-by-arch
