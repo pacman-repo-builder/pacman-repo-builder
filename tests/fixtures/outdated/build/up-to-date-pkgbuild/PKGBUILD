@@ -1,0 +1,8 @@
+pkgname='up-to-date-pkgbuild'
+pkgver='1.2.3'
+pkgrel='1'
+arch=('any')
+
+package() {
+  true
+}

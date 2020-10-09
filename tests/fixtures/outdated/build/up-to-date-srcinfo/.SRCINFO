@@ -1,0 +1,6 @@
+pkgbase = up-to-date-srcinfo
+	pkgver = 1.2.3
+	pkgrel = 1
+	arch = any
+
+pkgname = up-to-date-srcinfo

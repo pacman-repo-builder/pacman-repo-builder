@@ -1,0 +1,6 @@
+pkgbase = out-of-date-by-pkgver
+	pkgver = 1.2.3
+	pkgrel = 1
+	arch = any
+
+pkgname = out-of-date-by-pkgver

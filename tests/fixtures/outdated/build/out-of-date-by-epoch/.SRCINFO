@@ -1,0 +1,7 @@
+pkgbase = out-of-date-by-epoch
+	pkgver = 1.2.3
+	pkgrel = 1
+	epoch = 2
+	arch = any
+
+pkgname = out-of-date-by-epoch
