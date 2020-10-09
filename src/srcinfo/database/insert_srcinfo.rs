@@ -42,8 +42,6 @@ impl<'a> SimpleDatabase<'a> {
                     .pipe_ref(|name| bases.get(name));
                 if let Some(dependency_pkgbase) = dependency_pkgbase {
                     dependency_list.insert(*dependency_pkgbase);
-                    self.build_order
-                        .insert(pkgbase.to_string(), dependency_pkgbase.to_string());
                 }
             }
         }

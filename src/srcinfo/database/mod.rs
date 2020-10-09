@@ -1,11 +1,10 @@
+pub mod build_order;
 pub mod insert_srcinfo;
-pub mod package_build_order;
 pub mod package_file_base_names;
 pub mod text_wrapper;
 
 use super::SrcInfo;
 use indexmap::{IndexMap, IndexSet};
-use package_build_order::PackageBuildOrder;
 use std::hash::Hash;
 use text_wrapper::{PkgBase, PkgName};
 
@@ -20,7 +19,6 @@ where
     name_to_base: IndexMap<PkgName, PkgBase>,
     infos: IndexMap<PkgBase, SrcInfo<SrcInfoContent>>,
     dependencies: IndexMap<PkgBase, IndexSet<PkgBase>>,
-    build_order: PackageBuildOrder,
 }
 
 impl<PkgBase, PkgName, SrcInfoContent> Database<PkgBase, PkgName, SrcInfoContent>
@@ -47,14 +45,6 @@ where
 
     pub fn dependencies(&self) -> &IndexMap<PkgBase, IndexSet<PkgBase>> {
         &self.dependencies
-    }
-
-    pub fn build_order(&self) -> &PackageBuildOrder {
-        &self.build_order
-    }
-
-    pub fn into_build_order(self) -> PackageBuildOrder {
-        self.build_order
     }
 }
 
