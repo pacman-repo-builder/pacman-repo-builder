@@ -83,9 +83,10 @@ fn read_build_dir(directory: &Path) -> Result<String, String> {
             .pipe(Ok)
     } else {
         Err(format!(
-            "execution of 'makepkg --printsrcinfo' in directory {:?} exits with code {:?}",
+            "execution of 'makepkg --printsrcinfo' in directory {:?} exits with code {:?}\n{}",
             directory,
             output.status.code(),
+            output.stderr.as_slice().pipe(String::from_utf8_lossy),
         ))
     }
 }
