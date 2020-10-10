@@ -1,6 +1,7 @@
 use super::super::manifest::{BuildMetadata, Manifest, Member};
 use super::Pair;
 use pipe_trait::*;
+use rayon::prelude::*;
 use std::{
     fs::{metadata, read},
     path::{Path, PathBuf},
@@ -11,30 +12,36 @@ pub fn read_srcinfo_texts(
     manifest: &Manifest<PathBuf>,
     mut handle_error: impl FnMut(String),
 ) -> Vec<Pair<String, PathBuf>> {
-    let mut result = Vec::new();
-    for member in manifest.resolve_members() {
-        let Member {
-            directory,
-            read_build_metadata,
-            ..
-        } = member;
+    manifest
+        .resolve_members()
+        .collect::<Vec<_>>()
+        .into_par_iter()
+        .map(|member| {
+            let Member {
+                directory,
+                read_build_metadata,
+                ..
+            } = member;
 
-        let srcinfo_result = match read_build_metadata.unwrap_or_default() {
-            BuildMetadata::Either => read_either(&directory),
-            BuildMetadata::PkgBuild => read_build_dir(&directory),
-            BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
-        };
-
-        match srcinfo_result {
-            Ok(content) => result.push(Pair::new(content, directory)),
+            (
+                match read_build_metadata.unwrap_or_default() {
+                    BuildMetadata::Either => read_either(&directory),
+                    BuildMetadata::PkgBuild => read_build_dir(&directory),
+                    BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
+                },
+                directory,
+            )
+        })
+        .collect::<Vec<_>>()
+        .into_iter()
+        .filter_map(|(srcinfo_result, directory)| match srcinfo_result {
+            Ok(content) => Some(Pair::new(content, directory)),
             Err(error) => {
                 handle_error(error);
-                continue;
+                None
             }
-        };
-    }
-
-    result
+        })
+        .collect()
 }
 
 fn read_either(directory: &Path) -> Result<String, String> {
