@@ -1,11 +1,10 @@
 use super::super::manifest::{BuildMetadata, Manifest, Member};
-use super::Pair;
+use super::{read_srcinfo_from_pkgbuild, Pair};
 use pipe_trait::*;
 use rayon::prelude::*;
 use std::{
     fs::{metadata, read},
     path::{Path, PathBuf},
-    process::Command,
 };
 
 pub fn read_srcinfo_texts(
@@ -26,7 +25,7 @@ pub fn read_srcinfo_texts(
             (
                 match read_build_metadata.unwrap_or_default() {
                     BuildMetadata::Either => read_either(&directory),
-                    BuildMetadata::PkgBuild => read_build_dir(&directory),
+                    BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(&directory),
                     BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
                 },
                 directory,
@@ -56,44 +55,11 @@ fn read_either(directory: &Path) -> Result<String, String> {
     if file_exists(&srcinfo_file) {
         read_srcinfo_file(srcinfo_file)
     } else if file_exists(&pkgbuild_file) {
-        read_build_dir(directory)
+        read_srcinfo_from_pkgbuild(directory)
     } else {
         Err(format!(
             "directory {:?} contains neither .SRCINFO nor PKGBUILD",
             directory,
-        ))
-    }
-}
-
-fn read_build_dir(directory: &Path) -> Result<String, String> {
-    let output = Command::new("makepkg")
-        .current_dir(directory)
-        .arg("--printsrcinfo")
-        .output()
-        .map_err(|error| {
-            format!(
-                "fail to execute 'makepkg --printsrcinfo' in directory {:?}: {}",
-                directory, error,
-            )
-        })?;
-
-    if output.status.success() {
-        output
-            .stdout
-            .pipe(String::from_utf8)
-            .map_err(|error| {
-                format!(
-                "fail to convert output of 'makepkg --printsrcinfo' in directory {:?} to UTF-8: {}",
-                directory, error,
-            )
-            })?
-            .pipe(Ok)
-    } else {
-        Err(format!(
-            "execution of 'makepkg --printsrcinfo' in directory {:?} exits with code {:?}\n{}",
-            directory,
-            output.status.code(),
-            output.stderr.as_slice().pipe(String::from_utf8_lossy),
         ))
     }
 }
