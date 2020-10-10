@@ -1,10 +1,12 @@
 mod outdated;
 mod print_config;
 mod sort;
+mod sync_srcinfo;
 
 pub use outdated::{OutdatedArgs, OutdatedDetails};
 pub use print_config::PrintConfigArgs;
 pub use sort::SortArgs;
+pub use sync_srcinfo::SyncSrcInfoArgs;
 
 use argh::*;
 
@@ -21,4 +23,5 @@ pub enum Command {
     Sort(SortArgs),
     PrintConfig(PrintConfigArgs),
     Outdated(OutdatedArgs),
+    SyncSrcInfo(SyncSrcInfoArgs),
 }
