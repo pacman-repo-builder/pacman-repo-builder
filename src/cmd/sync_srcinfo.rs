@@ -1,6 +1,6 @@
 use super::super::{
     args::SyncSrcInfoArgs,
-    manifest::{BuildMetadata, Manifest},
+    manifest::{BuildMetadata, Manifest, Member},
     utils::{read_srcinfo_from_pkgbuild, DbInitError},
 };
 use pipe_trait::*;
@@ -36,18 +36,24 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
         .collect::<Vec<_>>()
         .into_par_iter()
         .filter_map(|member| {
-            if member.read_build_metadata.unwrap_or_default() != BuildMetadata::PkgBuild
-                && !member.directory.join("PKGBUILD").exists()
+            let Member {
+                ref directory,
+                read_build_metadata,
+                ..
+            } = member;
+
+            if read_build_metadata.unwrap_or_default() != BuildMetadata::PkgBuild
+                && !directory.join("PKGBUILD").exists()
             {
                 return None;
             }
 
-            let new_srcinfo_content = match read_srcinfo_from_pkgbuild(&member.directory) {
+            let new_srcinfo_content = match read_srcinfo_from_pkgbuild(directory) {
                 Ok(content) => content,
                 Err(error) => return Some(Err(error)),
             };
 
-            let srcinfo_file = member.directory.join(".SRCINFO");
+            let srcinfo_file = directory.join(".SRCINFO");
             let old_srcinfo_content = match read_to_string(&srcinfo_file) {
                 Ok(content) => content,
                 Err(error) => {
