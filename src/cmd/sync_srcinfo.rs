@@ -67,15 +67,14 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
                 }
             };
 
-            fn comparable(srcinfo: &str) -> Vec<&str> {
+            fn comparable(srcinfo: &str) -> impl Iterator<Item = &str> {
                 srcinfo
                     .lines()
                     .map(|x| x.trim_end())
                     .filter(|x| !x.is_empty())
-                    .collect()
             }
 
-            if comparable(&new_srcinfo_content) == comparable(&old_srcinfo_content) {
+            if comparable(&new_srcinfo_content).eq(comparable(&old_srcinfo_content)) {
                 return Some(Ok(SyncStatus::UpToDate));
             }
 
