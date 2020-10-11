@@ -1,9 +1,11 @@
 mod outdated;
+mod patch_makepkg;
 mod print_config;
 mod sort;
 mod sync_srcinfo;
 
 pub use outdated::{OutdatedArgs, OutdatedDetails};
+pub use patch_makepkg::PatchMakePkgArgs;
 pub use print_config::PrintConfigArgs;
 pub use sort::SortArgs;
 pub use sync_srcinfo::SyncSrcInfoArgs;
@@ -24,4 +26,5 @@ pub enum Command {
     PrintConfig(PrintConfigArgs),
     Outdated(OutdatedArgs),
     SyncSrcInfo(SyncSrcInfoArgs),
+    PatchMakePkg(PatchMakePkgArgs),
 }

@@ -1,6 +1,6 @@
 use super::super::{
     args::{Args, Command},
-    cmd::{outdated, print_config, sort, sync_srcinfo},
+    cmd::{outdated, patch_makepkg, print_config, sort, sync_srcinfo},
 };
 use super::App;
 
@@ -12,6 +12,7 @@ impl App {
             Command::Sort(args) => sort(args),
             Command::Outdated(args) => outdated(args),
             Command::SyncSrcInfo(args) => sync_srcinfo(args),
+            Command::PatchMakePkg(args) => patch_makepkg(args),
         }
     }
 }
