@@ -67,7 +67,15 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
                 }
             };
 
-            if new_srcinfo_content == old_srcinfo_content {
+            fn comparable(srcinfo: &str) -> Vec<&str> {
+                srcinfo
+                    .lines()
+                    .map(|x| x.trim_end())
+                    .filter(|x| !x.is_empty())
+                    .collect()
+            }
+
+            if comparable(&new_srcinfo_content) == comparable(&old_srcinfo_content) {
                 return Some(Ok(SyncStatus::UpToDate));
             }
 
