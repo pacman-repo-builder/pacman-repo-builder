@@ -8,7 +8,7 @@ use rayon::prelude::*;
 use std::{
     fs::{read_to_string, write},
     io::ErrorKind,
-    path::PathBuf,
+    path::Path,
 };
 
 pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
@@ -26,15 +26,14 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
         }
     };
 
-    enum SyncStatus {
-        UpToDate,
-        OutOfDate(PathBuf),
+    struct SyncStatus<'a> {
+        up_to_date: bool,
+        directory: &'a Path,
     }
 
-    let results: Vec<_> = manifest
-        .resolve_members()
-        .collect::<Vec<_>>()
-        .into_par_iter()
+    let members: Vec<_> = manifest.resolve_members().collect();
+    let results: Vec<_> = members
+        .par_iter()
         .filter_map(|member| {
             let Member {
                 ref directory,
@@ -75,7 +74,10 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
             }
 
             if comparable(&new_srcinfo_content).eq(comparable(&old_srcinfo_content)) {
-                return Some(Ok(SyncStatus::UpToDate));
+                return Some(Ok(SyncStatus {
+                    up_to_date: true,
+                    directory,
+                }));
             }
 
             if update {
@@ -89,7 +91,10 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
                 }
             }
 
-            srcinfo_file.pipe(SyncStatus::OutOfDate).pipe(Ok).pipe(Some)
+            Some(Ok(SyncStatus {
+                up_to_date: false,
+                directory,
+            }))
         })
         .collect();
 
@@ -99,11 +104,16 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
                 eprintln!("{}", error);
                 error_count += 1;
             }
-            Ok(SyncStatus::OutOfDate(srcinfo_file)) => {
-                println!("{}", srcinfo_file.to_string_lossy());
+            Ok(SyncStatus {
+                up_to_date: false,
+                directory,
+            }) => {
+                println!("{}", directory.to_string_lossy());
                 outdated += 1;
             }
-            Ok(SyncStatus::UpToDate) => {}
+            Ok(SyncStatus {
+                up_to_date: true, ..
+            }) => {}
         }
     }
 
