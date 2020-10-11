@@ -1,0 +1,5 @@
+pkgbase = outdated-single
+	pkgver = 0.1.2
+	pkgrel = 3
+
+pkgname = outdated-single

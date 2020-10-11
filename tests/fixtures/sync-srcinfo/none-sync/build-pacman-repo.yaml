@@ -1,0 +1,3 @@
+members:
+  - directory: multiple-packages
+  - directory: single-package

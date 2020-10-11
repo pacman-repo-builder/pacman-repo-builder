@@ -1,0 +1,19 @@
+pkgname=(
+  'updated-multi-foo'
+  'updated-multi-bar'
+  'updated-multi-baz'
+)
+pkgver='0.1.2'
+pkgrel='3'
+
+package_updated-multi-foo() {
+  true
+}
+
+package_updated-multi-bar() {
+  true
+}
+
+package_updated-multi-baz() {
+  true
+}

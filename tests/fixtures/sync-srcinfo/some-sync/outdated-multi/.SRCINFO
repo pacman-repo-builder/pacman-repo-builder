@@ -1,0 +1,9 @@
+pkgbase = outdated-multi-foo
+	pkgver = 0.1.2
+	pkgrel = 3
+
+pkgname = outdated-multi-foo
+
+pkgname = outdated-multi-bar
+
+pkgname = outdated-multi-baz

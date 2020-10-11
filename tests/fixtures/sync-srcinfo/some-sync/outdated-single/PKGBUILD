@@ -1,0 +1,7 @@
+pkgname='outdated-single'
+pkgver='1.0.0'
+pkgrel='1'
+
+package() {
+  true
+}

@@ -1,0 +1,9 @@
+pkgbase = multiple-packages-foo
+	pkgver = 0.1.2
+	pkgrel = 3
+
+pkgname = multiple-packages-foo
+
+pkgname = multiple-packages-bar
+
+pkgname = multiple-packages-baz

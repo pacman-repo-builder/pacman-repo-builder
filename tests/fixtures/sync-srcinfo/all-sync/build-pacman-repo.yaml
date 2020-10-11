@@ -1,0 +1,4 @@
+members:
+  - directory: multiple-packages
+  - directory: single-package
+  - directory: without-pkgbuild

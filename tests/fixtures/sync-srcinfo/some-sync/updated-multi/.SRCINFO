@@ -1,0 +1,9 @@
+pkgbase = updated-multi-foo
+	pkgver = 0.1.2
+	pkgrel = 3
+
+pkgname = updated-multi-foo
+
+pkgname = updated-multi-bar
+
+pkgname = updated-multi-baz

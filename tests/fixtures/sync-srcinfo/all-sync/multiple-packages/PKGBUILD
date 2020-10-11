@@ -1,0 +1,19 @@
+pkgname=(
+  'multiple-packages-foo'
+  'multiple-packages-bar'
+  'multiple-packages-baz'
+)
+pkgver='0.1.2'
+pkgrel='3'
+
+package_multiple-packages-foo() {
+  true
+}
+
+package_multiple-packages-bar() {
+  true
+}
+
+package_multiple-packages-baz() {
+  true
+}

@@ -1,0 +1,19 @@
+pkgname=(
+  'outdated-multi-foo'
+  'outdated-multi-bar'
+  'outdated-multi-baz'
+)
+pkgver='1.0.0'
+pkgrel='1'
+
+package_outdated-multi-foo() {
+  true
+}
+
+package_outdated-multi-bar() {
+  true
+}
+
+package_outdated-multi-baz() {
+  true
+}

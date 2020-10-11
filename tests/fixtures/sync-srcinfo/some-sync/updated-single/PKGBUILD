@@ -1,0 +1,7 @@
+pkgname='updated-single'
+pkgver='0.1.2'
+pkgrel='3'
+
+package() {
+  true
+}

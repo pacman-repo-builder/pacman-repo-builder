@@ -1,0 +1,5 @@
+pkgbase = without-pkgbuild
+	pkgver = 0.1.2
+	pkgrel = 3
+
+pkgname = without-pkgbuild

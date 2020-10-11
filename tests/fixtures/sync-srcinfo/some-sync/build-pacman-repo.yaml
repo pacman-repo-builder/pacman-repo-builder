@@ -1,0 +1,6 @@
+members:
+  - directory: outdated-multi
+  - directory: outdated-single
+  - directory: updated-multi
+  - directory: updated-single
+  - directory: without-pkgbuild
