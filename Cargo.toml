@@ -45,3 +45,7 @@ rayon = "^1.4.1"
 [dependencies.serde]
 version = "^1.0.116"
 features = ["derive"]
+
+[dev-dependencies]
+tempfile = "^3.1.0"
+fs_extra = "^1.2.0"
