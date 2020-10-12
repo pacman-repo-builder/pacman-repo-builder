@@ -12,4 +12,9 @@ pub struct PatchMakePkgArgs {
         description = "replace system's default makepkg with custom one"
     )]
     pub replace: bool,
+    #[argh(
+        switch,
+        description = "ignore unknown modification of system's makepkg"
+    )]
+    pub unsafe_ignore_unknown_changes: bool,
 }
