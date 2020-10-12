@@ -25,9 +25,6 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
         let hash = hasher.finalize();
         let hash = hash.as_slice();
         if hash != ORIGINAL_MAKEPKG_SHA1SUM && hash != CUSTOM_MAKEPKG_SHA1SUM {
-            eprintln!("makepkg had been modified by an unknown party");
-            eprintln!("it is not safe to proceed");
-            eprintln!("sha1sum of actual system makepkg: {}", HexFmt(hash));
             eprintln!(
                 "sha1sum of expected default system makepkg: {}",
                 HexFmt(ORIGINAL_MAKEPKG_SHA1SUM),
@@ -36,6 +33,9 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
                 "sha1sum of custom makepkg: {}",
                 HexFmt(CUSTOM_MAKEPKG_SHA1SUM),
             );
+            eprintln!("makepkg had been modified by an unknown party");
+            eprintln!("it is not safe to proceed");
+            eprintln!("sha1sum of actual system makepkg: {}", HexFmt(hash));
             eprintln!("run again with --unsafe-ignore-unknown-changes to ignore this error");
             return 1;
         }
