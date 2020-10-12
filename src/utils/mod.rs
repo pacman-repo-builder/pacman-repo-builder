@@ -1,3 +1,4 @@
+mod create_makepkg_command;
 mod custom_makepkg;
 mod db_init;
 mod deserialize_multi_docs_yaml;
@@ -11,6 +12,7 @@ mod read_srcinfo_texts;
 mod serialize_iter_yaml;
 mod split_str_once;
 
+pub use create_makepkg_command::create_makepkg_command;
 pub use custom_makepkg::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM};
 pub use db_init::{DbInit, DbInitError, DbInitValue};
 pub use deserialize_multi_docs_yaml::deserialize_multi_docs_yaml;
