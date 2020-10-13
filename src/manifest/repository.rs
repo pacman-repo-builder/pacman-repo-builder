@@ -54,6 +54,13 @@ impl<P: AsRef<Path>> Repository<P> {
                 .pipe(Multiple),
         }
     }
+
+    pub fn into_vec(self) -> Vec<P> {
+        match self {
+            Repository::Single(path) => vec![path],
+            Repository::Multiple(paths) => paths,
+        }
+    }
 }
 
 pub fn concat_repository_options<P: AsRef<Path>>(
@@ -66,4 +73,10 @@ pub fn concat_repository_options<P: AsRef<Path>>(
         (left, None) => left,
         (Some(left), Some(right)) => Some(left.concat(right)),
     }
+}
+
+pub fn iterate_repository_option<P: AsRef<Path>>(
+    repository: Option<Repository<P>>,
+) -> impl Iterator<Item = P> {
+    repository.into_iter().flat_map(Repository::into_vec)
 }

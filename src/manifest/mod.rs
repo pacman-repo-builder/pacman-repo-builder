@@ -6,7 +6,7 @@ mod repository;
 pub use build_metadata::BuildMetadata;
 pub use global_settings::GlobalSettings;
 pub use member::Member;
-pub use repository::{concat_repository_options, Repository};
+pub use repository::{concat_repository_options, iterate_repository_option, Repository};
 
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
