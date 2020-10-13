@@ -40,7 +40,7 @@ impl<'a> DbInit<'a> {
         let mut database = SimpleDatabase::default();
         for pair in srcinfo_collection {
             let (srcinfo, directory) = pair.to_ref().into_tuple();
-            if let Err(error) = database.insert_srcinfo(srcinfo, directory.to_path_buf()) {
+            if let Err(error) = database.insert_srcinfo(srcinfo, directory.as_path()) {
                 eprintln!("error in directory {:?}: {}", directory, error);
                 error_count += 1;
             }

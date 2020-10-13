@@ -1,4 +1,4 @@
-use super::Database;
+use super::{Database, DatabaseValue};
 use indexmap::IndexMap;
 use petgraph::{algo::toposort, graph::Graph};
 use pipe_trait::*;
@@ -21,13 +21,13 @@ where
         let mut pkgbase_to_node_index = IndexMap::new();
 
         // Register pkgbase as node indices
-        for (pkgbase, _) in self.dependencies() {
+        for (pkgbase, _) in self.pkgbase() {
             let node_index = graph.add_node(pkgbase);
             pkgbase_to_node_index.insert(pkgbase, node_index);
         }
 
         // Register dependency links as node edges
-        for (dependant, dependencies) in self.dependencies() {
+        for (dependant, DatabaseValue { dependencies, .. }) in self.pkgbase() {
             let dependant_index = pkgbase_to_node_index
                 .get(dependant)
                 .copied()

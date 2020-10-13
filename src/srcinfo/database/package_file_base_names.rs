@@ -1,6 +1,6 @@
 use super::super::super::utils::PackageFileName;
 use super::super::SrcInfo;
-use super::Database;
+use super::{Database, DatabaseValue};
 use pipe_trait::*;
 use std::{hash::Hash, path::Path};
 
@@ -17,9 +17,10 @@ where
     ) -> impl Iterator<
         Item = Result<PackageFileName<&str, String, &str>, Error<PkgBase, SrcInfoContent>>,
     > + '_ {
-        self.infos()
+        self.pkgbase()
             .iter()
-            .flat_map(|(pkgbase, srcinfo)| -> Box<dyn Iterator<Item = _>> {
+            .flat_map(|(pkgbase, value)| -> Box<dyn Iterator<Item = _>> {
+                let DatabaseValue { srcinfo, .. } = value;
                 match srcinfo.package_file_base_names() {
                     Ok(iter) => iter.map(Ok).pipe(Box::new),
                     Err(message) => Error {
