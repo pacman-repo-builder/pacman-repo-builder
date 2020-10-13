@@ -5,13 +5,16 @@ use pipe_trait::*;
 use std::{
     fmt::{self, Debug, Display, Formatter},
     hash::Hash,
+    path::Path,
 };
 
-impl<PkgBase, PkgName, SrcInfoContent> Database<PkgBase, PkgName, SrcInfoContent>
+impl<PkgBase, PkgName, SrcInfoContent, BuildDir>
+    Database<PkgBase, PkgName, SrcInfoContent, BuildDir>
 where
-    PkgBase: AsRef<str> + Default + Hash + Eq + Clone,
-    PkgName: AsRef<str> + Default + Hash + Eq + Clone,
-    SrcInfoContent: AsRef<str> + Default,
+    PkgBase: AsRef<str> + Hash + Eq + Clone,
+    PkgName: AsRef<str> + Hash + Eq + Clone,
+    SrcInfoContent: AsRef<str>,
+    BuildDir: AsRef<Path>,
 {
     pub fn build_order(&self) -> Result<impl Iterator<Item = &PkgBase>, BuildOrderError<&PkgBase>> {
         let mut graph = Graph::<&PkgBase, ()>::new();

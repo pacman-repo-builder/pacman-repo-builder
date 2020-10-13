@@ -5,12 +5,16 @@ use super::{
 };
 use indexmap::IndexSet;
 use pipe_trait::*;
-use std::fmt::{self, Display, Formatter};
+use std::{
+    fmt::{self, Display, Formatter},
+    path::PathBuf,
+};
 
 impl<'a> SimpleDatabase<'a> {
     pub fn insert_srcinfo(
         &mut self,
         srcinfo: &'a SrcInfo<&'a str>,
+        build_directory: PathBuf,
     ) -> Result<Option<RemovedInfo>, InsertionError> {
         let pkgbase = srcinfo
             .pkgbase()
@@ -18,6 +22,7 @@ impl<'a> SimpleDatabase<'a> {
             .pipe(PkgBase);
 
         let removed_srcinfo = self.infos.insert(pkgbase, *srcinfo);
+        let removed_build_directory = self.build_directories.insert(pkgbase, build_directory);
 
         let dependency_list = if let Some(dependency_list) = self.dependencies.get_mut(&pkgbase) {
             dependency_list
@@ -48,14 +53,20 @@ impl<'a> SimpleDatabase<'a> {
 
         let removed_names = self.base_to_name.insert(pkgbase, new_names);
 
-        Ok(match (removed_srcinfo, removed_names) {
-            (None, None) => None,
-            (Some(srcinfo), Some(names)) => Some(RemovedInfo { srcinfo, names }),
-            (srcinfo, ref names) => {
-                dbg!(srcinfo, names);
-                panic!("impossible state reached");
-            }
-        })
+        Ok(
+            match (removed_srcinfo, removed_names, removed_build_directory) {
+                (None, None, None) => None,
+                (Some(srcinfo), Some(names), Some(directory)) => Some(RemovedInfo {
+                    srcinfo,
+                    names,
+                    directory,
+                }),
+                (srcinfo, ref names, ref directory) => {
+                    dbg!(srcinfo, names, directory);
+                    panic!("impossible state reached");
+                }
+            },
+        )
     }
 }
 
@@ -63,6 +74,7 @@ impl<'a> SimpleDatabase<'a> {
 pub struct RemovedInfo<'a> {
     pub srcinfo: SrcInfo<&'a str>,
     pub names: IndexSet<PkgName<'a>>,
+    pub directory: PathBuf,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]

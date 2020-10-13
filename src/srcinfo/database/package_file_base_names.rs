@@ -2,13 +2,15 @@ use super::super::super::utils::PackageFileName;
 use super::super::SrcInfo;
 use super::Database;
 use pipe_trait::*;
-use std::hash::Hash;
+use std::{hash::Hash, path::Path};
 
-impl<PkgBase, PkgName, SrcInfoContent> Database<PkgBase, PkgName, SrcInfoContent>
+impl<PkgBase, PkgName, SrcInfoContent, BuildDir>
+    Database<PkgBase, PkgName, SrcInfoContent, BuildDir>
 where
-    PkgBase: AsRef<str> + Default + Hash + Eq + Clone,
-    PkgName: AsRef<str> + Default + Hash + Eq + Clone,
-    SrcInfoContent: AsRef<str> + Default,
+    PkgBase: AsRef<str> + Hash + Eq + Clone,
+    PkgName: AsRef<str> + Hash + Eq + Clone,
+    SrcInfoContent: AsRef<str>,
+    BuildDir: AsRef<Path>,
 {
     pub fn package_file_base_names(
         &self,
