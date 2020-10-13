@@ -10,7 +10,7 @@ use std::{
 pub fn read_srcinfo_texts(
     manifest: &Manifest<PathBuf>,
     mut handle_error: impl FnMut(String),
-) -> Vec<Pair<String, PathBuf>> {
+) -> Vec<Pair<String, Member<PathBuf>>> {
     manifest
         .resolve_members()
         .collect::<Vec<_>>()
@@ -20,7 +20,7 @@ pub fn read_srcinfo_texts(
                 directory,
                 read_build_metadata,
                 ..
-            } = member;
+            } = &member;
 
             (
                 match read_build_metadata.unwrap_or_default() {
@@ -28,13 +28,13 @@ pub fn read_srcinfo_texts(
                     BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(&directory),
                     BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
                 },
-                directory,
+                member,
             )
         })
         .collect::<Vec<_>>()
         .into_iter()
-        .filter_map(|(srcinfo_result, directory)| match srcinfo_result {
-            Ok(content) => Some(Pair::new(content, directory)),
+        .filter_map(|(srcinfo_result, member)| match srcinfo_result {
+            Ok(content) => Some(Pair::new(content, member)),
             Err(error) => {
                 handle_error(error);
                 None

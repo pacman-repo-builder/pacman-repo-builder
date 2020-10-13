@@ -1,5 +1,5 @@
 use super::super::{
-    manifest::Manifest,
+    manifest::{Manifest, Member},
     srcinfo::{database::SimpleDatabase, SrcInfo},
 };
 use super::{read_srcinfo_texts, Pair};
@@ -7,8 +7,8 @@ use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct DbInit<'a> {
-    srcinfo_texts: Vec<Pair<String, PathBuf>>,
-    srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a PathBuf>>,
+    srcinfo_texts: Vec<Pair<String, Member<PathBuf>>>,
+    srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a Member<PathBuf>>>,
 }
 
 impl<'a> DbInit<'a> {
@@ -39,9 +39,9 @@ impl<'a> DbInit<'a> {
             .collect();
         let mut database = SimpleDatabase::default();
         for pair in srcinfo_collection {
-            let (srcinfo, directory) = pair.to_ref().into_tuple();
-            if let Err(error) = database.insert_srcinfo(srcinfo, directory.as_path()) {
-                eprintln!("error in directory {:?}: {}", directory, error);
+            let (srcinfo, member) = pair.to_ref().into_tuple();
+            if let Err(error) = database.insert_srcinfo(srcinfo, member.directory.as_path()) {
+                eprintln!("error in directory {:?}: {}", member.directory, error);
                 error_count += 1;
             }
         }
