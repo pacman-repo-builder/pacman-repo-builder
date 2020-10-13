@@ -30,13 +30,13 @@ impl<'a> SimpleDatabase<'a> {
             self.pkgname.insert(pkgname, pkgbase);
 
             for dependency in srcinfo.all_required_dependencies() {
-                let name_to_base = &self.pkgname;
-                let dependency_pkgbase = dependency
+                if let Some(dependency_pkgbase) = dependency
                     .name()
                     .pipe(PkgName)
-                    .pipe_ref(|name| name_to_base.get(name));
-                if let Some(dependency_pkgbase) = dependency_pkgbase {
-                    dependencies.insert(*dependency_pkgbase);
+                    .pipe_ref(|name| self.pkgname.get(name))
+                    .copied()
+                {
+                    dependencies.insert(dependency_pkgbase);
                 }
             }
         }
