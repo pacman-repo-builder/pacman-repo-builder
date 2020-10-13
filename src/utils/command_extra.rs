@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, process::Command};
 
-pub trait MayEnv<Key, Value>: Sized {
+pub trait CommandExtra<Key, Value>: Sized {
     fn with_env(self, key: Key, value: Value) -> Self;
 
     fn may_env(self, key: Key, value: Option<Value>) -> Self {
@@ -12,7 +12,7 @@ pub trait MayEnv<Key, Value>: Sized {
     }
 }
 
-impl<Key, Value> MayEnv<Key, Value> for Command
+impl<Key, Value> CommandExtra<Key, Value> for Command
 where
     Key: AsRef<OsStr>,
     Value: AsRef<OsStr>,

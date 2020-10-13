@@ -1,10 +1,10 @@
+mod command_extra;
 mod create_makepkg_command;
 mod custom_makepkg;
 mod db_init;
 mod deserialize_multi_docs_yaml;
 mod extract_pkgname_prefix;
 mod extract_value_from_line;
-mod may_env;
 mod outdated_packages;
 mod package_file_name;
 mod pair;
@@ -13,13 +13,13 @@ mod read_srcinfo_texts;
 mod serialize_iter_yaml;
 mod split_str_once;
 
+pub use command_extra::CommandExtra;
 pub use create_makepkg_command::create_makepkg_command;
 pub use custom_makepkg::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM};
 pub use db_init::{DbInit, DbInitError, DbInitValue};
 pub use deserialize_multi_docs_yaml::deserialize_multi_docs_yaml;
 pub use extract_pkgname_prefix::extract_pkgname_prefix;
 pub use extract_value_from_line::extract_value_from_line;
-pub use may_env::MayEnv;
 pub use outdated_packages::outdated_packages;
 pub use package_file_name::PackageFileName;
 pub use pair::Pair;
