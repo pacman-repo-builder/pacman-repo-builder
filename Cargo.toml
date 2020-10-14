@@ -45,6 +45,7 @@ rayon = "^1.4.1"
 sha-1 = "^0.9.1"
 hex-literal = "^0.3.1"
 hex_fmt = "^0.3.0"
+command-extra = "1.0.0"
 
 [dependencies.serde]
 version = "^1.0.116"

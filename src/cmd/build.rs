@@ -4,6 +4,7 @@ use super::super::{
     srcinfo::database::DatabaseValue,
     utils::{create_makepkg_command, CommandUtils, DbInit, DbInitValue},
 };
+use command_extra::CommandExtra;
 use pipe_trait::*;
 use std::{
     fs::copy,
