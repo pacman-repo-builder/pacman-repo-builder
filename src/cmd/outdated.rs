@@ -23,7 +23,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         .package_file_base_names()
         .filter_map(|item| match item {
             Err(error) => {
-                eprintln!("error in pkgbase of {}: {}", error.pkgbase, error.message);
+                eprintln!("⮾ Error in pkgbase of {}: {}", error.pkgbase, error.message);
                 error_count += 1;
                 None
             }
