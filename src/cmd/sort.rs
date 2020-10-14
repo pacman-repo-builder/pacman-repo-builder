@@ -23,7 +23,7 @@ pub fn sort(args: SortArgs) -> i32 {
         }
         Ok(build_order) => {
             for pkgbase in build_order {
-                println!("⮾ {}", pkgbase)
+                println!("{}", pkgbase)
             }
         }
     }
