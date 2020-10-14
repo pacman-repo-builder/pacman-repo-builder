@@ -1,4 +1,4 @@
-use pacman_repo_builder::utils::{CommandExtra, CUSTOM_MAKEPKG};
+use pacman_repo_builder::utils::{CommandUtils, CUSTOM_MAKEPKG};
 use pipe_trait::*;
 use std::process::Command;
 

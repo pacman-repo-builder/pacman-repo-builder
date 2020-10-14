@@ -1,4 +1,4 @@
-use pacman_repo_builder::{manifest::Manifest, utils::CommandExtra};
+use pacman_repo_builder::{manifest::Manifest, utils::CommandUtils};
 use pipe_trait::*;
 use std::{
     collections::{BTreeMap, BTreeSet},

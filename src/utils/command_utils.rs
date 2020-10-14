@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, path::Path, process::Command};
 
-pub trait CommandExtra: Sized {
+pub trait CommandUtils: Sized {
     fn with_current_dir(self, dir: impl AsRef<Path>) -> Self;
     fn with_env(self, key: impl AsRef<OsStr>, value: impl AsRef<OsStr>) -> Self;
     fn with_arg(self, arg: impl AsRef<OsStr>) -> Self;
@@ -30,7 +30,7 @@ pub trait CommandExtra: Sized {
     }
 }
 
-impl CommandExtra for Command {
+impl CommandUtils for Command {
     fn with_current_dir(mut self, dir: impl AsRef<Path>) -> Self {
         self.current_dir(dir);
         self

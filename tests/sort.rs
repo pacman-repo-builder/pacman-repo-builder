@@ -1,4 +1,4 @@
-use pacman_repo_builder::utils::CommandExtra;
+use pacman_repo_builder::utils::CommandUtils;
 use pipe_trait::*;
 use std::{collections::BTreeSet, iter::FromIterator, path::PathBuf, process::Command};
 

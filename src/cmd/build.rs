@@ -2,7 +2,7 @@ use super::super::{
     args::BuildArgs,
     manifest::{iterate_repository_option, Member, Repository},
     srcinfo::database::DatabaseValue,
-    utils::{create_makepkg_command, CommandExtra, DbInit, DbInitValue},
+    utils::{create_makepkg_command, CommandUtils, DbInit, DbInitValue},
 };
 use pipe_trait::*;
 use std::{
