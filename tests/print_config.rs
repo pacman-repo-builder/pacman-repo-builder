@@ -1,3 +1,4 @@
+use pacman_repo_builder::utils::CommandExtra;
 use pipe_trait::*;
 use std::{path::PathBuf, process::Command};
 
@@ -12,18 +13,16 @@ fn work_dir() -> PathBuf {
 }
 
 fn init() -> Command {
-    let mut command = Command::new(EXE);
-    command
-        .current_dir(work_dir())
-        .arg("print-config")
-        .args(&["--container", "mixed"])
-        .args(&["--container", "pkgbuild-only"])
-        .args(&["--container", "srcinfo-only"])
-        .args(&["--container", "pkgbuild-and-srcinfo"]);
-    command
+    Command::new(EXE)
+        .with_current_dir(work_dir())
+        .with_arg("print-config")
+        .with_args(&["--container", "mixed"])
+        .with_args(&["--container", "pkgbuild-only"])
+        .with_args(&["--container", "srcinfo-only"])
+        .with_args(&["--container", "pkgbuild-and-srcinfo"])
 }
 
-fn output(command: &mut Command) -> (String, String, bool) {
+fn output(mut command: Command) -> (String, String, bool) {
     let output = command.output().expect("get output from a command");
     let stdout = output
         .stdout
@@ -39,7 +38,7 @@ fn output(command: &mut Command) -> (String, String, bool) {
 
 #[test]
 fn require_nothing() {
-    let (stdout, stderr, success) = output(&mut init());
+    let (stdout, stderr, success) = output(init());
     let actual = (stdout.trim(), stderr.trim(), success);
     let expected = (
         include_str!("./expected-output/print-config/require-nothing.stdout.yaml").trim(),
@@ -51,7 +50,7 @@ fn require_nothing() {
 
 #[test]
 fn require_pkgbuild() {
-    let (stdout, stderr, success) = init().arg("--require-pkgbuild").pipe(output);
+    let (stdout, stderr, success) = init().with_arg("--require-pkgbuild").pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
     let expected = (
         include_str!("./expected-output/print-config/require-pkgbuild.stdout.yaml").trim(),
@@ -63,7 +62,7 @@ fn require_pkgbuild() {
 
 #[test]
 fn require_srcinfo() {
-    let (stdout, stderr, success) = init().arg("--require-srcinfo").pipe(output);
+    let (stdout, stderr, success) = init().with_arg("--require-srcinfo").pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
     let expected = (
         include_str!("./expected-output/print-config/require-srcinfo.stdout.yaml").trim(),
@@ -76,8 +75,8 @@ fn require_srcinfo() {
 #[test]
 fn require_pkgbuild_and_srcinfo() {
     let (stdout, stderr, success) = init()
-        .arg("--require-pkgbuild")
-        .arg("--require-srcinfo")
+        .with_arg("--require-pkgbuild")
+        .with_arg("--require-srcinfo")
         .pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
     let expected = (
@@ -91,7 +90,9 @@ fn require_pkgbuild_and_srcinfo() {
 
 #[test]
 fn with_one_repository() {
-    let (stdout, stderr, success) = init().args(&["--repository", "repository"]).pipe(output);
+    let (stdout, stderr, success) = init()
+        .with_args(&["--repository", "repository"])
+        .pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
     let expected = (
         include_str!("./expected-output/print-config/with-one-repository.stdout.yaml").trim(),
@@ -104,9 +105,9 @@ fn with_one_repository() {
 #[test]
 fn with_multiple_repositories() {
     let (stdout, stderr, success) = init()
-        .args(&["--repository", "foo"])
-        .args(&["--repository", "bar"])
-        .args(&["--repository", "baz"])
+        .with_args(&["--repository", "foo"])
+        .with_args(&["--repository", "bar"])
+        .with_args(&["--repository", "baz"])
         .pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
     let expected = (

@@ -1,3 +1,4 @@
+use pacman_repo_builder::utils::CommandExtra;
 use pipe_trait::*;
 use std::{collections::BTreeSet, iter::FromIterator, path::PathBuf, process::Command};
 
@@ -12,12 +13,12 @@ fn work_dir() -> PathBuf {
 }
 
 fn init() -> Command {
-    let mut command = Command::new(EXE);
-    command.current_dir(work_dir()).arg("sort");
-    command
+    Command::new(EXE)
+        .with_current_dir(work_dir())
+        .with_arg("sort")
 }
 
-fn output(command: &mut Command) -> (String, String, bool) {
+fn output(mut command: Command) -> (String, String, bool) {
     let output = command.output().expect("get output from a command");
     let stdout = output
         .stdout
@@ -47,7 +48,7 @@ macro_rules! test_case {
     ($name:ident, $typename:ident, $filter:expr, $expected:expr) => {
         #[test]
         fn $name() {
-            let (stdout, stderr, _) = output(&mut init());
+            let (stdout, stderr, _) = output(init());
             eprintln!("    ==> command stdout\n{}", &stdout);
             eprintln!("    ==> command stderr\n{}", &stderr);
             let actual: $typename<_> = collect(&stdout, $filter);
@@ -110,12 +111,12 @@ test_order!(
 
 #[test]
 fn stderr() {
-    let (_, stderr, _) = output(&mut init());
+    let (_, stderr, _) = output(init());
     assert!(stderr.trim().is_empty(), "stderr is empty");
 }
 
 #[test]
 fn success() {
-    let (_, _, success) = output(&mut init());
+    let (_, _, success) = output(init());
     assert!(success, "process exit with success status");
 }

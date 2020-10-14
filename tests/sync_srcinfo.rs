@@ -1,4 +1,4 @@
-use pacman_repo_builder::manifest::Manifest;
+use pacman_repo_builder::{manifest::Manifest, utils::CommandExtra};
 use pipe_trait::*;
 use std::{
     collections::{BTreeMap, BTreeSet},
@@ -37,7 +37,6 @@ struct Context {
 
 impl Context {
     fn new(branch: &'static str) -> Self {
-        let mut command = Command::new(EXE);
         let work_dir = TempDir::new().expect("create temporary directory for context");
         eprintln!("Current Working Directory: {:?}", work_dir.path());
         fs_extra::dir::copy(
@@ -50,7 +49,9 @@ impl Context {
             },
         )
         .expect("copy fixtures to working directory");
-        command.current_dir(work_dir.path()).arg("sync-srcinfo");
+        let command = Command::new(EXE)
+            .with_current_dir(work_dir.as_ref())
+            .with_arg("sync-srcinfo");
         Context { command, work_dir }
     }
 

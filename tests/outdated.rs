@@ -1,3 +1,4 @@
+use pacman_repo_builder::utils::CommandExtra;
 use pipe_trait::*;
 use std::{path::PathBuf, process::Command};
 
@@ -12,12 +13,12 @@ fn work_dir() -> PathBuf {
 }
 
 fn init() -> Command {
-    let mut command = Command::new(EXE);
-    command.current_dir(work_dir()).arg("outdated");
-    command
+    Command::new(EXE)
+        .with_current_dir(work_dir())
+        .with_arg("outdated")
 }
 
-fn output(command: &mut Command) -> (String, String, bool) {
+fn output(mut command: Command) -> (String, String, bool) {
     let output = command.output().expect("get output from a command");
     let stdout = output
         .stdout
@@ -35,7 +36,8 @@ macro_rules! test_case {
     ($name:ident, $details:literal, $expected:literal) => {
         #[test]
         fn $name() {
-            let (stdout, stderr, success) = init().arg("--details").arg($details).pipe(output);
+            let (stdout, stderr, success) =
+                init().with_arg("--details").with_arg($details).pipe(output);
             let actual = (stdout.trim(), stderr.trim(), success);
             let expected = (include_str!($expected).trim(), "", true);
             assert_eq!(actual, expected);

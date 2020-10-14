@@ -1,16 +1,14 @@
-use pacman_repo_builder::utils::CUSTOM_MAKEPKG;
+use pacman_repo_builder::utils::{CommandExtra, CUSTOM_MAKEPKG};
 use pipe_trait::*;
 use std::process::Command;
 
 const EXE: &str = env!("CARGO_BIN_EXE_build-pacman-repo");
 
 fn init() -> Command {
-    let mut command = Command::new(EXE);
-    command.arg("patch-makepkg");
-    command
+    Command::new(EXE).with_arg("patch-makepkg")
 }
 
-fn output(command: &mut Command) -> (String, String, bool) {
+fn output(mut command: Command) -> (String, String, bool) {
     let output = command.output().expect("get output from a command");
     let stdout = output
         .stdout
@@ -26,7 +24,7 @@ fn output(command: &mut Command) -> (String, String, bool) {
 
 #[test]
 fn print_makepkg() {
-    let (stdout, stderr, success) = output(&mut init());
+    let (stdout, stderr, success) = output(init());
     let actual_stderr_lines = stderr.lines().collect::<Vec<_>>();
     let actual = (stdout.as_str(), actual_stderr_lines.as_slice(), success);
     let expected_stderr_lines: &[&str] = &[
