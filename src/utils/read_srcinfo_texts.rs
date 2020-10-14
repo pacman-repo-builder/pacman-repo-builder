@@ -58,7 +58,7 @@ fn read_either(directory: &Path) -> Result<String, String> {
         read_srcinfo_from_pkgbuild(directory)
     } else {
         Err(format!(
-            "directory {:?} contains neither .SRCINFO nor PKGBUILD",
+            "⮾ Directory {:?} contains neither .SRCINFO nor PKGBUILD",
             directory,
         ))
     }
@@ -70,7 +70,7 @@ fn read_srcinfo_file(file: PathBuf) -> Result<String, String> {
         .pipe(String::from_utf8)
         .map_err(|error| {
             format!(
-                "cannot convert content of file {:?} to UTF-8: {}",
+                "⮾ Cannot convert content of file {:?} to UTF-8: {}",
                 file, error
             )
         })

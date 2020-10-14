@@ -17,7 +17,7 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
         let makepkg = match read("/usr/bin/makepkg") {
             Ok(content) => content,
             Err(error) => {
-                eprintln!("{}", error);
+                eprintln!("⮾ {}", error);
                 return error.raw_os_error().unwrap_or(1);
             }
         };
@@ -26,24 +26,24 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
         let hash = hash.as_slice();
         if hash != ORIGINAL_MAKEPKG_SHA1SUM && hash != CUSTOM_MAKEPKG_SHA1SUM {
             eprintln!(
-                "sha1sum of expected default system makepkg: {}",
+                "🛈 sha1sum of expected default system makepkg: {}",
                 HexFmt(ORIGINAL_MAKEPKG_SHA1SUM),
             );
             eprintln!(
-                "sha1sum of custom makepkg: {}",
+                "🛈 sha1sum of custom makepkg: {}",
                 HexFmt(CUSTOM_MAKEPKG_SHA1SUM),
             );
-            eprintln!("sha1sum of actual system makepkg: {}", HexFmt(hash));
-            eprintln!("makepkg had been modified by an unknown party");
-            eprintln!("it is not safe to proceed");
-            eprintln!("run again with --unsafe-ignore-unknown-changes to ignore this error");
+            eprintln!("🛈 sha1sum of actual system makepkg: {}", HexFmt(hash));
+            eprintln!("⮾ makepkg had been modified by an unknown party");
+            eprintln!("⮾ it is not safe to proceed");
+            eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
             return 1;
         }
     }
 
     if replace {
         if let Err(error) = write("/usr/bin/makepkg", CUSTOM_MAKEPKG) {
-            eprintln!("{}", error);
+            eprintln!("⮾ {}", error);
             return error.raw_os_error().unwrap_or(1);
         }
     } else {

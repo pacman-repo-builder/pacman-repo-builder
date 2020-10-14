@@ -20,8 +20,7 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
     let manifest = match Manifest::from_env() {
         Ok(manifest) => manifest,
         Err(error) => {
-            eprintln!("{}", error);
-            eprintln!("1 errors occurred");
+            eprintln!("⮾ {}", error);
             return DbInitError::ManifestLoadingFailure.code();
         }
     };
@@ -59,7 +58,7 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
                     if error.kind() == ErrorKind::NotFound {
                         "".to_string()
                     } else {
-                        return format!("cannot read {:?} as a file: {}", srcinfo_file, error)
+                        return format!("⮾ Cannot read {:?} as a file: {}", srcinfo_file, error)
                             .pipe(Err)
                             .pipe(Some);
                     }
@@ -83,7 +82,7 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
             if update {
                 if let Err(error) = write(&srcinfo_file, &new_srcinfo_content) {
                     return format!(
-                        "cannot write content to {:?} as a file: {}",
+                        "⮾ Cannot write content to {:?} as a file: {}",
                         srcinfo_file, error,
                     )
                     .pipe(Err)

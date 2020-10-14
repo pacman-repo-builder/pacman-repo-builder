@@ -38,7 +38,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
                 Some(repository)
             } else {
                 eprintln!(
-                    "(warning) a member with directory {:?} has no repositories",
+                    "⚠ A member with directory {:?} has no repositories",
                     member.directory,
                 );
                 None
@@ -52,7 +52,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         let directory = if let Some(parent) = repository.parent() {
             parent
         } else {
-            eprintln!("repository cannot be a directory: {:?}", repository);
+            eprintln!("⮾ Repository cannot be a directory: {:?}", repository);
             error_count += 1;
             continue;
         };
@@ -68,7 +68,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
 
         let entries = match read_dir(directory) {
             Err(error) => {
-                eprintln!("cannot read {:?} as a directory: {}", directory, error);
+                eprintln!("⮾ Cannot read {:?} as a directory: {}", directory, error,);
                 error_count += 1;
                 continue;
             }
@@ -80,7 +80,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             let file_name = match entry {
                 Err(error) => {
                     eprintln!(
-                        "cannot read an entry of directory {:?}: {}",
+                        "⮾ Cannot read an entry of directory {:?}: {}",
                         directory, error,
                     );
                     error_count += 1;

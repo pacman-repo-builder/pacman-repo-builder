@@ -18,12 +18,12 @@ pub fn sort(args: SortArgs) -> i32 {
 
     match database.build_order() {
         Err(error) => {
-            eprintln!("{}", error);
+            eprintln!("⮾ {}", error);
             error_count += 1;
         }
         Ok(build_order) => {
             for pkgbase in build_order {
-                println!("{}", pkgbase)
+                println!("⮾ {}", pkgbase)
             }
         }
     }

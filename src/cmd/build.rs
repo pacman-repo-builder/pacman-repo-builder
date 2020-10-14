@@ -113,7 +113,7 @@ pub fn build(args: BuildArgs) -> i32 {
         };
 
         if status != 0 {
-            eprintln!("makepkg exits with non-zero status code: {}", status);
+            eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
             return status;
         }
 
@@ -131,7 +131,7 @@ pub fn build(args: BuildArgs) -> i32 {
                     eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
                     if let Err(error) = copy(package_path, repository_directory.join(package_name))
                     {
-                        eprintln!("{}", error);
+                        eprintln!("⮾ {}", error);
                         return error.raw_os_error().unwrap_or(1);
                     }
                 }
@@ -156,7 +156,7 @@ pub fn build(args: BuildArgs) -> i32 {
                         }
                     };
                     if status != 0 {
-                        eprintln!("repo-add exits with non-zero status code: {}", status);
+                        eprintln!("⮾ repo-add exits with non-zero status code: {}", status);
                         return status;
                     }
                 }

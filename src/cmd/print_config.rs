@@ -46,7 +46,7 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
     for container in containers {
         let list = match read_dir(&container) {
             Err(error) => {
-                eprintln!("cannot read directory {:?}: {}", &container, error);
+                eprintln!("⮾ Cannot read directory {:?}: {}", &container, error);
                 error_count += 1;
                 continue;
             }
@@ -55,7 +55,7 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
         for entry in list {
             let directory = match entry {
                 Err(error) => {
-                    eprintln!("cannot read an entry of {:?}: {}", &container, error);
+                    eprintln!("⮾ Cannot read an entry of {:?}: {}", &container, error);
                     error_count += 1;
                     continue;
                 }
@@ -64,7 +64,7 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
             .path();
             match metadata(&directory) {
                 Err(error) => {
-                    eprintln!("cannot stat {:?}: {}", &directory, error);
+                    eprintln!("⮾ Cannot stat {:?}: {}", &directory, error);
                     error_count += 1;
                     continue;
                 }
@@ -99,7 +99,7 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
         members,
     };
     if let Err(error) = serde_yaml::to_writer(stdout(), &manifest) {
-        eprintln!("cannot write yaml to stdout: {}", error);
+        eprintln!("⮾ Cannot write yaml to stdout: {}", error);
         error_count += 1;
     };
 
