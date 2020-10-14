@@ -81,7 +81,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
                 Err(error) => {
                     eprintln!(
                         "cannot read an entry of directory {:?}: {}",
-                        directory, error
+                        directory, error,
                     );
                     error_count += 1;
                     continue;
