@@ -86,18 +86,15 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         },
     ) in outdated_packages(&latest_packages, &current_packages)
     {
-        // TODO: Remove 'repository*' information
         match details {
             OutdatedDetails::PkgName => {
                 println!("{}", pkgname);
             }
             OutdatedDetails::PkgFilePath => {
-                println!("{}", directory.join(file_name).to_string_lossy());
+                println!("{}", file_name);
             }
             OutdatedDetails::LossyYaml => {
                 println!("---");
-                println!("repository-file: {}", repository.to_string_lossy());
-                println!("repository-directory: {}", directory.to_string_lossy());
                 println!("file-name: {}", file_name);
                 println!("pkgname: {}", pkgname);
                 println!("version: {}", version);
@@ -105,8 +102,6 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
             }
             OutdatedDetails::StrictYaml => {
                 println!("---");
-                println!("repository-file: {:?}", repository);
-                println!("repository-directory: {:?}", directory);
                 println!("file-name: {:?}", file_name);
                 println!("pkgname: {:?}", pkgname);
                 println!("version: {:?}", version);
