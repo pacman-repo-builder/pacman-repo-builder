@@ -16,7 +16,7 @@ ls ./downloads | while read -r name; do
 	*) suffix='' ;;
 	esac
 
-	src="./downloads/${name}/strip-ansi${suffix}"
+	src="./downloads/${name}/build-pacman-repo${suffix}"
 	dst="./flatten/${name}${suffix}"
 	cp -v "$src" "$dst"
 done
