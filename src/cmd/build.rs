@@ -99,10 +99,10 @@ pub fn build(args: BuildArgs) -> i32 {
         eprintln!();
 
         let status = match makepkg()
-            .current_dir(directory)
-            .stdin(Stdio::null())
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
+            .with_current_dir(directory)
+            .with_stdin(Stdio::null())
+            .with_stdout(Stdio::inherit())
+            .with_stderr(Stdio::inherit())
             .spawn()
             .and_then(|mut child| child.wait())
         {
@@ -144,9 +144,9 @@ pub fn build(args: BuildArgs) -> i32 {
                         .with_arg("--nocolor")
                         .with_arg(repository)
                         .with_arg(package_path)
-                        .stdin(Stdio::null())
-                        .stdout(Stdio::inherit())
-                        .stderr(Stdio::inherit())
+                        .with_stdin(Stdio::null())
+                        .with_stdout(Stdio::inherit())
+                        .with_stderr(Stdio::inherit())
                         .spawn()
                         .and_then(|mut child| child.wait())
                     {

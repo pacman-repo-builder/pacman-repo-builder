@@ -1,11 +1,12 @@
 use super::create_makepkg_command;
+use command_extra::CommandExtra;
 use pipe_trait::*;
 use std::path::Path;
 
 pub fn read_srcinfo_from_pkgbuild(directory: &Path) -> Result<String, String> {
     let output = create_makepkg_command()
-        .current_dir(directory)
-        .arg("--printsrcinfo")
+        .with_current_dir(directory)
+        .with_arg("--printsrcinfo")
         .output()
         .map_err(|error| {
             format!(
