@@ -38,8 +38,8 @@ macro_rules! test_case {
         fn $name() {
             let (stdout, stderr, success) =
                 init().with_arg("--details").with_arg($details).pipe(output);
-            let actual = (stdout.trim(), stderr.trim(), success);
-            let expected = (include_str!($expected).trim(), "", true);
+            let actual = (stdout.as_str(), stderr.trim(), success);
+            let expected = (include_str!($expected), "", true);
             assert_eq!(actual, expected);
         }
     };
