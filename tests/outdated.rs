@@ -39,6 +39,7 @@ macro_rules! test_case {
             let (stdout, stderr, success) =
                 init().with_arg("--details").with_arg($details).pipe(output);
             let actual = (stdout.trim(), stderr.trim(), success);
+            eprintln!("\n\n{}\n\n", actual.0); // TO BE REMOVED
             let expected = (include_str!($expected).trim(), "", true);
             assert_eq!(actual, expected);
         }
