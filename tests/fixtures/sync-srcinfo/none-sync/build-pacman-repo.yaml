@@ -1,3 +1,5 @@
+global-settings:
+  repository: repo/repo.db
 members:
   - directory: multiple-packages
   - directory: single-package
