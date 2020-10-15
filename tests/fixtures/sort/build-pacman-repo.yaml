@@ -1,3 +1,5 @@
+global-settings:
+  repository: repo.db
 members:
   # order of members is intentionally chaotic
   - directory: standalone-multi

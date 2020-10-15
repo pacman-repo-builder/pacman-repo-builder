@@ -1,12 +1,11 @@
 use super::super::{
     args::PrintConfigArgs,
-    manifest::{BuildMetadata, GlobalSettings, Manifest, Member, Repository},
+    manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
 };
 use pipe_trait::*;
 use std::{
     fs::{metadata, read_dir},
     io::stdout,
-    path::Path,
 };
 
 pub fn print_config(args: PrintConfigArgs) -> i32 {
@@ -14,21 +13,10 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
 
     let PrintConfigArgs {
         containers,
-        repositories,
+        repository,
         require_pkgbuild,
         require_srcinfo,
     } = args;
-
-    let repository: Option<Repository<&Path>> = match &repositories[..] {
-        [] => None,
-        [repository] => Some(Repository::Single(repository)),
-        repositories => repositories
-            .iter()
-            .map(|x| x.as_path())
-            .collect::<Vec<_>>()
-            .pipe(Repository::Multiple)
-            .pipe(Some),
-    };
 
     let read_build_metadata = Some(match (args.require_pkgbuild, args.require_srcinfo) {
         (false, false) | (true, true) => BuildMetadata::Either,
@@ -36,11 +24,11 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
         (true, false) => BuildMetadata::PkgBuild,
     });
 
-    let global_settings = Some(GlobalSettings {
+    let global_settings = GlobalSettings {
         container: None,
         read_build_metadata,
         repository,
-    });
+    };
 
     let mut members = Vec::new();
     for container in containers {
@@ -85,7 +73,6 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
                 continue;
             }
             members.push(Member {
-                repository: None,
                 read_build_metadata: None,
                 directory,
             });
@@ -95,7 +82,7 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
     let members: Vec<_> = members.iter().map(Member::as_path).collect();
 
     let manifest = Manifest {
-        global_settings,
+        global_settings: global_settings.as_path(),
         members,
     };
     if let Err(error) = serde_yaml::to_writer(stdout(), &manifest) {

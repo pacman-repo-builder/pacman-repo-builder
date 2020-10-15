@@ -1,3 +1,5 @@
+global-settings:
+  repository: repo/repo.db
 members:
   - directory: outdated-multi
   - directory: outdated-single

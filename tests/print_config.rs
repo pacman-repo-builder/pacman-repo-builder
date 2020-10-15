@@ -16,6 +16,7 @@ fn init() -> Command {
     Command::new(EXE)
         .with_current_dir(work_dir())
         .with_arg("print-config")
+        .with_args(&["--repository", "repo/repo.db"])
         .with_args(&["--container", "mixed"])
         .with_args(&["--container", "pkgbuild-only"])
         .with_args(&["--container", "srcinfo-only"])
@@ -81,37 +82,6 @@ fn require_pkgbuild_and_srcinfo() {
     let actual = (stdout.trim(), stderr.trim(), success);
     let expected = (
         include_str!("./expected-output/print-config/require-pkgbuild-and-srcinfo.stdout.yaml")
-            .trim(),
-        "",
-        true,
-    );
-    assert_eq!(actual, expected);
-}
-
-#[test]
-fn with_one_repository() {
-    let (stdout, stderr, success) = init()
-        .with_args(&["--repository", "repository"])
-        .pipe(output);
-    let actual = (stdout.trim(), stderr.trim(), success);
-    let expected = (
-        include_str!("./expected-output/print-config/with-one-repository.stdout.yaml").trim(),
-        "",
-        true,
-    );
-    assert_eq!(actual, expected);
-}
-
-#[test]
-fn with_multiple_repositories() {
-    let (stdout, stderr, success) = init()
-        .with_args(&["--repository", "foo"])
-        .with_args(&["--repository", "bar"])
-        .with_args(&["--repository", "baz"])
-        .pipe(output);
-    let actual = (stdout.trim(), stderr.trim(), success);
-    let expected = (
-        include_str!("./expected-output/print-config/with-multiple-repositories.stdout.yaml")
             .trim(),
         "",
         true,

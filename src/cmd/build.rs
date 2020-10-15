@@ -1,11 +1,10 @@
 use super::super::{
     args::BuildArgs,
-    manifest::{iterate_repository_option, Member, Repository},
+    manifest::Member,
     srcinfo::database::DatabaseValue,
     utils::{create_makepkg_command, CommandUtils, DbInit, DbInitValue},
 };
 use command_extra::CommandExtra;
-use pipe_trait::*;
 use std::{
     fs::copy,
     process::{Command, Stdio},
@@ -55,6 +54,7 @@ pub fn build(args: BuildArgs) -> i32 {
         }
     };
 
+    let repository = manifest.global_settings.repository.as_path();
     let members: Vec<_> = manifest.resolve_members().collect();
 
     for pkgbase in build_order {
@@ -65,24 +65,13 @@ pub fn build(args: BuildArgs) -> i32 {
             panic!("cannot lookup value")
         });
 
-        let Member {
-            repository,
-            directory,
-            ..
-        } = members
+        let Member { directory, .. } = members
             .iter()
             .find(|member| member.directory.as_path() == *directory)
             .unwrap_or_else(|| {
                 dbg!(pkgbase, directory);
                 panic!("cannot lookup member");
             });
-
-        let repositories = || {
-            repository
-                .as_ref()
-                .map(Repository::as_path)
-                .pipe(iterate_repository_option)
-        };
 
         eprintln!();
         eprintln!();
@@ -93,9 +82,7 @@ pub fn build(args: BuildArgs) -> i32 {
             eprintln!("🛈 pkgname:           {}", pkgname);
         }
         eprintln!("🛈 source directory:  {}", directory.to_string_lossy());
-        for path in repositories() {
-            eprintln!("🛈 target repository: {}", path.to_string_lossy());
-        }
+        eprintln!("🛈 target repository: {}", repository.to_string_lossy());
         eprintln!();
 
         let status = match makepkg()
@@ -125,41 +112,37 @@ pub fn build(args: BuildArgs) -> i32 {
             let package_name = &package_name.to_string();
             let package_path = &directory.join(package_name);
             eprintln!("📦 made file {}", package_name);
-            for repository in repositories() {
+            {
+                let repository_directory = repository.parent().expect("get repository directory");
+                eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
+                if let Err(error) = copy(package_path, repository_directory.join(package_name)) {
+                    eprintln!("⮾ {}", error);
+                    return error.raw_os_error().unwrap_or(1);
+                }
+            }
+
+            {
+                eprintln!("  → add to {}", repository.to_string_lossy());
+                let status = match Command::new("repo-add")
+                    .with_arg("--quiet")
+                    .with_arg("--nocolor")
+                    .with_arg(repository)
+                    .with_arg(package_path)
+                    .stdin(Stdio::null())
+                    .stdout(Stdio::inherit())
+                    .stderr(Stdio::inherit())
+                    .spawn()
+                    .and_then(|mut child| child.wait())
                 {
-                    let repository_directory =
-                        repository.parent().expect("get repository directory");
-                    eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
-                    if let Err(error) = copy(package_path, repository_directory.join(package_name))
-                    {
-                        eprintln!("⮾ {}", error);
+                    Ok(status) => status.code().unwrap_or(1),
+                    Err(error) => {
+                        eprintln!("{}", error);
                         return error.raw_os_error().unwrap_or(1);
                     }
-                }
-
-                {
-                    eprintln!("  → add to {}", repository.to_string_lossy());
-                    let status = match Command::new("repo-add")
-                        .with_arg("--quiet")
-                        .with_arg("--nocolor")
-                        .with_arg(repository)
-                        .with_arg(package_path)
-                        .with_stdin(Stdio::null())
-                        .with_stdout(Stdio::inherit())
-                        .with_stderr(Stdio::inherit())
-                        .spawn()
-                        .and_then(|mut child| child.wait())
-                    {
-                        Ok(status) => status.code().unwrap_or(1),
-                        Err(error) => {
-                            eprintln!("{}", error);
-                            return error.raw_os_error().unwrap_or(1);
-                        }
-                    };
-                    if status != 0 {
-                        eprintln!("⮾ repo-add exits with non-zero status code: {}", status);
-                        return status;
-                    }
+                };
+                if status != 0 {
+                    eprintln!("⮾ repo-add exits with non-zero status code: {}", status);
+                    return status;
                 }
             }
         }
