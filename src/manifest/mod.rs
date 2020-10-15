@@ -32,7 +32,9 @@ impl<P: AsRef<Path>> Manifest<P> {
     }
 
     pub fn resolve_members(&self) -> impl Iterator<Item = Member<PathBuf>> + '_ {
-        self.members.iter().map(|x| x.to_path_buf())
+        self.members
+            .iter()
+            .map(move |member| member.resolve(&self.global_settings))
     }
 }
 
