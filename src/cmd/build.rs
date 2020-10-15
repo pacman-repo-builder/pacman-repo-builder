@@ -85,6 +85,15 @@ pub fn build(args: BuildArgs) -> i32 {
         eprintln!("🛈 target repository: {}", repository.to_string_lossy());
         eprintln!();
 
+        if srcinfo
+            .package_file_base_names()
+            .expect("get future package file base names")
+            .all(|name| repository.join(name.to_string()).exists())
+        {
+            eprintln!("🛈 All packages are already built. Skip.");
+            continue;
+        }
+
         let status = match makepkg()
             .current_dir(directory)
             .stdin(Stdio::null())
