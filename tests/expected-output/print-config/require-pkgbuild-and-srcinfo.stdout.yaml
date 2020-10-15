@@ -1,5 +1,6 @@
 ---
 global-settings:
+  repository: repo
   read-build-metadata: either
 members:
   - directory: mixed/either

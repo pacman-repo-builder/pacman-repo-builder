@@ -1,5 +1,6 @@
 ---
 global-settings:
+  repository: repo
   read-build-metadata: pkgbuild
 members:
   - directory: mixed/either
