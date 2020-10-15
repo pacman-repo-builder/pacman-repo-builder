@@ -21,4 +21,6 @@ ls ./downloads | while read -r name; do
 	cp -v "$src" "$dst"
 done
 
-cp -v ./exports/* ./flatten/
+if [[ -d ./exports ]]; then
+	cp -v ./exports/* ./flatten/
+fi
