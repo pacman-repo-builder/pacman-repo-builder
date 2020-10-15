@@ -1,0 +1,4 @@
+out-of-date-by-arch
+out-of-date-by-epoch
+out-of-date-by-pkgrel
+out-of-date-by-pkgver

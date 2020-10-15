@@ -6,13 +6,14 @@ use std::str::FromStr;
 pub struct OutdatedArgs {
     #[argh(
         option,
-        description = "level of details of information (pkg-file-path|lossy-yaml|strict-yaml)"
+        description = "level of details of information (pkgname|pkg-file-path|lossy-yaml|strict-yaml)"
     )]
     pub details: Option<OutdatedDetails>,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum OutdatedDetails {
+    PkgName,
     PkgFilePath,
     LossyYaml,
     StrictYaml,
@@ -29,6 +30,7 @@ impl FromStr for OutdatedDetails {
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
         Ok(match text {
+            "pkgname" => OutdatedDetails::PkgName,
             "pkg-file-path" => OutdatedDetails::PkgFilePath,
             "lossy-yaml" => OutdatedDetails::LossyYaml,
             "strict-yaml" => OutdatedDetails::StrictYaml,

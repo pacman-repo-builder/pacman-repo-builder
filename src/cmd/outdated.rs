@@ -88,6 +88,9 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
     {
         // TODO: Remove 'repository*' information
         match details {
+            OutdatedDetails::PkgName => {
+                println!("{}", pkgname);
+            }
             OutdatedDetails::PkgFilePath => {
                 println!("{}", directory.join(file_name).to_string_lossy());
             }

@@ -47,6 +47,12 @@ macro_rules! test_case {
 }
 
 test_case!(
+    details_pkgname,
+    "pkgname",
+    "./expected-output/outdated/details-pkgname.stdout.txt"
+);
+
+test_case!(
     details_pkg_file_path,
     "pkg-file-path",
     "./expected-output/outdated/details-pkg-file-path.stdout.txt"
