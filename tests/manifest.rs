@@ -1,5 +1,5 @@
 use pacman_repo_builder::{
-    manifest::{BuildMetadata, GlobalSettings, Manifest, Member, Repository},
+    manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
 use pipe_trait::*;
@@ -15,49 +15,28 @@ fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
             Member {
                 directory: PathBuf::from("foo"),
                 read_build_metadata: None,
-                repository: None,
             },
             Member {
                 directory: PathBuf::from("bar"),
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
-                repository: "single-repo"
-                    .pipe(PathBuf::from)
-                    .pipe(Repository::Single)
-                    .pipe(Some),
             },
             Member {
                 directory: PathBuf::from("baz"),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
-                repository: ["repo1", "repo2", "repo3"]
-                    .iter()
-                    .map(PathBuf::from)
-                    .collect::<Vec<_>>()
-                    .pipe(Repository::Multiple)
-                    .pipe(Some),
             },
         ]
     };
 
     [
-        || None,
-        || {
-            Some(GlobalSettings {
-                container: None,
-                read_build_metadata: None,
-                repository: None,
-            })
+        || GlobalSettings {
+            container: None,
+            read_build_metadata: None,
+            repository: PathBuf::from("repo"),
         },
-        || {
-            Some(GlobalSettings {
-                container: "container".pipe(PathBuf::from).pipe(Some),
-                read_build_metadata: Some(BuildMetadata::Either),
-                repository: ["abc", "def", "ghi"]
-                    .iter()
-                    .map(PathBuf::from)
-                    .collect::<Vec<_>>()
-                    .pipe(Repository::Multiple)
-                    .pipe(Some),
-            })
+        || GlobalSettings {
+            container: "container".pipe(PathBuf::from).pipe(Some),
+            read_build_metadata: Some(BuildMetadata::Either),
+            repository: PathBuf::from("repo"),
         },
     ]
     .iter()

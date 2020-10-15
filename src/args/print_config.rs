@@ -21,7 +21,7 @@ pub struct PrintConfigArgs {
         short = 'T',
         description = "paths to repository files"
     )]
-    pub repositories: Vec<PathBuf>,
+    pub repository: PathBuf,
     #[argh(
         switch,
         description = "skip if directory does not contains build script"

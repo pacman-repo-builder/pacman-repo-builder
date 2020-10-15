@@ -1,6 +1,5 @@
 use super::super::{
     args::{OutdatedArgs, OutdatedDetails},
-    manifest::Repository,
     utils::{outdated_packages, DbInit, DbInitValue, PackageFileName},
 };
 use std::{fs::read_dir, path::PathBuf};
@@ -31,103 +30,84 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         })
         .collect();
 
-    for repository in manifest
-        .resolve_members()
-        .filter_map(|member| {
-            if let Some(repository) = member.repository {
-                Some(repository)
-            } else {
-                eprintln!(
-                    "⚠ A member with directory {:?} has no repositories",
-                    member.directory,
-                );
-                None
-            }
-        })
-        .flat_map(|repository| match repository {
-            Repository::Single(path) => vec![path],
-            Repository::Multiple(paths) => paths,
-        })
-    {
-        let directory = if let Some(parent) = repository.parent() {
-            parent
-        } else {
-            eprintln!("⮾ Repository cannot be a directory: {:?}", repository);
-            error_count += 1;
-            continue;
-        };
+    let repository = manifest.global_settings.repository.as_path();
+    let directory = if let Some(parent) = repository.parent() {
+        parent
+    } else {
+        eprintln!("⮾ Repository cannot be a directory: {:?}", repository);
+        return 1;
+    };
 
-        // PROBLEM: read_dir cannot read "" as a directory
-        // WORKAROUND: replace it with "."
-        let valid_current_directory = PathBuf::from(".");
-        let directory = if directory.as_os_str().is_empty() {
-            &valid_current_directory
-        } else {
-            directory
-        };
+    // PROBLEM: read_dir cannot read "" as a directory
+    // WORKAROUND: replace it with "."
+    let valid_current_directory = PathBuf::from(".");
+    let directory = if directory.as_os_str().is_empty() {
+        &valid_current_directory
+    } else {
+        directory
+    };
 
-        let entries = match read_dir(directory) {
+    let entries = match read_dir(directory) {
+        Err(error) => {
+            eprintln!("⮾ Cannot read {:?} as a directory: {}", directory, error,);
+            return 1;
+        }
+        Ok(entries) => entries,
+    };
+
+    let mut current_packages = Vec::new();
+    for entry in entries {
+        let file_name = match entry {
             Err(error) => {
-                eprintln!("⮾ Cannot read {:?} as a directory: {}", directory, error,);
+                eprintln!(
+                    "⮾ Cannot read an entry of directory {:?}: {}",
+                    directory, error,
+                );
                 error_count += 1;
                 continue;
             }
-            Ok(entries) => entries,
+            Ok(entry) => entry.file_name(),
         };
 
-        let mut current_packages = Vec::new();
-        for entry in entries {
-            let file_name = match entry {
-                Err(error) => {
-                    eprintln!(
-                        "⮾ Cannot read an entry of directory {:?}: {}",
-                        directory, error,
-                    );
-                    error_count += 1;
-                    continue;
-                }
-                Ok(entry) => entry.file_name(),
-            };
-
-            if let Some(name) = file_name.to_str() {
-                current_packages.push(name.to_string())
-            } else {
-                eprintln!("cannot convert {:?} to UTF-8", file_name);
-                error_count += 1;
-            }
+        if let Some(name) = file_name.to_str() {
+            current_packages.push(name.to_string())
+        } else {
+            eprintln!("cannot convert {:?} to UTF-8", file_name);
+            error_count += 1;
         }
+    }
 
-        for (
-            ref file_name,
-            PackageFileName {
-                pkgname,
-                version,
-                arch,
-            },
-        ) in outdated_packages(&latest_packages, &current_packages)
-        {
-            match details {
-                OutdatedDetails::PkgFilePath => {
-                    println!("{}", directory.join(file_name).to_string_lossy());
-                }
-                OutdatedDetails::LossyYaml => {
-                    println!("---");
-                    println!("repository-file: {}", repository.to_string_lossy());
-                    println!("repository-directory: {}", directory.to_string_lossy());
-                    println!("file-name: {}", file_name);
-                    println!("pkgname: {}", pkgname);
-                    println!("version: {}", version);
-                    println!("arch: {}", arch);
-                }
-                OutdatedDetails::StrictYaml => {
-                    println!("---");
-                    println!("repository-file: {:?}", repository);
-                    println!("repository-directory: {:?}", directory);
-                    println!("file-name: {:?}", file_name);
-                    println!("pkgname: {:?}", pkgname);
-                    println!("version: {:?}", version);
-                    println!("arch: {:?}", arch);
-                }
+    for (
+        ref file_name,
+        PackageFileName {
+            pkgname,
+            version,
+            arch,
+        },
+    ) in outdated_packages(&latest_packages, &current_packages)
+    {
+        // TODO: Remove 'repository*' information
+        match details {
+            OutdatedDetails::PkgFilePath => {
+                println!("{}", directory.join(file_name).to_string_lossy());
+            }
+            OutdatedDetails::LossyYaml => {
+                println!("---");
+                println!("repository-file: {}", repository.to_string_lossy());
+                println!("repository-directory: {}", directory.to_string_lossy());
+                println!("file-name: {}", file_name);
+                println!("pkgname: {}", pkgname);
+                println!("version: {}", version);
+                println!("arch: {}", arch);
+            }
+            OutdatedDetails::StrictYaml => {
+                println!("---");
+                println!("repository-file: {:?}", repository);
+                println!("repository-directory: {:?}", directory);
+                println!("file-name: {:?}", file_name);
+                println!("pkgname: {:?}", pkgname);
+                println!("version: {:?}", version);
+                println!("arch: {:?}", arch);
             }
         }
     }

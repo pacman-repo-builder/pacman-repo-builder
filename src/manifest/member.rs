@@ -1,4 +1,4 @@
-use super::{concat_repository_options, BuildMetadata, GlobalSettings, Repository};
+use super::{BuildMetadata, GlobalSettings};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
@@ -8,8 +8,6 @@ pub struct Member<P: AsRef<Path>> {
     pub directory: P,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_build_metadata: Option<BuildMetadata>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub repository: Option<Repository<P>>,
 }
 
 impl<P: AsRef<Path>> Member<P> {
@@ -17,7 +15,6 @@ impl<P: AsRef<Path>> Member<P> {
         Member {
             directory: self.directory.as_ref(),
             read_build_metadata: self.read_build_metadata,
-            repository: self.repository.as_ref().map(|x| x.as_path()),
         }
     }
 
@@ -25,7 +22,6 @@ impl<P: AsRef<Path>> Member<P> {
         Member {
             directory: self.directory.as_ref().to_path_buf(),
             read_build_metadata: self.read_build_metadata,
-            repository: self.repository.as_ref().map(Repository::to_path_buf),
         }
     }
 
@@ -40,14 +36,6 @@ impl<P: AsRef<Path>> Member<P> {
             read_build_metadata: self
                 .read_build_metadata
                 .or(global_settings.read_build_metadata),
-
-            repository: concat_repository_options(
-                self.repository.as_ref().map(Repository::to_path_buf),
-                global_settings
-                    .repository
-                    .as_ref()
-                    .map(Repository::to_path_buf),
-            ),
         }
     }
 }
