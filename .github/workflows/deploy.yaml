@@ -47,37 +47,26 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: true
-      matrix:
-        rust:
-          - '1.46.0'
-        target:
-          - x86_64-unknown-linux-gnu
-          - x86_64-unknown-linux-musl
-
     steps:
       - uses: actions/checkout@v2
 
       - uses: actions-rs/toolchain@v1.0.6
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
-          target: ${{ matrix.target }}
           override: 'true'
           default: 'true'
 
       - name: Build
-        run: cargo build --target ${{ matrix.target }} --release
+        run: cargo build --release
 
       - name: Strip all debug symbols
-        run: strip --strip-all target/${{ matrix.target }}/release/build-pacman-repo
+        run: strip --strip-all target/release/build-pacman-repo
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: build-pacman-repo-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/build-pacman-repo
+          name: build-pacman-repo
+          path: target/release/build-pacman-repo
 
   create_release:
     name: Create Release
@@ -144,7 +133,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2.0.5
         with:
-          name: build-pacman-repo-${{ matrix.target }}
+          name: build-pacman-repo
 
       - name: Release executable (UNIX)
         uses: actions/upload-release-asset@v1.0.2
@@ -153,7 +142,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: ./build-pacman-repo
-          asset_name: build-pacman-repo-${{ matrix.target }}
+          asset_name: build-pacman-repo
           asset_content_type: application/x-pie-executable
 
   upload_checksums:
