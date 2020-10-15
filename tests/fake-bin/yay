@@ -1,0 +1,3 @@
+#! /usr/bin/python3
+import lib
+lib.run_fake_command('YAY')
