@@ -55,12 +55,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions-rs/toolchain@v1.0.6
+      - name: Install toolchain
+        uses: ./ci/github-actions/arch-run
         with:
-          profile: minimal
-          target: ${{ matrix.target }}
-          override: 'true'
-          default: 'true'
+          command: rustup target add ${{ matrix.target }}
 
       - name: Build
         uses: ./ci/github-actions/arch-run
