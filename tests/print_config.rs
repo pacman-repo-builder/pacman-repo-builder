@@ -16,7 +16,7 @@ fn init() -> Command {
     Command::new(EXE)
         .with_current_dir(work_dir())
         .with_arg("print-config")
-        .with_args(&["--repository", "repo"])
+        .with_args(&["--repository", "repo/repo.db"])
         .with_args(&["--container", "mixed"])
         .with_args(&["--container", "pkgbuild-only"])
         .with_args(&["--container", "srcinfo-only"])
