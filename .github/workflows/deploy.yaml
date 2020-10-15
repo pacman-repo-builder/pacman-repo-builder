@@ -63,10 +63,14 @@ jobs:
           default: 'true'
 
       - name: Build
-        run: cargo build --target ${{ matrix.target }} --release
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: cargo build --target ${{ matrix.target }} --release
 
       - name: Strip all debug symbols
-        run: strip --strip-all target/${{ matrix.target }}/release/build-pacman-repo
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: strip --strip-all target/${{ matrix.target }}/release/build-pacman-repo
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
