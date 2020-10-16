@@ -1,8 +1,9 @@
 use super::super::{
     args::{OutdatedArgs, OutdatedDetails},
-    status::{Code, Status},
+    status::{Code, Failure, Status},
     utils::{outdated_packages, DbInit, DbInitValue, PackageFileName},
 };
+use pipe_trait::*;
 use std::{fs::read_dir, path::PathBuf};
 
 pub fn outdated(args: OutdatedArgs) -> Status {
@@ -33,7 +34,7 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         parent
     } else {
         eprintln!("⮾ Repository cannot be a directory: {:?}", repository);
-        return Err(Code::GenericFailure);
+        return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
     };
 
     // PROBLEM: read_dir cannot read "" as a directory
@@ -48,7 +49,7 @@ pub fn outdated(args: OutdatedArgs) -> Status {
     let entries = match read_dir(directory) {
         Err(error) => {
             eprintln!("⮾ Cannot read {:?} as a directory: {}", directory, error,);
-            return Err(Code::GenericFailure);
+            return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
         }
         Ok(entries) => entries,
     };
@@ -112,6 +113,6 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         Ok(0)
     } else {
         eprintln!("{} errors occurred", error_count);
-        Err(Code::GenericFailure)
+        Code::GenericFailure.pipe(Failure::Expected).pipe(Err)
     }
 }

@@ -1,7 +1,7 @@
 use super::super::{
     args::SyncSrcInfoArgs,
     manifest::{BuildMetadata, Manifest, Member},
-    status::{Code, Status},
+    status::{Code, Failure, Status},
     utils::read_srcinfo_from_pkgbuild,
 };
 use pipe_trait::*;
@@ -18,10 +18,12 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
     let mut outdated = 0u32;
     let mut error_count = 0u32;
 
-    let manifest = Manifest::from_env().map_err(|error| {
-        eprintln!("⮾ {}", error);
-        Code::ManifestLoadingFailure
-    })?;
+    let manifest = Manifest::from_env()
+        .map_err(|error| {
+            eprintln!("⮾ {}", error);
+            Code::ManifestLoadingFailure
+        })
+        .map_err(Failure::Expected)?;
 
     struct SyncStatus<'a> {
         up_to_date: bool,
@@ -116,11 +118,11 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
 
     if error_count != 0 {
         eprintln!("{} errors occurred", error_count);
-        return Err(Code::GenericFailure);
+        return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
     }
 
     match (update, outdated) {
         (_, 0) | (true, _) => Ok(0),
-        _ => Err(Code::SrcInfoOutOfSync),
+        _ => Code::GenericFailure.pipe(Failure::Expected).pipe(Err),
     }
 }

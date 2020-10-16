@@ -1,8 +1,9 @@
 use super::super::{
     args::SortArgs,
-    status::{Code, Status},
+    status::{Code, Failure, Status},
     utils::{DbInit, DbInitValue},
 };
+use pipe_trait::*;
 
 pub fn sort(args: SortArgs) -> Status {
     let SortArgs {} = args;
@@ -30,6 +31,6 @@ pub fn sort(args: SortArgs) -> Status {
         Ok(0)
     } else {
         eprintln!("{} errors occurred", error_count);
-        Err(Code::GenericFailure)
+        Code::GenericFailure.pipe(Failure::Expected).pipe(Err)
     }
 }

@@ -1,6 +1,6 @@
 use super::super::{
     args::PatchMakePkgArgs,
-    status::{Code, Status},
+    status::{Code, Failure, Status},
     utils::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM},
 };
 use hex_fmt::HexFmt;
@@ -39,7 +39,7 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
             eprintln!("⮾ makepkg had been modified by an unknown party");
             eprintln!("⮾ it is not safe to proceed");
             eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
-            return Err(Code::GenericFailure);
+            return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
         }
     }
 

@@ -1,10 +1,11 @@
 use super::super::{
     manifest::{Manifest, Member},
     srcinfo::{database::SimpleDatabase, SrcInfo},
-    status::Code,
+    status::{Code, Failure},
 };
 use super::{read_srcinfo_texts, Pair};
 use indexmap::{IndexMap, IndexSet};
+use pipe_trait::*;
 use std::path::PathBuf;
 
 #[derive(Debug, Default)]
@@ -14,7 +15,7 @@ pub struct DbInit<'a> {
 }
 
 impl<'a> DbInit<'a> {
-    pub fn init(&'a mut self) -> Result<DbInitValue<'a>, Code> {
+    pub fn init(&'a mut self) -> Result<DbInitValue<'a>, Failure> {
         let DbInit {
             srcinfo_texts,
             srcinfo_collection,
@@ -26,7 +27,9 @@ impl<'a> DbInit<'a> {
             Ok(manifest) => manifest,
             Err(error) => {
                 eprintln!("{}", error);
-                return Err(Code::ManifestLoadingFailure);
+                return Code::ManifestLoadingFailure
+                    .pipe(Failure::Expected)
+                    .pipe(Err);
             }
         };
 

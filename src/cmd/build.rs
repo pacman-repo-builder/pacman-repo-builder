@@ -2,7 +2,7 @@ use super::super::{
     args::BuildArgs,
     manifest::Member,
     srcinfo::database::DatabaseValue,
-    status::{Code, Status},
+    status::{Code, Failure, Status},
     utils::{create_makepkg_command, CommandUtils, DbInit, DbInitValue},
 };
 use command_extra::CommandExtra;
@@ -42,14 +42,14 @@ pub fn build(args: BuildArgs) -> Status {
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
-        return Err(Code::GenericFailure);
+        return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
     }
 
     let build_order = match database.build_order() {
         Ok(build_order) => build_order,
         Err(error) => {
             eprintln!("{}", error);
-            return Err(Code::GenericFailure);
+            return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
         }
     };
 
@@ -102,7 +102,7 @@ pub fn build(args: BuildArgs) -> Status {
             .and_then(|mut child| child.wait())
             .map_err(|error| {
                 eprintln!("⮾ {}", error);
-                Code::GenericFailure
+                Failure::Expected(Code::GenericFailure)
             })?
             .code()
             .unwrap_or(1);
@@ -124,13 +124,13 @@ pub fn build(args: BuildArgs) -> Status {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
                 if let Err(error) = copy(package_path, repository_directory.join(package_name)) {
                     eprintln!("⮾ {}", error);
-                    return error.raw_os_error().unwrap_or(1).pipe(Ok);
+                    return error.pipe(Failure::Unexpected).pipe(Err);
                 }
             }
 
             {
                 eprintln!("  → add to {}", repository.to_string_lossy());
-                let status = match Command::new("repo-add")
+                let status = Command::new("repo-add")
                     .with_arg("--quiet")
                     .with_arg("--nocolor")
                     .with_arg(repository)
@@ -140,13 +140,12 @@ pub fn build(args: BuildArgs) -> Status {
                     .with_stderr(Stdio::inherit())
                     .spawn()
                     .and_then(|mut child| child.wait())
-                {
-                    Ok(status) => status.code().unwrap_or(1),
-                    Err(error) => {
-                        eprintln!("{}", error);
-                        return error.raw_os_error().unwrap_or(1).pipe(Ok);
-                    }
-                };
+                    .map_err(|error| {
+                        eprintln!("⮾ {}", error);
+                        Failure::Unexpected(error)
+                    })?
+                    .code()
+                    .unwrap_or(1);
                 if status != 0 {
                     eprintln!("⮾ repo-add exits with non-zero status code: {}", status);
                     return Ok(status);

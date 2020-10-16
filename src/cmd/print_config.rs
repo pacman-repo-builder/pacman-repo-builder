@@ -1,7 +1,7 @@
 use super::super::{
     args::PrintConfigArgs,
     manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
-    status::{Code, Status},
+    status::{Code, Failure, Status},
 };
 use pipe_trait::*;
 use std::{
@@ -95,6 +95,6 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         Ok(0)
     } else {
         eprintln!("{} errors occurred.", error_count);
-        Err(Code::GenericFailure)
+        Code::GenericFailure.pipe(Failure::Expected).pipe(Err)
     }
 }
