@@ -1,6 +1,6 @@
 ---
 global-settings:
-  repository: repo/repo.db
+  repository: repo/repo.db.tar.gz
   read-build-metadata: srcinfo
 members:
   - directory: mixed/either

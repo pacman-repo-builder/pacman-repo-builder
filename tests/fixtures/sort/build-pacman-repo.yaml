@@ -1,5 +1,5 @@
 global-settings:
-  repository: repo.db
+  repository: repo.db.tar.gz
 members:
   # order of members is intentionally chaotic
   - directory: standalone-multi

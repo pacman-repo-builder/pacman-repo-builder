@@ -1,6 +1,6 @@
 global-settings:
   container: build
-  repository: repo/repo.db
+  repository: repo/repo.db.tar.gz
 members:
   - directory: out-of-date-by-arch
   - directory: out-of-date-by-epoch
