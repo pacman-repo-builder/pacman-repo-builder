@@ -66,7 +66,7 @@ fn read_either(directory: &Path) -> Result<String, String> {
 
 fn read_srcinfo_file(file: PathBuf) -> Result<String, String> {
     file.pipe_ref(read)
-        .map_err(|error| format!("cannot read file {:?}: {}", file, error))?
+        .map_err(|error| format!("⮾ Cannot read file {:?}: {}", file, error))?
         .pipe(String::from_utf8)
         .map_err(|error| {
             format!(

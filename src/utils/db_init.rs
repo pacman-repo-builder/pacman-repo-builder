@@ -44,7 +44,7 @@ impl<'a> DbInit<'a> {
             let (srcinfo, member) = pair.to_ref().into_tuple();
             match database.insert_srcinfo(srcinfo, member.directory.as_path()) {
                 Err(error) => {
-                    eprintln!("error in directory {:?}: {}", member.directory, error);
+                    eprintln!("⮾ Error in directory {:?}: {}", member.directory, error);
                     error_count += 1;
                 }
                 Ok(Some(removal_info)) => {
@@ -62,7 +62,7 @@ impl<'a> DbInit<'a> {
         }
 
         if !duplications.is_empty() {
-            eprintln!("duplication detected");
+            eprintln!("⮾ Duplication detected");
             for (pkgbase, directories) in duplications.iter() {
                 eprintln!("  * pkgbase: {}", pkgbase);
                 for directory in directories.iter() {
