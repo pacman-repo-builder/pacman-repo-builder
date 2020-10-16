@@ -121,6 +121,6 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
 
     match (update, outdated) {
         (_, 0) | (true, _) => Ok(0),
-        _ => Code::GenericFailure.pipe(Failure::Expected).pipe(Err),
+        _ => Code::SrcInfoOutOfSync.pipe(Failure::Expected).pipe(Err),
     }
 }
