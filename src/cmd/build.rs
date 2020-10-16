@@ -49,7 +49,7 @@ pub fn build(args: BuildArgs) -> Status {
         Ok(build_order) => build_order,
         Err(error) => {
             eprintln!("⮾ {}", error);
-            return Code::GenericFailure.into();
+            return error.code().into();
         }
     };
 

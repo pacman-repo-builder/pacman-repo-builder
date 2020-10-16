@@ -1,3 +1,4 @@
+use super::super::super::status::Code;
 use super::{Database, DatabaseValue};
 use indexmap::IndexMap;
 use petgraph::{algo::toposort, graph::Graph};
@@ -54,6 +55,14 @@ where
 #[derive(Debug, Copy, Clone)]
 pub enum BuildOrderError<PkgBase> {
     CyclicDependency(PkgBase),
+}
+
+impl<PkgBase> BuildOrderError<PkgBase> {
+    pub fn code(&self) -> Code {
+        match self {
+            BuildOrderError::CyclicDependency(_) => Code::CyclicDependency,
+        }
+    }
 }
 
 impl<PkgBase> Display for BuildOrderError<PkgBase>

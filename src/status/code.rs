@@ -6,6 +6,7 @@ pub enum Code {
     GenericFailure = 1,
     ManifestLoadingFailure = 2,
     SrcInfoOutOfSync = 3,
+    CyclicDependency = 4,
 }
 
 impl Into<Status> for Code {
