@@ -119,8 +119,8 @@ pub fn build(args: BuildArgs) -> Status {
             let package_name = &package_name.to_string();
             let package_path = &directory.join(package_name);
             eprintln!("📦 made file {}", package_name);
+            let repository_directory = repository.parent().expect("get repository directory");
             {
-                let repository_directory = repository.parent().expect("get repository directory");
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
                 if let Err(error) = copy(package_path, repository_directory.join(package_name)) {
                     eprintln!("⮾ {}", error);
@@ -134,7 +134,7 @@ pub fn build(args: BuildArgs) -> Status {
                     .with_arg("--quiet")
                     .with_arg("--nocolor")
                     .with_arg(repository)
-                    .with_arg(package_path)
+                    .with_arg(repository_directory.join(package_name))
                     .with_stdin(Stdio::null())
                     .with_stdout(Stdio::inherit())
                     .with_stderr(Stdio::inherit())
