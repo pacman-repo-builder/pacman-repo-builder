@@ -63,7 +63,7 @@ where
     fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
         match self {
             BuildOrderError::CyclicDependency(pkgbase) => {
-                write!(formatter, "dependency cycle detected at {}", pkgbase)
+                write!(formatter, "Dependency cycle detected at {}", pkgbase)
             }
         }
     }
