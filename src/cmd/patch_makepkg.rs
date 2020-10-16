@@ -39,7 +39,7 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
             eprintln!("⮾ makepkg had been modified by an unknown party");
             eprintln!("⮾ it is not safe to proceed");
             eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
-            return Code::GenericFailure.into();
+            return Code::UnrecognizedMakePkg.into();
         }
     }
 

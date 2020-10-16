@@ -7,6 +7,7 @@ pub enum Code {
     ManifestLoadingFailure = 2,
     SrcInfoOutOfSync = 3,
     CyclicDependency = 4,
+    UnrecognizedMakePkg = 5,
 }
 
 impl Into<Status> for Code {
