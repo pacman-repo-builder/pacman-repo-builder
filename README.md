@@ -53,10 +53,6 @@ build-pacman-repo help $command
 build-pacman-repo $command --help
 ```
 
-## Installation
-
-_TODO_
-
 ## License
 
 This program contains [a modification of `makepkg` script](https://git.io/JTqsZ) which is released under [GNU Public License Version 3](https://git.io/JTq3Y). See content of `makepkg` for authors and contributors.
