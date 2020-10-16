@@ -116,11 +116,11 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
 
     if error_count != 0 {
         eprintln!("{} errors occurred", error_count);
-        return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
+        return Code::GenericFailure.into();
     }
 
     match (update, outdated) {
         (_, 0) | (true, _) => Ok(0),
-        _ => Code::SrcInfoOutOfSync.pipe(Failure::Expected).pipe(Err),
+        _ => Code::SrcInfoOutOfSync.into(),
     }
 }

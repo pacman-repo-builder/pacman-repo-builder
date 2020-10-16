@@ -42,14 +42,14 @@ pub fn build(args: BuildArgs) -> Status {
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
-        return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
+        return Code::GenericFailure.into();
     }
 
     let build_order = match database.build_order() {
         Ok(build_order) => build_order,
         Err(error) => {
             eprintln!("⮾ {}", error);
-            return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
+            return Code::GenericFailure.into();
         }
     };
 

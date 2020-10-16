@@ -20,7 +20,7 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
             Ok(content) => content,
             Err(error) => {
                 eprintln!("⮾ {}", error);
-                return error.raw_os_error().unwrap_or(1).pipe(Ok);
+                return error.pipe(Failure::from).into();
             }
         };
         hasher.update(&makepkg);
@@ -39,14 +39,14 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
             eprintln!("⮾ makepkg had been modified by an unknown party");
             eprintln!("⮾ it is not safe to proceed");
             eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
-            return Code::GenericFailure.pipe(Failure::Expected).pipe(Err);
+            return Code::GenericFailure.into();
         }
     }
 
     if replace {
         if let Err(error) = write("/usr/bin/makepkg", CUSTOM_MAKEPKG) {
             eprintln!("⮾ {}", error);
-            return error.raw_os_error().unwrap_or(1).pipe(Ok);
+            return error.pipe(Failure::from).into();
         }
     } else {
         print!("{}", CUSTOM_MAKEPKG);
