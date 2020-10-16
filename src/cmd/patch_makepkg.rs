@@ -1,12 +1,14 @@
 use super::super::{
     args::PatchMakePkgArgs,
+    status::{Code, Status},
     utils::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM},
 };
 use hex_fmt::HexFmt;
+use pipe_trait::*;
 use sha1::{Digest, Sha1};
 use std::fs::{read, write};
 
-pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
+pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
     let PatchMakePkgArgs {
         replace,
         unsafe_ignore_unknown_changes,
@@ -18,7 +20,7 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
             Ok(content) => content,
             Err(error) => {
                 eprintln!("⮾ {}", error);
-                return error.raw_os_error().unwrap_or(1);
+                return error.raw_os_error().unwrap_or(1).pipe(Ok);
             }
         };
         hasher.update(&makepkg);
@@ -37,14 +39,14 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
             eprintln!("⮾ makepkg had been modified by an unknown party");
             eprintln!("⮾ it is not safe to proceed");
             eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
-            return 1;
+            return Err(Code::GenericFailure);
         }
     }
 
     if replace {
         if let Err(error) = write("/usr/bin/makepkg", CUSTOM_MAKEPKG) {
             eprintln!("⮾ {}", error);
-            return error.raw_os_error().unwrap_or(1);
+            return error.raw_os_error().unwrap_or(1).pipe(Ok);
         }
     } else {
         print!("{}", CUSTOM_MAKEPKG);
@@ -53,5 +55,5 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> i32 {
         eprintln!("# NOTE: Run again with --replace flag to replace system's makepkg");
     }
 
-    0
+    Ok(0)
 }

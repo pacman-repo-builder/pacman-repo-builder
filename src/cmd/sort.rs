@@ -1,9 +1,10 @@
 use super::super::{
     args::SortArgs,
+    status::{Code, Status},
     utils::{DbInit, DbInitValue},
 };
 
-pub fn sort(args: SortArgs) -> i32 {
+pub fn sort(args: SortArgs) -> Status {
     let SortArgs {} = args;
 
     let mut db_init = DbInit::default();
@@ -12,7 +13,7 @@ pub fn sort(args: SortArgs) -> i32 {
         mut error_count,
         ..
     } = match db_init.init() {
-        Err(error) => return error.code(),
+        Err(error) => return Err(error),
         Ok(value) => value,
     };
 
@@ -29,9 +30,9 @@ pub fn sort(args: SortArgs) -> i32 {
     }
 
     if error_count == 0 {
-        0
+        Ok(0)
     } else {
         eprintln!("{} errors occurred", error_count);
-        1
+        Err(Code::GenericFailure)
     }
 }

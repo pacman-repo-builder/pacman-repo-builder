@@ -1,10 +1,11 @@
 use super::super::{
     args::{OutdatedArgs, OutdatedDetails},
+    status::{Code, Status},
     utils::{outdated_packages, DbInit, DbInitValue, PackageFileName},
 };
 use std::{fs::read_dir, path::PathBuf};
 
-pub fn outdated(args: OutdatedArgs) -> i32 {
+pub fn outdated(args: OutdatedArgs) -> Status {
     let OutdatedArgs { details } = args;
     let details = details.unwrap_or_default();
 
@@ -14,7 +15,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         database,
         mut error_count,
     } = match db_init.init() {
-        Err(error) => return error.code(),
+        Err(error) => return Err(error),
         Ok(value) => value,
     };
 
@@ -35,7 +36,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
         parent
     } else {
         eprintln!("⮾ Repository cannot be a directory: {:?}", repository);
-        return 1;
+        return Err(Code::GenericFailure);
     };
 
     // PROBLEM: read_dir cannot read "" as a directory
@@ -50,7 +51,7 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
     let entries = match read_dir(directory) {
         Err(error) => {
             eprintln!("⮾ Cannot read {:?} as a directory: {}", directory, error,);
-            return 1;
+            return Err(Code::GenericFailure);
         }
         Ok(entries) => entries,
     };
@@ -111,9 +112,9 @@ pub fn outdated(args: OutdatedArgs) -> i32 {
     }
 
     if error_count == 0 {
-        0
+        Ok(0)
     } else {
         eprintln!("{} errors occurred", error_count);
-        1
+        Err(Code::GenericFailure)
     }
 }

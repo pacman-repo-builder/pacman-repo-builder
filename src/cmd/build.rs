@@ -2,15 +2,17 @@ use super::super::{
     args::BuildArgs,
     manifest::Member,
     srcinfo::database::DatabaseValue,
+    status::{Code, Status},
     utils::{create_makepkg_command, CommandUtils, DbInit, DbInitValue},
 };
 use command_extra::CommandExtra;
+use pipe_trait::*;
 use std::{
     fs::copy,
     process::{Command, Stdio},
 };
 
-pub fn build(args: BuildArgs) -> i32 {
+pub fn build(args: BuildArgs) -> Status {
     let BuildArgs {
         syncdeps,
         force,
@@ -37,20 +39,20 @@ pub fn build(args: BuildArgs) -> i32 {
         error_count,
         manifest,
     } = match db_init.init() {
-        Err(error) => return error.code(),
+        Err(error) => return Err(error),
         Ok(value) => value,
     };
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
-        return 1;
+        return Err(Code::GenericFailure);
     }
 
     let build_order = match database.build_order() {
         Ok(build_order) => build_order,
         Err(error) => {
             eprintln!("{}", error);
-            return 1;
+            return Err(Code::GenericFailure);
         }
     };
 
@@ -105,13 +107,13 @@ pub fn build(args: BuildArgs) -> i32 {
             Ok(status) => status.code().unwrap_or(1),
             Err(error) => {
                 eprintln!("{}", error);
-                return 1;
+                return Err(Code::GenericFailure);
             }
         };
 
         if status != 0 {
             eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
-            return status;
+            return Ok(status);
         }
 
         for package_name in srcinfo
@@ -126,7 +128,7 @@ pub fn build(args: BuildArgs) -> i32 {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
                 if let Err(error) = copy(package_path, repository_directory.join(package_name)) {
                     eprintln!("⮾ {}", error);
-                    return error.raw_os_error().unwrap_or(1);
+                    return error.raw_os_error().unwrap_or(1).pipe(Ok);
                 }
             }
 
@@ -146,16 +148,16 @@ pub fn build(args: BuildArgs) -> i32 {
                     Ok(status) => status.code().unwrap_or(1),
                     Err(error) => {
                         eprintln!("{}", error);
-                        return error.raw_os_error().unwrap_or(1);
+                        return error.raw_os_error().unwrap_or(1).pipe(Ok);
                     }
                 };
                 if status != 0 {
                     eprintln!("⮾ repo-add exits with non-zero status code: {}", status);
-                    return status;
+                    return Ok(status);
                 }
             }
         }
     }
 
-    0
+    Ok(0)
 }

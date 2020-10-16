@@ -1,6 +1,7 @@
 use super::super::{
     manifest::{Manifest, Member},
     srcinfo::{database::SimpleDatabase, SrcInfo},
+    status::Code,
 };
 use super::{read_srcinfo_texts, Pair};
 use indexmap::{IndexMap, IndexSet};
@@ -13,7 +14,7 @@ pub struct DbInit<'a> {
 }
 
 impl<'a> DbInit<'a> {
-    pub fn init(&'a mut self) -> Result<DbInitValue<'a>, DbInitError> {
+    pub fn init(&'a mut self) -> Result<DbInitValue<'a>, Code> {
         let DbInit {
             srcinfo_texts,
             srcinfo_collection,
@@ -25,7 +26,7 @@ impl<'a> DbInit<'a> {
             Ok(manifest) => manifest,
             Err(error) => {
                 eprintln!("{}", error);
-                return Err(DbInitError::ManifestLoadingFailure);
+                return Err(Code::ManifestLoadingFailure);
             }
         };
 
@@ -84,17 +85,4 @@ pub struct DbInitValue<'a> {
     pub manifest: Manifest<PathBuf>,
     pub database: SimpleDatabase<'a>,
     pub error_count: usize,
-}
-
-#[derive(Debug, Copy, Clone)]
-pub enum DbInitError {
-    ManifestLoadingFailure,
-}
-
-impl DbInitError {
-    pub fn code(self) -> i32 {
-        match self {
-            DbInitError::ManifestLoadingFailure => 2,
-        }
-    }
 }

@@ -1,7 +1,8 @@
 use super::super::{
     args::SyncSrcInfoArgs,
     manifest::{BuildMetadata, Manifest, Member},
-    utils::{read_srcinfo_from_pkgbuild, DbInitError},
+    status::{Code, Status},
+    utils::read_srcinfo_from_pkgbuild,
 };
 use pipe_trait::*;
 use rayon::prelude::*;
@@ -11,7 +12,7 @@ use std::{
     path::Path,
 };
 
-pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
+pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
     let SyncSrcInfoArgs { update } = args;
 
     let mut outdated = 0u32;
@@ -21,7 +22,7 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
         Ok(manifest) => manifest,
         Err(error) => {
             eprintln!("⮾ {}", error);
-            return DbInitError::ManifestLoadingFailure.code();
+            return Err(Code::ManifestLoadingFailure);
         }
     };
 
@@ -118,11 +119,11 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> i32 {
 
     if error_count != 0 {
         eprintln!("{} errors occurred", error_count);
-        return 1;
+        return Err(Code::GenericFailure);
     }
 
     match (update, outdated) {
-        (_, 0) | (true, _) => 0,
-        _ => 3,
+        (_, 0) | (true, _) => Ok(0),
+        _ => Err(Code::SrcInfoOutOfSync),
     }
 }

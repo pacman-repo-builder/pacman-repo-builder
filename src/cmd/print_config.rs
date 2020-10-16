@@ -1,6 +1,7 @@
 use super::super::{
     args::PrintConfigArgs,
     manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
+    status::{Code, Status},
 };
 use pipe_trait::*;
 use std::{
@@ -8,7 +9,7 @@ use std::{
     io::stdout,
 };
 
-pub fn print_config(args: PrintConfigArgs) -> i32 {
+pub fn print_config(args: PrintConfigArgs) -> Status {
     let mut error_count = 0u32;
 
     let PrintConfigArgs {
@@ -91,9 +92,9 @@ pub fn print_config(args: PrintConfigArgs) -> i32 {
     };
 
     if error_count == 0 {
-        0
+        Ok(0)
     } else {
         eprintln!("{} errors occurred.", error_count);
-        1
+        Err(Code::GenericFailure)
     }
 }

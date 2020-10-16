@@ -16,7 +16,7 @@ mod split_str_once;
 pub use command_utils::CommandUtils;
 pub use create_makepkg_command::create_makepkg_command;
 pub use custom_makepkg::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM};
-pub use db_init::{DbInit, DbInitError, DbInitValue};
+pub use db_init::{DbInit, DbInitValue};
 pub use deserialize_multi_docs_yaml::deserialize_multi_docs_yaml;
 pub use extract_pkgname_prefix::extract_pkgname_prefix;
 pub use extract_value_from_line::extract_value_from_line;
