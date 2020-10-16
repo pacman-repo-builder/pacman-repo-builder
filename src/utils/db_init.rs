@@ -3,6 +3,7 @@ use super::super::{
     srcinfo::{database::SimpleDatabase, SrcInfo},
 };
 use super::{read_srcinfo_texts, Pair};
+use indexmap::{IndexMap, IndexSet};
 use std::path::PathBuf;
 
 #[derive(Debug, Default)]
@@ -38,12 +39,37 @@ impl<'a> DbInit<'a> {
             .map(|x| x.to_ref().map(String::as_str).map(SrcInfo))
             .collect();
         let mut database = SimpleDatabase::default();
+        let mut duplications: IndexMap<String, IndexSet<PathBuf>> = Default::default();
         for pair in srcinfo_collection {
             let (srcinfo, member) = pair.to_ref().into_tuple();
-            if let Err(error) = database.insert_srcinfo(srcinfo, member.directory.as_path()) {
-                eprintln!("error in directory {:?}: {}", member.directory, error);
-                error_count += 1;
+            match database.insert_srcinfo(srcinfo, member.directory.as_path()) {
+                Err(error) => {
+                    eprintln!("error in directory {:?}: {}", member.directory, error);
+                    error_count += 1;
+                }
+                Ok(Some(removal_info)) => {
+                    let pkgbase = removal_info.pkgbase.to_string();
+                    let values = if let Some(values) = duplications.get_mut(&pkgbase) {
+                        values
+                    } else {
+                        duplications.insert(pkgbase.clone(), Default::default());
+                        duplications.get_mut(&pkgbase).unwrap()
+                    };
+                    values.insert(removal_info.db_value.directory.to_path_buf());
+                }
+                Ok(None) => {}
             }
+        }
+
+        if !duplications.is_empty() {
+            eprintln!("duplication detected");
+            for (pkgbase, directories) in duplications.iter() {
+                eprintln!("  * pkgbase: {}", pkgbase);
+                for directory in directories.iter() {
+                    eprintln!("    - directory: {}", directory.to_string_lossy());
+                }
+            }
+            error_count += duplications.len() as u32;
         }
 
         Ok(DbInitValue {
