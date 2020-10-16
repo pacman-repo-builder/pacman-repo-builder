@@ -117,12 +117,14 @@ pub fn build(args: BuildArgs) -> Status {
             .expect("get package file base names")
         {
             let package_name = &package_name.to_string();
-            let package_path = &directory.join(package_name);
             eprintln!("📦 made file {}", package_name);
             let repository_directory = repository.parent().expect("get repository directory");
             {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
-                if let Err(error) = copy(package_path, repository_directory.join(package_name)) {
+                if let Err(error) = copy(
+                    directory.join(package_name),
+                    repository_directory.join(package_name),
+                ) {
                     eprintln!("⮾ {}", error);
                     return error.pipe(Failure::from).into();
                 }
