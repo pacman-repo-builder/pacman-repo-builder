@@ -14,10 +14,11 @@ This program is meant to used within a docker container.
 Manifest file is always named `build-pacman-repo.yaml`. It contains instruction to build a pacman repository.
 
 ```sh
-build-pacman-repo print-config -T repository/$repo_name.db -D build-directories > build-pacman-repo.yaml
+build-pacman-repo print-config -T $repo_dir/$repo_name.db -D build-directories > build-pacman-repo.yaml
 ```
 
-_Note:_ Replace `$repo_name` with name of your repository.
+_Note:_ Replace `$repo_dir` with path of your repository directory. This directory would contains all built packages.
+_Note:_ Replace `$repo_name` with name of your repository file. This file would be fetched by `pacman` to check for updates.
 
 ### Replace `/usr/bin/makepkg` with one that allows running as root
 
