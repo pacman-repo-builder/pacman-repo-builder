@@ -19,7 +19,7 @@ impl<'a> DbInit<'a> {
             srcinfo_collection,
         } = self;
 
-        let mut error_count = 0u32;
+        let mut error_count = 0;
 
         let manifest = match Manifest::from_env() {
             Ok(manifest) => manifest,
@@ -69,7 +69,7 @@ impl<'a> DbInit<'a> {
                     eprintln!("    - directory: {}", directory.to_string_lossy());
                 }
             }
-            error_count += duplications.len() as u32;
+            error_count += duplications.len();
         }
 
         Ok(DbInitValue {
@@ -83,7 +83,7 @@ impl<'a> DbInit<'a> {
 pub struct DbInitValue<'a> {
     pub manifest: Manifest<PathBuf>,
     pub database: SimpleDatabase<'a>,
-    pub error_count: u32,
+    pub error_count: usize,
 }
 
 #[derive(Debug, Copy, Clone)]
