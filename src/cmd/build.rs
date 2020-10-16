@@ -102,7 +102,7 @@ pub fn build(args: BuildArgs) -> Status {
             .and_then(|mut child| child.wait())
             .map_err(|error| {
                 eprintln!("⮾ {}", error);
-                Failure::Expected(Code::GenericFailure)
+                Failure::Unexpected(error)
             })?
             .code()
             .unwrap_or(1);
