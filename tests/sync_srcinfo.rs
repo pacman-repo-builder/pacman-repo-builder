@@ -1,5 +1,5 @@
 use command_extra::CommandExtra;
-use pacman_repo_builder::manifest::Manifest;
+use pacman_repo_builder::{manifest::Manifest, status::Code::SrcInfoOutOfSync};
 use pipe_trait::*;
 use std::{
     collections::{BTreeMap, BTreeSet},
@@ -105,13 +105,13 @@ test_check!(
     check_none_sync,
     "none-sync",
     vec!["multiple-packages", "single-package"],
-    3
+    SrcInfoOutOfSync as i32
 );
 test_check!(
     check_some_sync,
     "some-sync",
     vec!["outdated-multi", "outdated-single"],
-    3
+    SrcInfoOutOfSync as i32
 );
 
 fn read_srcinfo_files<DirList>(
