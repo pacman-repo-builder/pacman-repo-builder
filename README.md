@@ -14,7 +14,7 @@ Build a custom pacman repository from a collection of PKGBUILD directories.
 Manifest file is always named `build-pacman-repo.yaml`. It contains instruction to build a pacman repository.
 
 ```sh
-build-pacman-repo print-config -T $repo_dir/$repo_name.db -D build-directories > build-pacman-repo.yaml
+build-pacman-repo print-config -T $repo_dir/$repo_name.db.tar.gz -D build-directories > build-pacman-repo.yaml
 ```
 
 _Note:_ Replace `$repo_dir` with path of your repository directory. This directory would contains all built packages.
