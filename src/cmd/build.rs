@@ -124,7 +124,7 @@ pub fn build(args: BuildArgs) -> Status {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
                 if let Err(error) = copy(package_path, repository_directory.join(package_name)) {
                     eprintln!("⮾ {}", error);
-                    return error.pipe(Failure::Unexpected).pipe(Err);
+                    return error.pipe(Failure::from).into();
                 }
             }
 
