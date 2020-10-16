@@ -15,7 +15,7 @@ impl<'a> SimpleDatabase<'a> {
         &mut self,
         srcinfo: &'a SrcInfo<&'a str>,
         directory: &'a Path,
-    ) -> Result<Option<SimpleDatabaseValue<'a>>, InsertionError> {
+    ) -> Result<Option<RemovalInfo<'a>>, InsertionError> {
         let pkgbase = srcinfo
             .pkgbase()
             .ok_or(InsertionError::MissingPkgBase)?
@@ -41,16 +41,25 @@ impl<'a> SimpleDatabase<'a> {
             }
         }
 
-        Ok(self.pkgbase.insert(
-            pkgbase,
-            SimpleDatabaseValue {
-                names,
-                dependencies,
-                srcinfo: *srcinfo,
-                directory,
-            },
-        ))
+        self.pkgbase
+            .insert(
+                pkgbase,
+                SimpleDatabaseValue {
+                    names,
+                    dependencies,
+                    srcinfo: *srcinfo,
+                    directory,
+                },
+            )
+            .map(|db_value| RemovalInfo { pkgbase, db_value })
+            .pipe(Ok)
     }
+}
+
+#[derive(Debug)]
+pub struct RemovalInfo<'a> {
+    pub pkgbase: PkgBase<'a>,
+    pub db_value: SimpleDatabaseValue<'a>,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
