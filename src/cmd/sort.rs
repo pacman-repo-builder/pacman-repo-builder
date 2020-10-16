@@ -12,10 +12,7 @@ pub fn sort(args: SortArgs) -> Status {
         database,
         mut error_count,
         ..
-    } = match db_init.init() {
-        Err(error) => return Err(error),
-        Ok(value) => value,
-    };
+    } = db_init.init()?;
 
     match database.build_order() {
         Err(error) => {

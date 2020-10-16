@@ -14,10 +14,7 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         manifest,
         database,
         mut error_count,
-    } = match db_init.init() {
-        Err(error) => return Err(error),
-        Ok(value) => value,
-    };
+    } = db_init.init()?;
 
     let latest_packages: Vec<_> = database
         .package_file_base_names()

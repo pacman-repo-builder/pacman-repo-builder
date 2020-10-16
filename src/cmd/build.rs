@@ -38,10 +38,7 @@ pub fn build(args: BuildArgs) -> Status {
         database,
         error_count,
         manifest,
-    } = match db_init.init() {
-        Err(error) => return Err(error),
-        Ok(value) => value,
-    };
+    } = db_init.init()?;
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
@@ -96,20 +93,19 @@ pub fn build(args: BuildArgs) -> Status {
             continue;
         }
 
-        let status = match makepkg()
+        let status = makepkg()
             .with_current_dir(directory)
             .with_stdin(Stdio::null())
             .with_stdout(Stdio::inherit())
             .with_stderr(Stdio::inherit())
             .spawn()
             .and_then(|mut child| child.wait())
-        {
-            Ok(status) => status.code().unwrap_or(1),
-            Err(error) => {
-                eprintln!("{}", error);
-                return Err(Code::GenericFailure);
-            }
-        };
+            .map_err(|error| {
+                eprintln!("⮾ {}", error);
+                Code::GenericFailure
+            })?
+            .code()
+            .unwrap_or(1);
 
         if status != 0 {
             eprintln!("⮾ makepkg exits with non-zero status code: {}", status);

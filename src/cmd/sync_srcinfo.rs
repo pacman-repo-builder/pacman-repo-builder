@@ -18,13 +18,10 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
     let mut outdated = 0u32;
     let mut error_count = 0u32;
 
-    let manifest = match Manifest::from_env() {
-        Ok(manifest) => manifest,
-        Err(error) => {
-            eprintln!("⮾ {}", error);
-            return Err(Code::ManifestLoadingFailure);
-        }
-    };
+    let manifest = Manifest::from_env().map_err(|error| {
+        eprintln!("⮾ {}", error);
+        Code::ManifestLoadingFailure
+    })?;
 
     struct SyncStatus<'a> {
         up_to_date: bool,
