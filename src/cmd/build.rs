@@ -84,10 +84,11 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!("🛈 target repository: {}", repository.to_string_lossy());
         eprintln!();
 
-        if srcinfo
-            .package_file_base_names()
-            .expect("get future package file base names")
-            .all(|name| repository.join(name.to_string()).exists())
+        if !force
+            && srcinfo
+                .package_file_base_names()
+                .expect("get future package file base names")
+                .all(|name| repository.join(name.to_string()).exists())
         {
             eprintln!("🛈 All packages are already built. Skip.");
             continue;
