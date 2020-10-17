@@ -111,6 +111,7 @@ pub fn build(args: BuildArgs) -> Status {
                 .unwrap_or(1);
             if status != 0 {
                 eprintln!("⮾ pacman -U exits with non-zero status code: {}", status);
+                return Ok(status);
             }
 
             continue;
