@@ -93,6 +93,26 @@ pub fn build(args: BuildArgs) -> Status {
                 .all(|name| repository_directory.join(name.to_string()).exists())
         {
             eprintln!("🛈 All packages are already built. Skip.");
+
+            let status = pacman
+                .as_deref()
+                .unwrap_or("pacman")
+                .pipe(Command::new)
+                .with_arg("--upgrade")
+                .with_arg("--noconfirm")
+                .with_arg("--asdeps")
+                .spawn()
+                .and_then(|mut child| child.wait())
+                .map_err(|error| {
+                    eprintln!("⮾ {}", error);
+                    Failure::from(error)
+                })?
+                .code()
+                .unwrap_or(1);
+            if status != 0 {
+                eprintln!("⮾ pacman -U exits with non-zero status code: {}", status);
+            }
+
             continue;
         }
 
