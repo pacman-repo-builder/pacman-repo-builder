@@ -7,7 +7,7 @@ Build a custom pacman repository from a collection of PKGBUILD directories.
 
 ## Usage
 
-**⚠ WARNING:** This program is meant to used within a docker container.
+**⚠ WARNING:** This program is meant to be used within a docker container.
 
 ### Generate manifest file
 
