@@ -99,6 +99,12 @@ pub fn build(args: BuildArgs) -> Status {
                 .unwrap_or("pacman")
                 .pipe(Command::new)
                 .with_arg("--upgrade")
+                .with_args(
+                    srcinfo
+                        .package_file_base_names()
+                        .expect("get future package file base names")
+                        .map(|name| repository_directory.join(name.to_string())),
+                )
                 .with_arg("--noconfirm")
                 .with_arg("--asdeps")
                 .spawn()
