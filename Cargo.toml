@@ -1,7 +1,7 @@
 [package]
 name = "pacman-repo-builder"
 description = "Build a custom pacman repository from a collection of PKGBUILD directories"
-version = "0.0.0-rc.11"
+version = "0.0.0-rc.12"
 authors = ["khai96_ <hvksmr1996@gmail.com>"]
 edition = "2018"
 readme = "README.md"
