@@ -85,13 +85,13 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!();
 
         let repository_directory = repository.parent().expect("get repository directory");
+        let future_package_files: Vec<_> = srcinfo
+            .package_file_base_names()
+            .expect("get future package file base names")
+            .map(|name| repository_directory.join(name.to_string()))
+            .collect();
 
-        if !force
-            && srcinfo
-                .package_file_base_names()
-                .expect("get future package file base names")
-                .all(|name| repository_directory.join(name.to_string()).exists())
-        {
+        if !force && future_package_files.iter().all(|path| path.exists()) {
             eprintln!("🛈 All packages are already built. Skip.");
 
             let status = pacman
@@ -99,12 +99,7 @@ pub fn build(args: BuildArgs) -> Status {
                 .unwrap_or("pacman")
                 .pipe(Command::new)
                 .with_arg("--upgrade")
-                .with_args(
-                    srcinfo
-                        .package_file_base_names()
-                        .expect("get future package file base names")
-                        .map(|name| repository_directory.join(name.to_string())),
-                )
+                .with_args(future_package_files)
                 .with_arg("--noconfirm")
                 .with_arg("--asdeps")
                 .spawn()
