@@ -85,12 +85,19 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!();
 
         let repository_directory = repository.parent().expect("get repository directory");
+        dbg!(repository_directory);
 
+        #[allow(clippy::all)]
         if !force
             && srcinfo
                 .package_file_base_names()
                 .expect("get future package file base names")
-                .all(|name| repository_directory.join(name.to_string()).exists())
+                .all(|name| {
+                    let package_path = repository_directory.join(name.to_string());
+                    let exists = package_path.exists();
+                    dbg!(&package_path, exists);
+                    exists
+                })
         {
             eprintln!("🛈 All packages are already built. Skip.");
             continue;
