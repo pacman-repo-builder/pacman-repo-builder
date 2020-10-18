@@ -183,7 +183,8 @@ pub fn build(args: BuildArgs) -> Status {
 
     if deref_db {
         eprintln!("Resolving all symlinks to repository database into real files");
-        let canon_repository = canonicalize(repository).expect("canonicalize repository directory");
+        let canon_repository_directory =
+            canonicalize(repository_directory).expect("canonicalize repository directory");
         for entry in read_dir(repository_directory).expect("read repository repository") {
             let entry = entry.expect("read entry");
             if !entry
@@ -197,7 +198,7 @@ pub fn build(args: BuildArgs) -> Status {
             if !file_name.to_string_lossy().ends_with(".db") {
                 continue;
             }
-            let canon_target = canon_repository
+            let canon_target = canon_repository_directory
                 .join(file_name)
                 .pipe(canonicalize)
                 .expect("canonicalize suspect");
