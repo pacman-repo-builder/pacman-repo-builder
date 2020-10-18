@@ -9,12 +9,11 @@ use pipe_trait::*;
 pub fn deref_db(args: DerefDbArgs) -> Status {
     let DerefDbArgs {} = args;
 
-    let manifest = Manifest::from_env().map_err(|error| {
-        eprintln!("⮾ {}", error);
-        Failure::from(Code::ManifestLoadingFailure)
-    })?;
-
-    manifest
+    Manifest::from_env()
+        .map_err(|error| {
+            eprintln!("⮾ {}", error);
+            Failure::from(Code::ManifestLoadingFailure)
+        })?
         .global_settings
         .repository
         .parent()
