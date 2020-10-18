@@ -3,12 +3,14 @@ use super::super::{
     manifest::Member,
     srcinfo::database::DatabaseValue,
     status::{Code, Failure, Status},
-    utils::{create_makepkg_command, CommandUtils, DbInit, DbInitValue},
+    utils::{
+        create_makepkg_command, dereference_database_symlinks, CommandUtils, DbInit, DbInitValue,
+    },
 };
 use command_extra::CommandExtra;
 use pipe_trait::*;
 use std::{
-    fs::{canonicalize, copy, read_dir, remove_file},
+    fs::copy,
     process::{Command, Stdio},
 };
 
@@ -185,29 +187,7 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!("");
         eprintln!("");
         eprintln!("Resolving all symlinks to repository database into real files");
-        let canon_repository_directory =
-            canonicalize(repository_directory).expect("canonicalize repository directory");
-        for entry in read_dir(repository_directory).expect("read repository repository") {
-            let entry = entry.expect("read entry");
-            if !entry
-                .file_type()
-                .map(|kind| kind.is_symlink())
-                .unwrap_or(false)
-            {
-                continue;
-            }
-            let file_name = entry.file_name();
-            let lossy_file_name = file_name.to_string_lossy();
-            if !lossy_file_name.ends_with(".db") && !lossy_file_name.ends_with(".files") {
-                continue;
-            }
-            let link_path = canon_repository_directory.join(file_name);
-            let link_target = canonicalize(&link_path).expect("canonicalize suspect");
-            eprintln!("  → Delete {:?}", &link_path);
-            remove_file(&link_path).map_err(Failure::from)?;
-            eprintln!("  → Copy {:?} to {:?}", link_target, &link_path);
-            copy(link_target, link_path).map_err(Failure::from)?;
-        }
+        dereference_database_symlinks(repository_directory).map_err(Failure::from)?;
     }
 
     Ok(0)
