@@ -1,6 +1,6 @@
 use super::super::{
     args::{Args, Command},
-    cmd::{build, outdated, patch_makepkg, print_config, sort, sync_srcinfo},
+    cmd::{build, deref_db, outdated, patch_makepkg, print_config, sort, sync_srcinfo},
     status::Status,
 };
 use super::App;
@@ -14,6 +14,7 @@ impl App {
             Command::Outdated(args) => outdated(args),
             Command::SyncSrcInfo(args) => sync_srcinfo(args),
             Command::PatchMakePkg(args) => patch_makepkg(args),
+            Command::DerefDb(args) => deref_db(args),
             Command::Build(args) => build(args),
         }
     }
