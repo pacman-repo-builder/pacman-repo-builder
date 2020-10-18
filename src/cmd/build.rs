@@ -3,9 +3,7 @@ use super::super::{
     manifest::Member,
     srcinfo::database::DatabaseValue,
     status::{Code, Failure, Status},
-    utils::{
-        create_makepkg_command, dereference_database_symlinks, CommandUtils, DbInit, DbInitValue,
-    },
+    utils::{create_makepkg_command, run_deref_db, CommandUtils, DbInit, DbInitValue},
 };
 use command_extra::CommandExtra;
 use pipe_trait::*;
@@ -187,7 +185,7 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!("");
         eprintln!("");
         eprintln!("Resolving all symlinks to repository database into real files");
-        dereference_database_symlinks(repository_directory).map_err(|error| {
+        run_deref_db(repository_directory).map_err(|error| {
             eprintln!("⮾ {}", error);
             Failure::from(error)
         })?;

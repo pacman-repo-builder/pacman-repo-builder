@@ -4,7 +4,7 @@ use std::{
     path::Path,
 };
 
-pub fn dereference_database_symlinks(repository_directory: &Path) -> Result<(), io::Error> {
+pub fn run_deref_db(repository_directory: &Path) -> Result<(), io::Error> {
     let canon_repository_directory =
         canonicalize(repository_directory).expect("canonicalize repository directory");
     for entry in read_dir(repository_directory).expect("read repository repository") {

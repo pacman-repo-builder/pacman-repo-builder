@@ -2,7 +2,7 @@ use super::super::{
     args::DerefDbArgs,
     manifest::Manifest,
     status::{Code, Failure, Status},
-    utils::dereference_database_symlinks,
+    utils::run_deref_db,
 };
 use pipe_trait::*;
 
@@ -18,7 +18,7 @@ pub fn deref_db(args: DerefDbArgs) -> Status {
         .repository
         .parent()
         .expect("get repository directory")
-        .pipe(dereference_database_symlinks)
+        .pipe(run_deref_db)
         .map_err(|error| {
             eprintln!("⮾ {}", error);
             Failure::from(error)
