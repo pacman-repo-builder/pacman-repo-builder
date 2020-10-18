@@ -182,6 +182,8 @@ pub fn build(args: BuildArgs) -> Status {
     }
 
     if deref_db {
+        eprintln!("");
+        eprintln!("");
         eprintln!("Resolving all symlinks to repository database into real files");
         let canon_repository_directory =
             canonicalize(repository_directory).expect("canonicalize repository directory");
