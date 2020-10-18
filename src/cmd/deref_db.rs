@@ -19,7 +19,10 @@ pub fn deref_db(args: DerefDbArgs) -> Status {
         .parent()
         .expect("get repository directory")
         .pipe(dereference_database_symlinks)
-        .map_err(Failure::from)?;
+        .map_err(|error| {
+            eprintln!("⮾ {}", error);
+            Failure::from(error)
+        })?;
 
     Ok(0)
 }

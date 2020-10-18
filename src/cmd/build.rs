@@ -187,7 +187,10 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!("");
         eprintln!("");
         eprintln!("Resolving all symlinks to repository database into real files");
-        dereference_database_symlinks(repository_directory).map_err(Failure::from)?;
+        dereference_database_symlinks(repository_directory).map_err(|error| {
+            eprintln!("⮾ {}", error);
+            Failure::from(error)
+        })?;
     }
 
     Ok(0)
