@@ -48,7 +48,7 @@ hex_fmt = "^0.3.0"
 command-extra = "1.0.0"
 
 [dependencies.serde]
-version = "^1.0.116"
+version = "^1.0.117"
 features = ["derive"]
 
 [dev-dependencies]
