@@ -13,6 +13,6 @@ pub struct BuildArgs {
     pub log_dest: Option<String>,
     #[argh(option, description = "identify the creator of resulting packages")]
     pub packager: Option<String>,
-    #[argh(switch, description = "convert *.db from symlink into real file")]
+    #[argh(switch, description = "make *.db and *.files real files")]
     pub deref_db: bool,
 }

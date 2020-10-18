@@ -195,21 +195,16 @@ pub fn build(args: BuildArgs) -> Status {
                 continue;
             }
             let file_name = entry.file_name();
-            if !file_name.to_string_lossy().ends_with(".db") {
+            let lossy_file_name = file_name.to_string_lossy();
+            if !lossy_file_name.ends_with(".db") && !lossy_file_name.ends_with(".files") {
                 continue;
             }
-            let canon_target = canon_repository_directory
-                .join(file_name)
-                .pipe(canonicalize)
-                .expect("canonicalize suspect");
-            let canon_repository = canonicalize(repository).expect("canonicalize repository file");
-            if canon_target != canon_repository {
-                continue;
-            }
-            eprintln!("  → Delete {:?}", &canon_target);
-            remove_file(&canon_target).map_err(Failure::from)?;
-            eprintln!("  → Copy {:?} to {:?}", canon_repository, &canon_target);
-            copy(canon_repository, canon_target).map_err(Failure::from)?;
+            let link_path = canon_repository_directory.join(file_name);
+            let link_target = canonicalize(&link_path).expect("canonicalize suspect");
+            eprintln!("  → Delete {:?}", &link_path);
+            remove_file(&link_path).map_err(Failure::from)?;
+            eprintln!("  → Copy {:?} to {:?}", link_target, &link_path);
+            copy(link_target, link_path).map_err(Failure::from)?;
         }
     }
 
