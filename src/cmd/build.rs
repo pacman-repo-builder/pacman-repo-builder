@@ -8,7 +8,7 @@ use super::super::{
 use command_extra::CommandExtra;
 use pipe_trait::*;
 use std::{
-    fs::copy,
+    fs::{canonicalize, copy, read_dir, remove_file},
     process::{Command, Stdio},
 };
 
@@ -19,6 +19,7 @@ pub fn build(args: BuildArgs) -> Status {
         pacman,
         log_dest,
         packager,
+        deref_db,
     } = args;
 
     let makepkg = || {
@@ -54,6 +55,7 @@ pub fn build(args: BuildArgs) -> Status {
     };
 
     let repository = manifest.global_settings.repository.as_path();
+    let repository_directory = repository.parent().expect("get repository directory");
     let members: Vec<_> = manifest.resolve_members().collect();
 
     for pkgbase in build_order {
@@ -84,7 +86,6 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!("🛈 target repository: {}", repository.to_string_lossy());
         eprintln!();
 
-        let repository_directory = repository.parent().expect("get repository directory");
         let future_package_files: Vec<_> = srcinfo
             .package_file_base_names()
             .expect("get future package file base names")
@@ -177,6 +178,37 @@ pub fn build(args: BuildArgs) -> Status {
                     return Ok(status);
                 }
             }
+        }
+    }
+
+    if deref_db {
+        eprintln!("Resolving all symlinks to repository database into real files");
+        let canon_repository = canonicalize(repository).expect("canonicalize repository directory");
+        for entry in read_dir(repository_directory).expect("read repository repository") {
+            let entry = entry.expect("read entry");
+            if !entry
+                .file_type()
+                .map(|kind| kind.is_symlink())
+                .unwrap_or(false)
+            {
+                continue;
+            }
+            let file_name = entry.file_name();
+            if !file_name.to_string_lossy().ends_with(".db") {
+                continue;
+            }
+            let canon_target = canon_repository
+                .join(file_name)
+                .pipe(canonicalize)
+                .expect("canonicalize suspect");
+            let canon_repository = canonicalize(repository).expect("canonicalize repository file");
+            if canon_target != canon_repository {
+                continue;
+            }
+            eprintln!("  → Delete {:?}", &canon_target);
+            remove_file(&canon_target).map_err(Failure::from)?;
+            eprintln!("  → Copy {:?} to {:?}", canon_repository, &canon_target);
+            copy(canon_repository, canon_target).map_err(Failure::from)?;
         }
     }
 
