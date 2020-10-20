@@ -26,7 +26,7 @@ with open('Cargo.toml') as cargo_toml:
   data = toml.load(cargo_toml)
 
   if type(data) != dict:
-    print('::error Content of package.json is not an object')
+    print('::error Content of Cargo.toml is not an object')
     exit(1)
 
   version = dict_path(data, ['package', 'version'])
