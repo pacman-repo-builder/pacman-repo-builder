@@ -56,6 +56,4 @@ build-pacman-repo $command --help
 
 ## License
 
-This program contains [a modification of `makepkg` script](https://git.io/JTqsZ) which is released under [GNU Public License Version 3](https://git.io/JTq3Y). See content of `makepkg` for authors and contributors.
-
-Everything else is released under [MIT](https://git.io/JTq3K). Copyright © 2020 [Hoàng Văn Khải](https://github.com/KSXGitHub/).
+[GPLv3](https://git.io/JTBVM) © [Hoàng Văn Khải](https://ksxgithub.github.io).
