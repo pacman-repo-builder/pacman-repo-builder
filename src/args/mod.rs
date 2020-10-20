@@ -1,4 +1,5 @@
 mod build;
+mod copyright;
 mod deref_db;
 mod outdated;
 mod patch_makepkg;
@@ -7,6 +8,7 @@ mod sort;
 mod sync_srcinfo;
 
 pub use build::BuildArgs;
+pub use copyright::CopyrightArgs;
 pub use deref_db::DerefDbArgs;
 pub use outdated::{OutdatedArgs, OutdatedDetails};
 pub use patch_makepkg::PatchMakePkgArgs;
@@ -33,4 +35,5 @@ pub enum Command {
     PatchMakePkg(PatchMakePkgArgs),
     DerefDb(DerefDbArgs),
     Build(BuildArgs),
+    Copyright(CopyrightArgs),
 }

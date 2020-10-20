@@ -1,4 +1,5 @@
 mod build;
+mod copyright;
 mod deref_db;
 mod outdated;
 mod patch_makepkg;
@@ -7,6 +8,7 @@ mod sort;
 mod sync_srcinfo;
 
 pub use build::build;
+pub use copyright::copyright;
 pub use deref_db::deref_db;
 pub use outdated::outdated;
 pub use patch_makepkg::patch_makepkg;

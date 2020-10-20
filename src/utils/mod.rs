@@ -1,4 +1,5 @@
 mod command_utils;
+mod copyright_terms;
 mod create_makepkg_command;
 mod custom_makepkg;
 mod db_init;
@@ -15,6 +16,7 @@ mod serialize_iter_yaml;
 mod split_str_once;
 
 pub use command_utils::CommandUtils;
+pub use copyright_terms::COPYING;
 pub use create_makepkg_command::create_makepkg_command;
 pub use custom_makepkg::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM};
 pub use db_init::{DbInit, DbInitValue};
