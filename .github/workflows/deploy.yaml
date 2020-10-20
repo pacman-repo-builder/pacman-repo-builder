@@ -252,4 +252,5 @@ jobs:
           owner: pacman-repo-builder
           repo: action
           tag_name: ${{ needs.create_release.outputs.release_tag }}
+          release_name: ${{ needs.create_release.outputs.release_tag }}
           prerelease: ${{ needs.create_release.outputs.is_prerelease }}
