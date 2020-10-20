@@ -212,3 +212,44 @@ jobs:
           asset_path: ./sha512sum.txt
           asset_name: sha512sum.txt
           asset_content_type: text/plain
+
+  publish_github_action:
+    name: Publish GitHub Action
+
+    needs:
+      - upload_release_assets
+      - create_release
+      - test
+      - build_linux
+
+    if: needs.create_release.outputs.is_release == 'true'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install some APT packages
+        run: apt install -y python3
+
+      - name: Clone action repository
+        run: git clone https://github.com/pacman-repo-builder/action gh-action-repo
+
+      - name: Update git tag
+        env:
+          RELEASE_TAG: ${{ needs.create_release.outputs.release_tag }}
+          COMMIT_AUTHOR_NAME: ${{ secrets.GHACT_AUTHOR_NAME }}
+          COMMIT_AUTHOR_EMAIL: ${{ secrets.GHACT_AUTHOR_EMAIL }}
+          AUTH_USERNAME: ${{ secrets.GHACT_AUTH_USERNAME }}
+          AUTH_PASSWORD: ${{ secrets.GHACT_AUTH_PASSWORD }}
+        run: ./gh-action-repo/update.py3
+
+      - name: Create release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHACT_AUTH_PASSWORD }}
+        with:
+          owner: pacman-repo-builder
+          repo: action
+          tag_name: ${{ needs.create_release.outputs.release_tag }}
+          prerelease: ${{ needs.create_release.outputs.is_prerelease }}
