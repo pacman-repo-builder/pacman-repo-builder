@@ -8,7 +8,7 @@ use super::super::{
 use command_extra::CommandExtra;
 use pipe_trait::*;
 use std::{
-    fs::copy,
+    fs::{copy, remove_file},
     process::{Command, Stdio},
 };
 
@@ -168,9 +168,16 @@ pub fn build(args: BuildArgs) -> Status {
 
             {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
-                if let Err(error) = copy(pkg_src_file, pkg_dst_file) {
+                if let Err(error) = copy(&pkg_src_file, pkg_dst_file) {
                     eprintln!("⮾ {}", error);
                     return error.pipe(Failure::from).into();
+                }
+            }
+
+            if clean {
+                eprintln!("  → clean");
+                if let Err(error) = remove_file(pkg_src_file) {
+                    eprintln!("⚠ {}", error);
                 }
             }
 
