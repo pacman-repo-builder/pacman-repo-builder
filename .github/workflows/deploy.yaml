@@ -258,17 +258,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions-rs/toolchain@v1.0.6
-        with:
-          profile: minimal
-          override: 'true'
-          default: 'true'
-
-      - name: Login
-        run: cargo login ${{ secrets.CRATE_AUTH_TOKEN }}
-
-      - name: List
-        run: cargo package --list
-
       - name: Publish
-        run: cargo publish
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: |
+            echo ::group::Login
+            cargo login ${{ secrets.CRATE_AUTH_TOKEN }}
+            echo ::endgroup::
+
+            echo ::group::List
+            cargo package --list
+            echo ::endgroup::
+
+            cargo publish
