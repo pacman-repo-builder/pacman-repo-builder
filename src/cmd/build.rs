@@ -143,13 +143,17 @@ pub fn build(args: BuildArgs) -> Status {
             .expect("get package file base names")
         {
             let package_name = &package_name.to_string();
+            let package_source_file = directory.join(package_name);
+            if !package_source_file.exists() {
+                eprintln!("⚠ File {:?} does not exist. Skip.", &package_source_file);
+                continue;
+            }
             eprintln!("📦 made file {}", package_name);
             {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
-                if let Err(error) = copy(
-                    directory.join(package_name),
-                    repository_directory.join(package_name),
-                ) {
+                if let Err(error) =
+                    copy(package_source_file, repository_directory.join(package_name))
+                {
                     eprintln!("⮾ {}", error);
                     return error.pipe(Failure::from).into();
                 }
