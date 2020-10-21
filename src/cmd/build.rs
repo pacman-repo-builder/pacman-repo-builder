@@ -19,6 +19,7 @@ pub fn build(args: BuildArgs) -> Status {
         pacman,
         log_dest,
         packager,
+        allow_failure,
         deref_db,
     } = args;
 
@@ -57,6 +58,7 @@ pub fn build(args: BuildArgs) -> Status {
     let repository = manifest.global_settings.repository.as_path();
     let repository_directory = repository.parent().expect("get repository directory");
     let members: Vec<_> = manifest.resolve_members().collect();
+    let mut failed_builds = Vec::new();
 
     for pkgbase in build_order {
         let DatabaseValue {
@@ -134,8 +136,15 @@ pub fn build(args: BuildArgs) -> Status {
             .unwrap_or(1);
 
         if status != 0 {
-            eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
-            return Ok(status);
+            if allow_failure {
+                eprintln!("⚠ makepkg exits with non-zero status code: {}", status);
+                eprintln!("⚠ skip {}", pkgbase);
+                failed_builds.push((*pkgbase, directory));
+                continue;
+            } else {
+                eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
+                return Ok(status);
+            }
         }
 
         for pkg_file_name in srcinfo
@@ -192,6 +201,15 @@ pub fn build(args: BuildArgs) -> Status {
             eprintln!("⮾ {}", error);
             Failure::from(error)
         })?;
+    }
+
+    if allow_failure && !failed_builds.is_empty() {
+        eprintln!();
+        eprintln!();
+        eprintln!("🛈 Some builds failed:");
+        for (pkgbase, directory) in failed_builds {
+            eprintln!("  ● {} ({})", pkgbase, directory.to_string_lossy());
+        }
     }
 
     Ok(0)
