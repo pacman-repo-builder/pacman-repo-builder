@@ -144,6 +144,7 @@ pub fn build(args: BuildArgs) -> Status {
         {
             let pkg_file_name = &pkg_file_name.to_string();
             let pkg_src_file = directory.join(pkg_file_name);
+            let pkg_dst_file = repository_directory.join(pkg_file_name);
             if !pkg_src_file.exists() {
                 eprintln!("⚠ File {:?} does not exist. Skip.", &pkg_src_file);
                 continue;
@@ -151,7 +152,7 @@ pub fn build(args: BuildArgs) -> Status {
             eprintln!("📦 made file {}", pkg_file_name);
             {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
-                if let Err(error) = copy(pkg_src_file, repository_directory.join(pkg_file_name)) {
+                if let Err(error) = copy(pkg_src_file, pkg_dst_file) {
                     eprintln!("⮾ {}", error);
                     return error.pipe(Failure::from).into();
                 }
