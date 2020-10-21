@@ -138,22 +138,20 @@ pub fn build(args: BuildArgs) -> Status {
             return Ok(status);
         }
 
-        for package_name in srcinfo
+        for pkg_file_name in srcinfo
             .package_file_base_names()
             .expect("get package file base names")
         {
-            let package_name = &package_name.to_string();
-            let package_source_file = directory.join(package_name);
-            if !package_source_file.exists() {
-                eprintln!("⚠ File {:?} does not exist. Skip.", &package_source_file);
+            let pkg_file_name = &pkg_file_name.to_string();
+            let pkg_src_file = directory.join(pkg_file_name);
+            if !pkg_src_file.exists() {
+                eprintln!("⚠ File {:?} does not exist. Skip.", &pkg_src_file);
                 continue;
             }
-            eprintln!("📦 made file {}", package_name);
+            eprintln!("📦 made file {}", pkg_file_name);
             {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
-                if let Err(error) =
-                    copy(package_source_file, repository_directory.join(package_name))
-                {
+                if let Err(error) = copy(pkg_src_file, repository_directory.join(pkg_file_name)) {
                     eprintln!("⮾ {}", error);
                     return error.pipe(Failure::from).into();
                 }
@@ -165,7 +163,7 @@ pub fn build(args: BuildArgs) -> Status {
                     .with_arg("--quiet")
                     .with_arg("--nocolor")
                     .with_arg(repository)
-                    .with_arg(repository_directory.join(package_name))
+                    .with_arg(repository_directory.join(pkg_file_name))
                     .with_stdin(Stdio::null())
                     .with_stdout(Stdio::inherit())
                     .with_stderr(Stdio::inherit())
