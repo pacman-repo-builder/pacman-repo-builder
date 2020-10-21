@@ -251,7 +251,7 @@ jobs:
       - create_release
       - test
 
-    if: needs.create_release.outputs.release_type == 'official'
+    if: needs.create_release.outputs.is_release == 'true'
 
     runs-on: ubuntu-latest
 
