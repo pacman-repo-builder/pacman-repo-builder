@@ -15,6 +15,8 @@ use std::{
 pub fn build(args: BuildArgs) -> Status {
     let BuildArgs {
         syncdeps,
+        clean,
+        cleanbuild,
         force,
         pacman,
         log_dest,
@@ -29,6 +31,8 @@ pub fn build(args: BuildArgs) -> Status {
             .with_arg("--noconfirm")
             .with_arg("--asdeps")
             .arg_if("--syncdeps", syncdeps)
+            .arg_if("--clean", clean)
+            .arg_if("--cleanbuild", cleanbuild)
             .arg_if("--force", force)
             .may_env("PACMAN", pacman.as_ref())
             .may_env("LOGDEST", log_dest.as_ref())

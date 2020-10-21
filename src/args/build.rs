@@ -5,6 +5,10 @@ use argh::*;
 pub struct BuildArgs {
     #[argh(switch, description = "install missing dependencies")]
     pub syncdeps: bool,
+    #[argh(switch, description = "clean up work files after build")]
+    pub clean: bool,
+    #[argh(switch, description = "remove source files before build")]
+    pub cleanbuild: bool,
     #[argh(switch, description = "overwrite built package if there's any")]
     pub force: bool,
     #[argh(option, description = "customize package manager program")]
