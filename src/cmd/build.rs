@@ -194,8 +194,8 @@ pub fn build(args: BuildArgs) -> Status {
     }
 
     if deref_db {
-        eprintln!("");
-        eprintln!("");
+        eprintln!();
+        eprintln!();
         eprintln!("Resolving all symlinks to repository database into real files");
         run_deref_db(repository_directory).map_err(|error| {
             eprintln!("⮾ {}", error);
