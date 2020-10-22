@@ -25,20 +25,6 @@ pub fn build(args: BuildArgs) -> Status {
         deref_db,
     } = args;
 
-    let makepkg = || {
-        create_makepkg_command()
-            .with_arg("--install")
-            .with_arg("--noconfirm")
-            .with_arg("--asdeps")
-            .arg_if("--syncdeps", syncdeps)
-            .arg_if("--clean", clean)
-            .arg_if("--cleanbuild", cleanbuild)
-            .arg_if("--force", force)
-            .may_env("PACMAN", pacman.as_ref())
-            .may_env("LOGDEST", log_dest.as_ref())
-            .may_env("PACKAGER", packager.as_ref())
-    };
-
     let mut db_init = DbInit::default();
     let DbInitValue {
         database,
@@ -125,7 +111,17 @@ pub fn build(args: BuildArgs) -> Status {
             continue;
         }
 
-        let status = makepkg()
+        let status = create_makepkg_command()
+            .with_arg("--install")
+            .with_arg("--noconfirm")
+            .with_arg("--asdeps")
+            .arg_if("--syncdeps", syncdeps)
+            .arg_if("--clean", clean)
+            .arg_if("--cleanbuild", cleanbuild)
+            .arg_if("--force", force)
+            .may_env("PACMAN", pacman.as_ref())
+            .may_env("LOGDEST", log_dest.as_ref())
+            .may_env("PACKAGER", packager.as_ref())
             .with_current_dir(directory)
             .with_stdin(Stdio::null())
             .with_stdout(Stdio::inherit())
