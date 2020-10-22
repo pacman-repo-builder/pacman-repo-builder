@@ -145,6 +145,8 @@ fn resolve_members() {
         .map(|x| x.resolve_members().collect::<Vec<_>>())
         .pipe(serialize_iter_yaml)
         .unwrap();
-    let expected = include_str!("./assets/resolved-members.yaml");
-    assert_eq!(actual.trim(), expected.trim());
+    let actual = actual.trim();
+    let expected = include_str!("./assets/resolved-members.yaml").trim();
+    eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
+    assert_eq!(actual, expected);
 }
