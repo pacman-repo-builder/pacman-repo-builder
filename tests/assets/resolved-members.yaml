@@ -4,6 +4,7 @@
   read-build-metadata: pkgbuild
   clean-before-build: false
   force-rebuild: true
+  allow-failure: false
 - directory: baz
   read-build-metadata: srcinfo
   install-missing-dependencies: false
@@ -26,7 +27,7 @@
   clean-after-build: false
   force-rebuild: true
   pacman: pacman
-  allow-failure: true
+  allow-failure: false
 - directory: container/baz
   read-build-metadata: srcinfo
   install-missing-dependencies: false
@@ -51,7 +52,7 @@
   clean-after-build: false
   force-rebuild: true
   pacman: pacman
-  allow-failure: true
+  allow-failure: false
 - directory: container/baz
   read-build-metadata: srcinfo
   install-missing-dependencies: false

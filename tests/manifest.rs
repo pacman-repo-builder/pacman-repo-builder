@@ -33,7 +33,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 clean_after_build: None,
                 force_rebuild: Some(true),
                 pacman: None,
-                allow_failure: None,
+                allow_failure: Some(false),
             },
             OwnedMember {
                 directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
