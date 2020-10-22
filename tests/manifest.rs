@@ -1,5 +1,8 @@
 use pacman_repo_builder::{
-    manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
+    manifest::{
+        BuildMetadata, Manifest, OwnedContainer, OwnedGlobalSettings, OwnedManifest, OwnedMember,
+        Wrapper,
+    },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
 use pipe_trait::*;
@@ -9,34 +12,37 @@ fn manifest_list_yaml() -> &'static str {
     include_str!("./assets/manifest-list.yaml").trim()
 }
 
-fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
+fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
     let make_members = || {
         vec![
-            Member {
-                directory: PathBuf::from("foo"),
+            OwnedMember {
+                directory: "foo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: None,
             },
-            Member {
-                directory: PathBuf::from("bar"),
+            OwnedMember {
+                directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
             },
-            Member {
-                directory: PathBuf::from("baz"),
+            OwnedMember {
+                directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
             },
         ]
     };
 
     [
-        || GlobalSettings {
+        || OwnedGlobalSettings {
             container: None,
             read_build_metadata: None,
-            repository: PathBuf::from("repo"),
+            repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
         },
-        || GlobalSettings {
-            container: "container".pipe(PathBuf::from).pipe(Some),
+        || OwnedGlobalSettings {
+            container: "container"
+                .pipe(PathBuf::from)
+                .pipe(OwnedContainer::from_inner)
+                .pipe(Some),
             read_build_metadata: Some(BuildMetadata::Either),
-            repository: PathBuf::from("repo"),
+            repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
         },
     ]
     .iter()
@@ -55,7 +61,7 @@ fn serialize() {
 #[test]
 fn deserialize() {
     let actual = manifest_list_yaml()
-        .pipe(deserialize_multi_docs_yaml::<Manifest<PathBuf>>)
+        .pipe(deserialize_multi_docs_yaml::<OwnedManifest>)
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
     let expected: Vec<_> = manifest_list().collect();

@@ -1,6 +1,6 @@
 use super::super::{
     args::PrintConfigArgs,
-    manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
+    manifest::{BuildMetadata, Manifest, Member, OwnedGlobalSettings, OwnedMember, Wrapper},
     status::{Code, Status},
 };
 use pipe_trait::*;
@@ -25,10 +25,10 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         (true, false) => BuildMetadata::PkgBuild,
     });
 
-    let global_settings = GlobalSettings {
+    let global_settings = OwnedGlobalSettings {
         container: None,
+        repository: Wrapper::from_inner(repository),
         read_build_metadata,
-        repository,
     };
 
     let mut members = Vec::new();
@@ -73,9 +73,9 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
             if require_srcinfo && !file_exists(".SRCINFO") {
                 continue;
             }
-            members.push(Member {
+            members.push(OwnedMember {
                 read_build_metadata: None,
-                directory,
+                directory: Wrapper::from_inner(directory),
             });
         }
     }

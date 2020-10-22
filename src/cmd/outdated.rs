@@ -29,7 +29,7 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         })
         .collect();
 
-    let repository = manifest.global_settings.repository.as_path();
+    let repository = manifest.global_settings.repository.as_ref();
     let directory = if let Some(parent) = repository.parent() {
         parent
     } else {

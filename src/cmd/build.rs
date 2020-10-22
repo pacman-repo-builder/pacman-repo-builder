@@ -9,6 +9,7 @@ use command_extra::CommandExtra;
 use pipe_trait::*;
 use std::{
     fs::{copy, remove_file},
+    path::Path,
     process::{Command, Stdio},
 };
 
@@ -45,7 +46,7 @@ pub fn build(args: BuildArgs) -> Status {
         }
     };
 
-    let repository = manifest.global_settings.repository.as_path();
+    let repository = manifest.global_settings.repository.as_ref();
     let repository_directory = repository.parent().expect("get repository directory");
     let members: Vec<_> = manifest.resolve_members().collect();
     let mut failed_builds = Vec::new();
@@ -60,11 +61,13 @@ pub fn build(args: BuildArgs) -> Status {
 
         let Member { directory, .. } = members
             .iter()
-            .find(|member| member.directory.as_path() == *directory)
+            .find(|member| member.directory.as_ref() == *directory)
             .unwrap_or_else(|| {
                 dbg!(pkgbase, directory);
                 panic!("cannot lookup member");
             });
+
+        let directory: &Path = directory.as_ref();
 
         eprintln!();
         eprintln!();

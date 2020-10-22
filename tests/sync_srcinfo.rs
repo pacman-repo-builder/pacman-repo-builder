@@ -1,5 +1,5 @@
 use command_extra::CommandExtra;
-use pacman_repo_builder::{manifest::Manifest, status::Code::SrcInfoOutOfSync};
+use pacman_repo_builder::{manifest::OwnedManifest, status::Code::SrcInfoOutOfSync};
 use pipe_trait::*;
 use std::{
     collections::{BTreeMap, BTreeSet},
@@ -21,7 +21,7 @@ fn fixtures(branch: &'static str) -> PathBuf {
         .join(branch)
 }
 
-fn fixture_manifest(branch: &'static str) -> Manifest<PathBuf> {
+fn fixture_manifest(branch: &'static str) -> OwnedManifest {
     branch
         .pipe(fixtures)
         .join("build-pacman-repo.yaml")
@@ -75,7 +75,7 @@ impl Context {
         self
     }
 
-    fn manifest(&self) -> Manifest<PathBuf> {
+    fn manifest(&self) -> OwnedManifest {
         self.work_dir
             .path()
             .join("build-pacman-repo.yaml")
@@ -153,7 +153,7 @@ macro_rules! test_update {
                 context
                     .manifest()
                     .resolve_members()
-                    .map(|member| member.directory.to_string_lossy().to_string())
+                    .map(|member| member.directory.as_ref().to_string_lossy().to_string())
                     .filter(|name| !actual_outdated.contains(name.as_str())),
             );
             let actual = (actual_outdated, stderr.trim(), status);
@@ -165,7 +165,7 @@ macro_rules! test_update {
                 $branch
                     .pipe(fixture_manifest)
                     .resolve_members()
-                    .map(|member| member.directory.to_string_lossy().to_string())
+                    .map(|member| member.directory.as_ref().to_string_lossy().to_string())
                     .filter(|name| !expected_outdated.contains(name.as_str())),
             );
             let expected = (expected_outdated, "", 0);
