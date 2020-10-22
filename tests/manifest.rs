@@ -23,7 +23,6 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 clean_after_build: None,
                 force_rebuild: None,
                 pacman: None,
-                packager: None,
                 allow_failure: None,
             },
             OwnedMember {
@@ -34,7 +33,6 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 clean_after_build: None,
                 force_rebuild: Some(true),
                 pacman: None,
-                packager: Some("Alice <alice@example.com>".to_owned_wrapper()),
                 allow_failure: None,
             },
             OwnedMember {
@@ -45,7 +43,6 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 clean_after_build: Some(false),
                 force_rebuild: Some(true),
                 pacman: Some("yay".to_owned_wrapper()),
-                packager: Some("Alice <alice@example.com>".to_owned_wrapper()),
                 allow_failure: Some(false),
             },
         ]

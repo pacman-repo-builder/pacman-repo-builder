@@ -1,7 +1,6 @@
 use super::{
-    Associations, BorrowedDirectory, BorrowedPackager, BorrowedPacman, BorrowedWrapper,
-    BuildMetadata, GlobalSettings, OwnedDirectory, OwnedPackager, OwnedPacman, OwnedWrapper,
-    Wrapper,
+    Associations, BorrowedDirectory, BorrowedPacman, BorrowedWrapper, BuildMetadata,
+    GlobalSettings, OwnedDirectory, OwnedPacman, OwnedWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
@@ -9,11 +8,10 @@ use std::path::Path;
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct Member<Directory, Pacman, Packager>
+pub struct Member<Directory, Pacman>
 where
     Directory: Associations + AsRef<Path>,
     Pacman: Associations + AsRef<str>,
-    Packager: Associations + AsRef<str>,
 {
     pub directory: Directory,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -29,20 +27,16 @@ where
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pacman: Option<Pacman>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub packager: Option<Packager>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_failure: Option<bool>,
 }
 
-pub type OwnedMember = Member<OwnedDirectory, OwnedPacman, OwnedPackager>;
-pub type BorrowedMember<'a> =
-    Member<BorrowedDirectory<'a>, BorrowedPacman<'a>, BorrowedPackager<'a>>;
+pub type OwnedMember = Member<OwnedDirectory, OwnedPacman>;
+pub type BorrowedMember<'a> = Member<BorrowedDirectory<'a>, BorrowedPacman<'a>>;
 
-impl<Directory, Pacman, Packager> Member<Directory, Pacman, Packager>
+impl<Directory, Pacman> Member<Directory, Pacman>
 where
     Directory: Associations + AsRef<Path>,
     Pacman: Associations + AsRef<str>,
-    Packager: Associations + AsRef<str>,
 {
     pub fn as_path(&self) -> BorrowedMember<'_> {
         BorrowedMember {
@@ -53,7 +47,6 @@ where
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
             pacman: self.pacman.as_ref().map(BorrowedWrapper::from_inner_ref),
-            packager: self.packager.as_ref().map(BorrowedWrapper::from_inner_ref),
             allow_failure: self.allow_failure,
         }
     }
@@ -71,7 +64,6 @@ where
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
             pacman: self.pacman.as_ref().map(OwnedWrapper::new_owned_from),
-            packager: self.packager.as_ref().map(OwnedWrapper::new_owned_from),
             allow_failure: self.allow_failure,
         }
     }
@@ -123,7 +115,6 @@ where
             clean_after_build: resolve_bool_option!(clean_after_build),
             force_rebuild: resolve_bool_option!(force_rebuild),
             pacman: resolve_wrapper_option!(pacman, OwnedPacman),
-            packager: resolve_wrapper_option!(packager, OwnedPackager),
             allow_failure: resolve_bool_option!(allow_failure),
         }
     }

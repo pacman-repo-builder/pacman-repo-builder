@@ -7,7 +7,6 @@ members:
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
-    packager: Alice <alice@example.com>
   - directory: baz
     read-build-metadata: srcinfo
     install-missing-dependencies: false
@@ -15,7 +14,6 @@ members:
     clean-after-build: false
     force-rebuild: true
     pacman: yay
-    packager: Alice <alice@example.com>
     allow-failure: false
 ---
 global-settings:
@@ -32,7 +30,6 @@ members:
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
-    packager: Alice <alice@example.com>
   - directory: baz
     read-build-metadata: srcinfo
     install-missing-dependencies: false
@@ -40,7 +37,6 @@ members:
     clean-after-build: false
     force-rebuild: true
     pacman: yay
-    packager: Alice <alice@example.com>
     allow-failure: false
 ---
 global-settings:
@@ -61,7 +57,6 @@ members:
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
-    packager: Alice <alice@example.com>
   - directory: baz
     read-build-metadata: srcinfo
     install-missing-dependencies: false
@@ -69,5 +64,4 @@ members:
     clean-after-build: false
     force-rebuild: true
     pacman: yay
-    packager: Alice <alice@example.com>
     allow-failure: false
