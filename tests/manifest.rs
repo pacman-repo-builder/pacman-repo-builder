@@ -1,7 +1,7 @@
 use pacman_repo_builder::{
     manifest::{
-        BuildMetadata, Manifest, OwnedContainer, OwnedGlobalSettings, OwnedManifest, OwnedMember,
-        Wrapper,
+        BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedGlobalSettings, OwnedManifest,
+        OwnedMember, Wrapper,
     },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
@@ -30,23 +30,23 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
                 install_missing_dependencies: None,
-                clean_before_build: None,
+                clean_before_build: Some(false),
                 clean_after_build: None,
-                force_rebuild: None,
+                force_rebuild: Some(true),
                 pacman: None,
-                packager: None,
+                packager: Some("Alice <alice@example.com>".to_owned_wrapper()),
                 allow_failure: None,
             },
             OwnedMember {
                 directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
-                install_missing_dependencies: None,
-                clean_before_build: None,
-                clean_after_build: None,
-                force_rebuild: None,
-                pacman: None,
-                packager: None,
-                allow_failure: None,
+                install_missing_dependencies: Some(false),
+                clean_before_build: Some(true),
+                clean_after_build: Some(false),
+                force_rebuild: Some(true),
+                pacman: Some("yay".to_owned_wrapper()),
+                packager: Some("Alice <alice@example.com>".to_owned_wrapper()),
+                allow_failure: Some(false),
             },
         ]
     };
@@ -76,14 +76,32 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
-            install_missing_dependencies: None,
+            install_missing_dependencies: Some(false),
             clean_before_build: None,
-            clean_after_build: None,
+            clean_after_build: Some(false),
             force_rebuild: None,
-            pacman: None,
+            pacman: Some("pacman".to_owned_wrapper()),
             packager: None,
-            allow_failure: None,
+            allow_failure: Some(true),
             dereference_database_symlinks: None,
+        },
+        || OwnedGlobalSettings {
+            container: "container"
+                .pipe(PathBuf::from)
+                .pipe(OwnedContainer::from_inner)
+                .pipe(Some),
+            read_build_metadata: Some(BuildMetadata::Either),
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            install_missing_dependencies: Some(false),
+            clean_before_build: Some(false),
+            clean_after_build: Some(false),
+            force_rebuild: Some(true),
+            pacman: Some("pacman".to_owned_wrapper()),
+            packager: Some("Bob <bob@example.com>".to_owned_wrapper()),
+            allow_failure: Some(true),
+            dereference_database_symlinks: Some(true),
         },
     ]
     .iter()
