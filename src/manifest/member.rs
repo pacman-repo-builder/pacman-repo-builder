@@ -102,6 +102,12 @@ where
             impl Associations + AsRef<str>,
         >,
     ) -> OwnedMember {
+        macro_rules! resolve_bool_option {
+            ($field:ident) => {
+                self.$field.or(global_settings.$field)
+            };
+        }
+
         macro_rules! wrapper_to_owned {
             ($source:expr, $typename:ident) => {
                 $source
@@ -128,25 +134,14 @@ where
             } else {
                 self.directory.as_ref().to_path_buf()
             }),
-
-            read_build_metadata: self
-                .read_build_metadata
-                .or(global_settings.read_build_metadata),
-
-            install_missing_dependencies: self
-                .install_missing_dependencies
-                .or(global_settings.install_missing_dependencies),
-
-            clean_before_build: self
-                .clean_before_build
-                .or(global_settings.clean_before_build),
-
-            force_rebuild: self.force_rebuild.or(global_settings.force_rebuild),
-
-            clean_after_build: self.clean_after_build.or(global_settings.clean_after_build),
+            read_build_metadata: resolve_bool_option!(read_build_metadata),
+            install_missing_dependencies: resolve_bool_option!(install_missing_dependencies),
+            clean_before_build: resolve_bool_option!(clean_before_build),
+            clean_after_build: resolve_bool_option!(clean_after_build),
+            force_rebuild: resolve_bool_option!(force_rebuild),
             pacman: resolve_wrapper_option!(pacman, OwnedPacman),
             packager: resolve_wrapper_option!(packager, OwnedPackager),
-            allow_failure: self.allow_failure.or(global_settings.allow_failure),
+            allow_failure: resolve_bool_option!(allow_failure),
         }
     }
 }
