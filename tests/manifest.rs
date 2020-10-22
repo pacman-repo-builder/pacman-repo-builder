@@ -18,17 +18,35 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             OwnedMember {
                 directory: "foo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: None,
-                ..Default::default()
+                install_missing_dependencies: None,
+                clean_before_build: None,
+                clean_after_build: None,
+                force_rebuild: None,
+                pacman: None,
+                packager: None,
+                allow_failure: None,
             },
             OwnedMember {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
-                ..Default::default()
+                install_missing_dependencies: None,
+                clean_before_build: None,
+                clean_after_build: None,
+                force_rebuild: None,
+                pacman: None,
+                packager: None,
+                allow_failure: None,
             },
             OwnedMember {
                 directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
-                ..Default::default()
+                install_missing_dependencies: None,
+                clean_before_build: None,
+                clean_after_build: None,
+                force_rebuild: None,
+                pacman: None,
+                packager: None,
+                allow_failure: None,
             },
         ]
     };
@@ -38,7 +56,14 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             container: None,
             read_build_metadata: None,
             repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
-            ..Default::default()
+            install_missing_dependencies: None,
+            clean_before_build: None,
+            clean_after_build: None,
+            force_rebuild: None,
+            pacman: None,
+            packager: None,
+            allow_failure: None,
+            dereference_database_symlinks: None,
         },
         || OwnedGlobalSettings {
             container: "container"
@@ -47,7 +72,14 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 .pipe(Some),
             read_build_metadata: Some(BuildMetadata::Either),
             repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
-            ..Default::default()
+            install_missing_dependencies: None,
+            clean_before_build: None,
+            clean_after_build: None,
+            force_rebuild: None,
+            pacman: None,
+            packager: None,
+            allow_failure: None,
+            dereference_database_symlinks: None,
         },
     ]
     .iter()
