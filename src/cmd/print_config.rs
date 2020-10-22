@@ -92,6 +92,7 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
             members.push(OwnedMember {
                 read_build_metadata: None,
                 directory: Wrapper::from_inner(directory),
+                ..Default::default()
             });
         }
     }

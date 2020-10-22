@@ -18,14 +18,17 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             OwnedMember {
                 directory: "foo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: None,
+                ..Default::default()
             },
             OwnedMember {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
+                ..Default::default()
             },
             OwnedMember {
                 directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
+                ..Default::default()
             },
         ]
     };

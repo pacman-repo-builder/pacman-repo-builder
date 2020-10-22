@@ -29,7 +29,7 @@ where
     Directory: Associations + AsRef<Path>,
 {
     pub global_settings: GlobalSettings<Repository, Container, Pacman, Packager>,
-    pub members: Vec<Member<Directory>>,
+    pub members: Vec<Member<Directory, Pacman, Packager>>,
 }
 
 pub type OwnedManifest =
