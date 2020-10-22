@@ -41,9 +41,12 @@ where
         }
     }
 
-    pub fn resolve<P: Associations + AsRef<Path>, Q: Associations + AsRef<Path>>(
+    pub fn resolve(
         &self,
-        global_settings: &GlobalSettings<P, Q>,
+        global_settings: &GlobalSettings<
+            impl Associations + AsRef<Path>,
+            impl Associations + AsRef<Path>,
+        >,
     ) -> OwnedMember {
         Member {
             directory: Wrapper::from_inner(if let Some(container) = &global_settings.container {
