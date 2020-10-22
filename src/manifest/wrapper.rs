@@ -21,6 +21,14 @@ pub trait BorrowedWrapper<'a, Inner: ?Sized + 'a, OwnedInner: AsRef<Inner>>:
     fn from_inner_ref(inner: &'a impl AsRef<Inner>) -> Self;
 }
 
+pub trait OwnedInner<'a, Return> {
+    fn as_ref_wrapper(&'a self) -> Return;
+}
+
+pub trait BorrowedInner<Return>: Copy {
+    fn to_owned_wrapper(self) -> Return;
+}
+
 pub trait Associations {
     type Inner;
     type OwnedInner;
@@ -35,16 +43,6 @@ macro_rules! wrapper_type {
         pub struct $name<Inner: AsRef<$borrowed_inner>>(Inner);
         pub type $owned_alias = $name<$owned_inner>;
         pub type $borrowed_alias<'a> = $name<&'a $borrowed_inner>;
-
-        impl<Inner: AsRef<$borrowed_inner>> $name<Inner> {
-            pub fn as_ref_wrapper(&self) -> $name<&$borrowed_inner> {
-                self.0.as_ref().pipe($name)
-            }
-
-            pub fn to_owned_wrapper(&self) -> $name<$owned_inner> {
-                self.0.as_ref().to_owned().pipe($name)
-            }
-        }
 
         impl<Inner: AsRef<$borrowed_inner>> Wrapper<Inner, $owned_inner, $borrowed_inner>
             for $name<Inner>
@@ -75,6 +73,18 @@ macro_rules! wrapper_type {
         impl<'a> BorrowedWrapper<'a, $borrowed_inner, $owned_inner> for $borrowed_alias<'a> {
             fn from_inner_ref(inner: &'a impl AsRef<$borrowed_inner>) -> Self {
                 inner.as_ref().pipe($name)
+            }
+        }
+
+        impl<'a, Inner: AsRef<$borrowed_inner>> OwnedInner<'a, $borrowed_alias<'a>> for Inner {
+            fn as_ref_wrapper(&'a self) -> $borrowed_alias<'a> {
+                self.as_ref().pipe($name)
+            }
+        }
+
+        impl<'a, Inner: AsRef<$borrowed_inner>> BorrowedInner<$owned_alias> for &'a Inner {
+            fn to_owned_wrapper(self) -> $owned_alias {
+                self.as_ref().to_owned().pipe($name)
             }
         }
 

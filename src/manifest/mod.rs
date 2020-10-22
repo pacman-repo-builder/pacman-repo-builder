@@ -7,10 +7,10 @@ pub use build_metadata::BuildMetadata;
 pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSettings};
 pub use member::{BorrowedMember, Member, OwnedMember};
 pub use wrapper::{
-    Associations, BorrowedContainer, BorrowedDirectory, BorrowedPackager, BorrowedPacman,
-    BorrowedRepository, BorrowedWrapper, Container, Directory, OwnedContainer, OwnedDirectory,
-    OwnedPackager, OwnedPacman, OwnedRepository, OwnedWrapper, Packager, Pacman, Repository,
-    Wrapper,
+    Associations, BorrowedContainer, BorrowedDirectory, BorrowedInner, BorrowedPackager,
+    BorrowedPacman, BorrowedRepository, BorrowedWrapper, Container, Directory, OwnedContainer,
+    OwnedDirectory, OwnedInner, OwnedPackager, OwnedPacman, OwnedRepository, OwnedWrapper,
+    Packager, Pacman, Repository, Wrapper,
 };
 
 use pipe_trait::*;
