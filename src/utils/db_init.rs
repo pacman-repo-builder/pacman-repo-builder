@@ -1,5 +1,5 @@
 use super::super::{
-    manifest::{Directory, Manifest, Member, OwnedManifest},
+    manifest::{Manifest, OwnedManifest, OwnedMember},
     srcinfo::{database::SimpleDatabase, SrcInfo},
     status::{Code, Failure},
 };
@@ -10,8 +10,8 @@ use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct DbInit<'a> {
-    srcinfo_texts: Vec<Pair<String, Member<Directory<PathBuf>>>>,
-    srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a Member<Directory<PathBuf>>>>,
+    srcinfo_texts: Vec<Pair<String, OwnedMember>>,
+    srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a OwnedMember>>,
 }
 
 impl<'a> DbInit<'a> {
