@@ -8,8 +8,9 @@ pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSet
 pub use member::{BorrowedMember, Member, OwnedMember};
 pub use wrapper::{
     Associations, BorrowedContainer, BorrowedDirectory, BorrowedPackager, BorrowedPacman,
-    BorrowedRepository, Container, Directory, OwnedContainer, OwnedDirectory, OwnedPackager,
-    OwnedPacman, OwnedRepository, Packager, Pacman, Repository, Wrapper,
+    BorrowedRepository, BorrowedWrapper, Container, Directory, OwnedContainer, OwnedDirectory,
+    OwnedPackager, OwnedPacman, OwnedRepository, OwnedWrapper, Packager, Pacman, Repository,
+    Wrapper,
 };
 
 use pipe_trait::*;

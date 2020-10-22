@@ -1,6 +1,7 @@
 use super::{
-    Associations, BorrowedDirectory, BorrowedPackager, BorrowedPacman, BuildMetadata,
-    GlobalSettings, OwnedDirectory, OwnedPackager, OwnedPacman, Wrapper,
+    Associations, BorrowedDirectory, BorrowedPackager, BorrowedPacman, BorrowedWrapper,
+    BuildMetadata, GlobalSettings, OwnedDirectory, OwnedPackager, OwnedPacman, OwnedWrapper,
+    Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
@@ -51,16 +52,8 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
-            pacman: self
-                .pacman
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(Wrapper::from_inner),
-            packager: self
-                .packager
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(Wrapper::from_inner),
+            pacman: self.pacman.as_ref().map(BorrowedWrapper::from_inner_ref),
+            packager: self.packager.as_ref().map(BorrowedWrapper::from_inner_ref),
             allow_failure: self.allow_failure,
         }
     }
@@ -77,18 +70,8 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
-            pacman: self
-                .pacman
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(ToString::to_string)
-                .map(Wrapper::from_inner),
-            packager: self
-                .packager
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(ToString::to_string)
-                .map(Wrapper::from_inner),
+            pacman: self.pacman.as_ref().map(OwnedWrapper::new_owned_from),
+            packager: self.packager.as_ref().map(OwnedWrapper::new_owned_from),
             allow_failure: self.allow_failure,
         }
     }

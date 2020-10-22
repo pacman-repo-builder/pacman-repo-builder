@@ -1,6 +1,7 @@
 use super::{
     Associations, BorrowedContainer, BorrowedPackager, BorrowedPacman, BorrowedRepository,
-    BuildMetadata, OwnedContainer, OwnedPackager, OwnedPacman, OwnedRepository, Wrapper,
+    BorrowedWrapper, BuildMetadata, OwnedContainer, OwnedPackager, OwnedPacman, OwnedRepository,
+    OwnedWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
@@ -58,26 +59,14 @@ where
     pub fn as_path(&self) -> BorrowedGlobalSettings<'_> {
         GlobalSettings {
             repository: self.repository.as_ref().pipe(Wrapper::from_inner),
-            container: self
-                .container
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(Wrapper::from_inner),
+            container: self.container.as_ref().map(BorrowedWrapper::from_inner_ref),
             read_build_metadata: self.read_build_metadata,
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
-            pacman: self
-                .pacman
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(Wrapper::from_inner),
-            packager: self
-                .packager
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(Wrapper::from_inner),
+            pacman: self.pacman.as_ref().map(BorrowedWrapper::from_inner_ref),
+            packager: self.packager.as_ref().map(BorrowedWrapper::from_inner_ref),
             allow_failure: self.allow_failure,
             dereference_database_symlinks: self.dereference_database_symlinks,
         }
@@ -85,34 +74,15 @@ where
 
     pub fn to_path_buf(&self) -> OwnedGlobalSettings {
         GlobalSettings {
-            repository: self
-                .repository
-                .as_ref()
-                .to_path_buf()
-                .pipe(Wrapper::from_inner),
-            container: self
-                .container
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(Path::to_path_buf)
-                .map(Wrapper::from_inner),
+            repository: self.repository.as_ref().pipe(OwnedWrapper::new_owned_from),
+            container: self.container.as_ref().map(OwnedWrapper::new_owned_from),
             read_build_metadata: self.read_build_metadata,
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
-            pacman: self
-                .pacman
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(ToString::to_string)
-                .map(Wrapper::from_inner),
-            packager: self
-                .packager
-                .as_ref()
-                .map(AsRef::as_ref)
-                .map(ToString::to_string)
-                .map(Wrapper::from_inner),
+            pacman: self.pacman.as_ref().map(OwnedWrapper::new_owned_from),
+            packager: self.packager.as_ref().map(OwnedWrapper::new_owned_from),
             allow_failure: self.allow_failure,
             dereference_database_symlinks: self.dereference_database_symlinks,
         }

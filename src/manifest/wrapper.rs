@@ -9,6 +9,18 @@ pub trait Wrapper<Inner, OwnedInner, BorrowedInner: ?Sized> {
     fn inner_mut(&mut self) -> &mut Inner;
 }
 
+pub trait OwnedWrapper<Inner: AsRef<BorrowedInner>, BorrowedInner: ?Sized>:
+    Wrapper<Inner, Inner, BorrowedInner>
+{
+    fn new_owned_from(inner: impl AsRef<BorrowedInner>) -> Self;
+}
+
+pub trait BorrowedWrapper<'a, Inner: ?Sized + 'a, OwnedInner: AsRef<Inner>>:
+    Wrapper<&'a Inner, OwnedInner, Inner>
+{
+    fn from_inner_ref(inner: &'a impl AsRef<Inner>) -> Self;
+}
+
 pub trait Associations {
     type Inner;
     type OwnedInner;
@@ -51,6 +63,18 @@ macro_rules! wrapper_type {
 
             fn inner_mut(&mut self) -> &mut Inner {
                 &mut self.0
+            }
+        }
+
+        impl OwnedWrapper<$owned_inner, $borrowed_inner> for $owned_alias {
+            fn new_owned_from(source: impl AsRef<$borrowed_inner>) -> Self {
+                source.as_ref().to_owned().pipe($name)
+            }
+        }
+
+        impl<'a> BorrowedWrapper<'a, $borrowed_inner, $owned_inner> for $borrowed_alias<'a> {
+            fn from_inner_ref(inner: &'a impl AsRef<$borrowed_inner>) -> Self {
+                inner.as_ref().pipe($name)
             }
         }
 
