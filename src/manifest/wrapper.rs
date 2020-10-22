@@ -77,3 +77,5 @@ wrapper_type!(
 );
 wrapper_type!(Container, OwnedContainer, BorrowedContainer, PathBuf, Path);
 wrapper_type!(Directory, OwnedDirectory, BorrowedDirectory, PathBuf, Path);
+wrapper_type!(Pacman, OwnedPacman, BorrowedPacman, String, str);
+wrapper_type!(Packager, OwnedPackager, BorrowedPackager, String, str);

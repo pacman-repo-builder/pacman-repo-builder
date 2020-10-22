@@ -7,8 +7,9 @@ pub use build_metadata::BuildMetadata;
 pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSettings};
 pub use member::{BorrowedMember, Member, OwnedMember};
 pub use wrapper::{
-    Associations, BorrowedContainer, BorrowedDirectory, BorrowedRepository, Container, Directory,
-    OwnedContainer, OwnedDirectory, OwnedRepository, Repository, Wrapper,
+    Associations, BorrowedContainer, BorrowedDirectory, BorrowedPackager, BorrowedPacman,
+    BorrowedRepository, Container, Directory, OwnedContainer, OwnedDirectory, OwnedPackager,
+    OwnedPacman, OwnedRepository, Packager, Pacman, Repository, Wrapper,
 };
 
 use pipe_trait::*;
@@ -19,24 +20,35 @@ pub const MANIFEST_BASENAME: &str = "build-pacman-repo.yaml";
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct Manifest<Repository, Container, Directory>
+pub struct Manifest<Repository, Container, Pacman, Packager, Directory>
 where
     Repository: Associations + AsRef<Path>,
     Container: Associations + AsRef<Path>,
+    Pacman: Associations + AsRef<str>,
+    Packager: Associations + AsRef<str>,
     Directory: Associations + AsRef<Path>,
 {
-    pub global_settings: GlobalSettings<Repository, Container>,
+    pub global_settings: GlobalSettings<Repository, Container, Pacman, Packager>,
     pub members: Vec<Member<Directory>>,
 }
 
-pub type OwnedManifest = Manifest<OwnedRepository, OwnedContainer, OwnedDirectory>;
-pub type BorrowedManifest<'a> =
-    Manifest<BorrowedRepository<'a>, BorrowedContainer<'a>, BorrowedDirectory<'a>>;
+pub type OwnedManifest =
+    Manifest<OwnedRepository, OwnedContainer, OwnedPacman, OwnedPackager, OwnedDirectory>;
+pub type BorrowedManifest<'a> = Manifest<
+    BorrowedRepository<'a>,
+    BorrowedContainer<'a>,
+    BorrowedPacman<'a>,
+    BorrowedPackager<'a>,
+    BorrowedDirectory<'a>,
+>;
 
-impl<Repository, Container, Directory> Manifest<Repository, Container, Directory>
+impl<Repository, Container, Pacman, Packager, Directory>
+    Manifest<Repository, Container, Pacman, Packager, Directory>
 where
     Repository: Associations + AsRef<Path>,
     Container: Associations + AsRef<Path>,
+    Pacman: Associations + AsRef<str>,
+    Packager: Associations + AsRef<str>,
     Directory: Associations + AsRef<Path>,
 {
     pub fn as_path(&self) -> BorrowedManifest<'_> {

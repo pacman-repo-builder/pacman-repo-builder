@@ -46,6 +46,8 @@ where
         global_settings: &GlobalSettings<
             impl Associations + AsRef<Path>,
             impl Associations + AsRef<Path>,
+            impl Associations + AsRef<str>,
+            impl Associations + AsRef<str>,
         >,
     ) -> OwnedMember {
         Member {
