@@ -55,7 +55,9 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
         || OwnedGlobalSettings {
             container: None,
             read_build_metadata: None,
-            repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
             install_missing_dependencies: None,
             clean_before_build: None,
             clean_after_build: None,
@@ -71,7 +73,9 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 .pipe(OwnedContainer::from_inner)
                 .pipe(Some),
             read_build_metadata: Some(BuildMetadata::Either),
-            repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
             install_missing_dependencies: None,
             clean_before_build: None,
             clean_after_build: None,

@@ -1,6 +1,6 @@
 ---
 global-settings:
-  repository: repo
+  repository: repo/repo.db.tar.gz
 members:
   - directory: foo
   - directory: bar
@@ -9,7 +9,7 @@ members:
     read-build-metadata: srcinfo
 ---
 global-settings:
-  repository: repo
+  repository: repo/repo.db.tar.gz
   container: container
   read-build-metadata: either
 members:
