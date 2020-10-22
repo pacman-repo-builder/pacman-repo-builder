@@ -1,5 +1,5 @@
 use super::super::{
-    manifest::{Container, Directory, Manifest, Member, Repository},
+    manifest::{Directory, Manifest, Member, OwnedManifest},
     srcinfo::{database::SimpleDatabase, SrcInfo},
     status::{Code, Failure},
 };
@@ -85,7 +85,7 @@ impl<'a> DbInit<'a> {
 }
 
 pub struct DbInitValue<'a> {
-    pub manifest: Manifest<Repository<PathBuf>, Container<PathBuf>, Directory<PathBuf>>,
+    pub manifest: OwnedManifest,
     pub database: SimpleDatabase<'a>,
     pub error_count: usize,
 }
