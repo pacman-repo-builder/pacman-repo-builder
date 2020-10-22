@@ -8,6 +8,10 @@ members:
     clean-before-build: false
     force-rebuild: true
     allow-failure: false
+  - directory: bar
+    install-missing-dependencies: true
+    clean-after-build: false
+    pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
     install-missing-dependencies: false
@@ -32,6 +36,36 @@ members:
     clean-before-build: false
     force-rebuild: true
     allow-failure: false
+  - directory: bar
+    install-missing-dependencies: true
+    clean-after-build: false
+    pacman: yay
+  - directory: baz
+    read-build-metadata: srcinfo
+    install-missing-dependencies: false
+    clean-before-build: true
+    clean-after-build: false
+    force-rebuild: true
+    pacman: yay
+    allow-failure: false
+---
+global-settings:
+  repository: repo/repo.db.tar.gz
+  clean-before-build: true
+  force-rebuild: false
+  packager: Bob <bob@example.com>
+  dereference-database-symlinks: false
+members:
+  - directory: foo
+  - directory: bar
+    read-build-metadata: pkgbuild
+    clean-before-build: false
+    force-rebuild: true
+    allow-failure: false
+  - directory: bar
+    install-missing-dependencies: true
+    clean-after-build: false
+    pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
     install-missing-dependencies: false
@@ -60,6 +94,10 @@ members:
     clean-before-build: false
     force-rebuild: true
     allow-failure: false
+  - directory: bar
+    install-missing-dependencies: true
+    clean-after-build: false
+    pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
     install-missing-dependencies: false

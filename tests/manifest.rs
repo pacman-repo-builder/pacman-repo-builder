@@ -36,6 +36,16 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 allow_failure: Some(false),
             },
             OwnedMember {
+                directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+                read_build_metadata: None,
+                install_missing_dependencies: Some(true),
+                clean_before_build: None,
+                clean_after_build: Some(false),
+                force_rebuild: None,
+                pacman: Some("yay".to_owned_wrapper()),
+                allow_failure: None,
+            },
+            OwnedMember {
                 directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
                 install_missing_dependencies: Some(false),
@@ -81,6 +91,21 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             packager: None,
             allow_failure: Some(true),
             dereference_database_symlinks: None,
+        },
+        || OwnedGlobalSettings {
+            container: None,
+            read_build_metadata: None,
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            install_missing_dependencies: None,
+            clean_before_build: Some(true),
+            clean_after_build: None,
+            force_rebuild: Some(false),
+            pacman: None,
+            packager: Some("Bob <bob@example.com>".to_owned_wrapper()),
+            allow_failure: None,
+            dereference_database_symlinks: Some(false),
         },
         || OwnedGlobalSettings {
             container: "container"
