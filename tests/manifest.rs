@@ -92,7 +92,9 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
 #[test]
 fn serialize() {
     let yaml = serialize_iter_yaml(manifest_list()).unwrap();
-    assert_eq!(yaml.trim(), manifest_list_yaml());
+    let actual = yaml.trim();
+    eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
+    assert_eq!(actual, manifest_list_yaml());
 }
 
 #[test]
@@ -102,6 +104,7 @@ fn deserialize() {
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
     let expected: Vec<_> = manifest_list().collect();
+    dbg!(&actual);
     assert_eq!(&actual, &expected);
 }
 
