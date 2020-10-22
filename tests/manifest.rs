@@ -35,6 +35,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             container: None,
             read_build_metadata: None,
             repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+            ..Default::default()
         },
         || OwnedGlobalSettings {
             container: "container"
@@ -43,6 +44,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
                 .pipe(Some),
             read_build_metadata: Some(BuildMetadata::Either),
             repository: "repo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+            ..Default::default()
         },
     ]
     .iter()
