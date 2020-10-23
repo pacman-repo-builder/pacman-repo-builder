@@ -9,14 +9,57 @@ Build a custom pacman repository from a collection of PKGBUILD directories.
 
 **⚠ WARNING:** This program is meant to be used within a docker container.
 
-### Generate manifest file
+### Manifest file
 
 Manifest file is always named `build-pacman-repo.yaml`. It contains instruction to build a pacman repository.
+
+**Example Manifest File:**
+
+```yaml
+# build-pacman-repo.yaml
+global-settings:
+  repository: repo/repo.db.tar.gz
+  container: container
+  read-build-metadata: either
+  install-missing-dependencies: false
+  clean-before-build: false
+  clean-after-build: false
+  force-rebuild: true
+  pacman: pacman
+  packager: Bob <bob@example.com>
+  allow-failure: true
+  dereference-database-symlinks: true
+members:
+  - directory: foo
+  - directory: bar
+    read-build-metadata: pkgbuild
+    clean-before-build: false
+    force-rebuild: true
+    allow-failure: false
+  - directory: bar
+    install-missing-dependencies: true
+    clean-after-build: false
+    pacman: yay
+  - directory: baz
+    read-build-metadata: srcinfo
+    install-missing-dependencies: false
+    clean-before-build: true
+    clean-after-build: false
+    force-rebuild: true
+    pacman: yay
+    allow-failure: false
+```
+
+### Generate manifest file
+
+Listing every member in a manifest file can be a chore. So when there are no members with customized properties, you can generate the manifest file the reflect the build directories instead:
 
 ```sh
 build-pacman-repo print-config \
   --repository $repo_dir/$repo_name.db.tar.gz \
   --container build-directories \
+  --require-pkgbuild \
+  --require-srcinfo \
   --with-install-missing-dependencies true \
   > build-pacman-repo.yaml
 ```
