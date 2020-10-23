@@ -49,6 +49,7 @@ fn inspect((stdout, stderr, success): (&str, &str, bool)) {
 fn require_nothing() {
     let (stdout, stderr, success) = output(init());
     let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
     let expected = (
         include_str!("./expected-output/print-config/require-nothing.stdout.yaml").trim(),
         "",
