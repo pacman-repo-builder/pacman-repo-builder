@@ -50,6 +50,18 @@ members:
     allow-failure: false
 ```
 
+**Field Explanations:**
+
+_Distinct Fields:_
+
+| Field                        | Required/Optional        | Description                                                                                                                        |
+|------------------------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `global-settings`            | required                 | Includes global settings from which all members inherit from.<br>Some settings can be overwritten by member customized properties. |
+| `member`                     | optional, default = `[]` | List all members.                                                                                                                  |
+| `global-settings.repository` | required                 | Path to repository file (typically ends with `.db.tar.gz`).<br>It will be passed to `repo-add` command after each build.           |
+| `global-settings.container`  | optional, default = `.`  | Directory that contains all build directories (a.k.a. members).                                                                    |
+| `member.directory`           | required                 | Path to build directory of each member (relative to `global-settings.container`).                                                  |
+
 ### Generate manifest file
 
 Listing every member in a manifest file can be a chore. So when there are no members with customized properties, you can generate the manifest file the reflect the build directories instead:
