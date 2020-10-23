@@ -47,8 +47,8 @@ macro_rules! wrapper_type {
         pub type $owned_alias = $name<$owned_inner>;
         pub type $borrowed_alias<'a> = $name<&'a $borrowed_inner>;
 
-        pub trait $trait_name: Associations + AsRef<$borrowed_inner> {}
-        impl<Inner: AsRef<$borrowed_inner>> $trait_name for $name<Inner> {}
+        pub trait $trait_name: Associations + AsRef<$borrowed_inner> + Clone {}
+        impl<Inner: AsRef<$borrowed_inner> + Clone> $trait_name for $name<Inner> {}
 
         impl<Inner: AsRef<$borrowed_inner>> Wrapper<Inner, $owned_inner, $borrowed_inner>
             for $name<Inner>
