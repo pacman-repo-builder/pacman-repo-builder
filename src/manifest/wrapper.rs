@@ -36,13 +36,16 @@ pub trait Associations {
 }
 
 macro_rules! wrapper_type {
-    ($name:ident, $owned_alias:ident, $borrowed_alias:ident, $owned_inner:ident, $borrowed_inner:ident) => {
+    ($name:ident, $trait_name:ident, $owned_alias:ident, $borrowed_alias:ident, $owned_inner:ident, $borrowed_inner:ident) => {
         #[derive(
             Debug, Default, Serialize, Deserialize, Eq, PartialEq, Ord, PartialOrd, Copy, Clone,
         )]
         pub struct $name<Inner: AsRef<$borrowed_inner>>(Inner);
         pub type $owned_alias = $name<$owned_inner>;
         pub type $borrowed_alias<'a> = $name<&'a $borrowed_inner>;
+
+        pub trait $trait_name: Associations + AsRef<$borrowed_inner> {}
+        impl<Inner: AsRef<$borrowed_inner>> $trait_name for $name<Inner> {}
 
         impl<Inner: AsRef<$borrowed_inner>> Wrapper<Inner, $owned_inner, $borrowed_inner>
             for $name<Inner>
@@ -104,12 +107,41 @@ macro_rules! wrapper_type {
 
 wrapper_type!(
     Repository,
+    RepositoryWrapper,
     OwnedRepository,
     BorrowedRepository,
     PathBuf,
     Path
 );
-wrapper_type!(Container, OwnedContainer, BorrowedContainer, PathBuf, Path);
-wrapper_type!(Directory, OwnedDirectory, BorrowedDirectory, PathBuf, Path);
-wrapper_type!(Pacman, OwnedPacman, BorrowedPacman, String, str);
-wrapper_type!(Packager, OwnedPackager, BorrowedPackager, String, str);
+wrapper_type!(
+    Container,
+    ContainerWrapper,
+    OwnedContainer,
+    BorrowedContainer,
+    PathBuf,
+    Path
+);
+wrapper_type!(
+    Directory,
+    DirectoryWrapper,
+    OwnedDirectory,
+    BorrowedDirectory,
+    PathBuf,
+    Path
+);
+wrapper_type!(
+    Pacman,
+    PacmanWrapper,
+    OwnedPacman,
+    BorrowedPacman,
+    String,
+    str
+);
+wrapper_type!(
+    Packager,
+    PackagerWrapper,
+    OwnedPackager,
+    BorrowedPackager,
+    String,
+    str
+);

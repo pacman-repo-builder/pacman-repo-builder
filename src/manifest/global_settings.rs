@@ -1,20 +1,19 @@
 use super::{
-    Associations, BorrowedContainer, BorrowedPackager, BorrowedPacman, BorrowedRepository,
-    BorrowedWrapper, BuildMetadata, OwnedContainer, OwnedPackager, OwnedPacman, OwnedRepository,
-    OwnedWrapper, Wrapper,
+    BorrowedContainer, BorrowedPackager, BorrowedPacman, BorrowedRepository, BorrowedWrapper,
+    BuildMetadata, ContainerWrapper, OwnedContainer, OwnedPackager, OwnedPacman, OwnedRepository,
+    OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct GlobalSettings<Repository, Container, Pacman, Packager>
 where
-    Repository: Associations + AsRef<Path>,
-    Container: Associations + AsRef<Path>,
-    Pacman: Associations + AsRef<str>,
-    Packager: Associations + AsRef<str>,
+    Repository: RepositoryWrapper,
+    Container: ContainerWrapper,
+    Pacman: PacmanWrapper,
+    Packager: PackagerWrapper,
 {
     pub repository: Repository,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -51,10 +50,10 @@ pub type BorrowedGlobalSettings<'a> = GlobalSettings<
 impl<Repository, Container, Pacman, Packager>
     GlobalSettings<Repository, Container, Pacman, Packager>
 where
-    Repository: Associations + AsRef<Path>,
-    Container: Associations + AsRef<Path>,
-    Pacman: Associations + AsRef<str>,
-    Packager: Associations + AsRef<str>,
+    Repository: RepositoryWrapper,
+    Container: ContainerWrapper,
+    Pacman: PacmanWrapper,
+    Packager: PackagerWrapper,
 {
     pub fn as_path(&self) -> BorrowedGlobalSettings<'_> {
         GlobalSettings {

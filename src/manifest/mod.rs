@@ -8,9 +8,10 @@ pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSet
 pub use member::{BorrowedMember, Member, OwnedMember};
 pub use wrapper::{
     Associations, BorrowedContainer, BorrowedDirectory, BorrowedInner, BorrowedPackager,
-    BorrowedPacman, BorrowedRepository, BorrowedWrapper, Container, Directory, OwnedContainer,
-    OwnedDirectory, OwnedInner, OwnedPackager, OwnedPacman, OwnedRepository, OwnedWrapper,
-    Packager, Pacman, Repository, Wrapper,
+    BorrowedPacman, BorrowedRepository, BorrowedWrapper, Container, ContainerWrapper, Directory,
+    DirectoryWrapper, OwnedContainer, OwnedDirectory, OwnedInner, OwnedPackager, OwnedPacman,
+    OwnedRepository, OwnedWrapper, Packager, PackagerWrapper, Pacman, PacmanWrapper, Repository,
+    RepositoryWrapper, Wrapper,
 };
 
 use pipe_trait::*;
@@ -23,11 +24,11 @@ pub const MANIFEST_BASENAME: &str = "build-pacman-repo.yaml";
 #[serde(rename_all = "kebab-case")]
 pub struct Manifest<Repository, Container, Pacman, Packager, Directory>
 where
-    Repository: Associations + AsRef<Path>,
-    Container: Associations + AsRef<Path>,
-    Pacman: Associations + AsRef<str>,
-    Packager: Associations + AsRef<str>,
-    Directory: Associations + AsRef<Path>,
+    Repository: RepositoryWrapper,
+    Container: ContainerWrapper,
+    Pacman: PacmanWrapper,
+    Packager: PackagerWrapper,
+    Directory: DirectoryWrapper,
 {
     pub global_settings: GlobalSettings<Repository, Container, Pacman, Packager>,
     pub members: Vec<Member<Directory, Pacman>>,
@@ -46,11 +47,11 @@ pub type BorrowedManifest<'a> = Manifest<
 impl<Repository, Container, Pacman, Packager, Directory>
     Manifest<Repository, Container, Pacman, Packager, Directory>
 where
-    Repository: Associations + AsRef<Path>,
-    Container: Associations + AsRef<Path>,
-    Pacman: Associations + AsRef<str>,
-    Packager: Associations + AsRef<str>,
-    Directory: Associations + AsRef<Path>,
+    Repository: RepositoryWrapper,
+    Container: ContainerWrapper,
+    Pacman: PacmanWrapper,
+    Packager: PackagerWrapper,
+    Directory: DirectoryWrapper,
 {
     pub fn as_path(&self) -> BorrowedManifest<'_> {
         Manifest {

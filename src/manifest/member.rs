@@ -1,17 +1,17 @@
 use super::{
-    Associations, BorrowedDirectory, BorrowedPacman, BorrowedWrapper, BuildMetadata,
-    GlobalSettings, OwnedDirectory, OwnedPacman, OwnedWrapper, Wrapper,
+    BorrowedDirectory, BorrowedPacman, BorrowedWrapper, BuildMetadata, ContainerWrapper,
+    DirectoryWrapper, GlobalSettings, OwnedDirectory, OwnedPacman, OwnedWrapper, PackagerWrapper,
+    PacmanWrapper, RepositoryWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct Member<Directory, Pacman>
 where
-    Directory: Associations + AsRef<Path>,
-    Pacman: Associations + AsRef<str>,
+    Directory: DirectoryWrapper,
+    Pacman: PacmanWrapper,
 {
     pub directory: Directory,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -35,8 +35,8 @@ pub type BorrowedMember<'a> = Member<BorrowedDirectory<'a>, BorrowedPacman<'a>>;
 
 impl<Directory, Pacman> Member<Directory, Pacman>
 where
-    Directory: Associations + AsRef<Path>,
-    Pacman: Associations + AsRef<str>,
+    Directory: DirectoryWrapper,
+    Pacman: PacmanWrapper,
 {
     pub fn as_path(&self) -> BorrowedMember<'_> {
         BorrowedMember {
@@ -71,10 +71,10 @@ where
     pub fn resolve(
         &self,
         global_settings: &GlobalSettings<
-            impl Associations + AsRef<Path>,
-            impl Associations + AsRef<Path>,
-            impl Associations + AsRef<str>,
-            impl Associations + AsRef<str>,
+            impl RepositoryWrapper,
+            impl ContainerWrapper,
+            impl PacmanWrapper,
+            impl PackagerWrapper,
         >,
     ) -> OwnedMember {
         macro_rules! resolve_bool_option {
