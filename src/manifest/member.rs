@@ -1,7 +1,7 @@
 use super::{
-    BorrowedDirectory, BorrowedPacman, BorrowedWrapper, BuildMetadata, ContainerWrapper,
-    DirectoryWrapper, GlobalSettings, OwnedDirectory, OwnedPacman, OwnedWrapper, PackagerWrapper,
-    PacmanWrapper, RepositoryWrapper, Wrapper,
+    ArchCollectionWrapper, BorrowedDirectory, BorrowedPacman, BorrowedWrapper, BuildMetadata,
+    ContainerWrapper, DirectoryWrapper, GlobalSettings, OwnedDirectory, OwnedPacman, OwnedWrapper,
+    PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
@@ -73,6 +73,7 @@ where
         global_settings: &GlobalSettings<
             impl RepositoryWrapper,
             impl ContainerWrapper,
+            impl ArchCollectionWrapper,
             impl PacmanWrapper,
             impl PackagerWrapper,
         >,

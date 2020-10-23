@@ -145,3 +145,13 @@ wrapper_type!(
     String,
     str
 );
+type OwnedArchVec = Vec<String>;
+type OwnedArchArray = [String];
+wrapper_type!(
+    ArchCollection,
+    ArchCollectionWrapper,
+    OwnedArchCollection,
+    BorrowedArchCollection,
+    OwnedArchVec,
+    OwnedArchArray
+);

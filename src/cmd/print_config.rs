@@ -1,6 +1,9 @@
 use super::super::{
     args::PrintConfigArgs,
-    manifest::{BuildMetadata, Manifest, Member, OwnedGlobalSettings, OwnedMember, Wrapper},
+    manifest::{
+        ArchFilter, BuildMetadata, Manifest, Member, OwnedArchCollection, OwnedGlobalSettings,
+        OwnedMember, Wrapper,
+    },
     status::{Code, Status},
 };
 use pipe_trait::*;
@@ -21,6 +24,7 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         with_clean_before_build,
         with_clean_after_build,
         with_force_rebuild,
+        with_arch_filter,
         with_pacman,
         with_packager,
         with_allow_failure,
@@ -33,6 +37,18 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         (true, false) => BuildMetadata::PkgBuild,
     });
 
+    let arch_filter = if with_arch_filter.is_empty() {
+        None
+    } else {
+        Some(if with_arch_filter.iter().any(|x| x == "any") {
+            ArchFilter::Any
+        } else {
+            with_arch_filter
+                .pipe(OwnedArchCollection::from_inner)
+                .pipe(ArchFilter::Selective)
+        })
+    };
+
     let global_settings = OwnedGlobalSettings {
         container: None,
         repository: Wrapper::from_inner(repository),
@@ -41,6 +57,7 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         clean_before_build: with_clean_before_build,
         clean_after_build: with_clean_after_build,
         force_rebuild: with_force_rebuild,
+        arch_filter,
         pacman: with_pacman.map(Wrapper::from_inner),
         packager: with_packager.map(Wrapper::from_inner),
         allow_failure: with_allow_failure,

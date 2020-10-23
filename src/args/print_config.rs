@@ -40,6 +40,8 @@ pub struct PrintConfigArgs {
     pub with_clean_after_build: Option<bool>,
     #[argh(option, description = "set force-rebuild")]
     pub with_force_rebuild: Option<bool>,
+    #[argh(option, description = "set arch-filter")]
+    pub with_arch_filter: Vec<String>,
     #[argh(option, description = "set pacman")]
     pub with_pacman: Option<String>,
     #[argh(option, description = "set packager")]

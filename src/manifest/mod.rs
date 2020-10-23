@@ -1,17 +1,20 @@
+mod arch_filter;
 mod build_metadata;
 mod global_settings;
 mod member;
 mod wrapper;
 
+pub use arch_filter::{ArchFilter, BorrowedArchFilter, OwnedArchFilter};
 pub use build_metadata::BuildMetadata;
 pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSettings};
 pub use member::{BorrowedMember, Member, OwnedMember};
 pub use wrapper::{
-    Associations, BorrowedContainer, BorrowedDirectory, BorrowedInner, BorrowedPackager,
-    BorrowedPacman, BorrowedRepository, BorrowedWrapper, Container, ContainerWrapper, Directory,
-    DirectoryWrapper, OwnedContainer, OwnedDirectory, OwnedInner, OwnedPackager, OwnedPacman,
-    OwnedRepository, OwnedWrapper, Packager, PackagerWrapper, Pacman, PacmanWrapper, Repository,
-    RepositoryWrapper, Wrapper,
+    ArchCollection, ArchCollectionWrapper, Associations, BorrowedArchCollection, BorrowedContainer,
+    BorrowedDirectory, BorrowedInner, BorrowedPackager, BorrowedPacman, BorrowedRepository,
+    BorrowedWrapper, Container, ContainerWrapper, Directory, DirectoryWrapper, OwnedArchCollection,
+    OwnedContainer, OwnedDirectory, OwnedInner, OwnedPackager, OwnedPacman, OwnedRepository,
+    OwnedWrapper, Packager, PackagerWrapper, Pacman, PacmanWrapper, Repository, RepositoryWrapper,
+    Wrapper,
 };
 
 use pipe_trait::*;
@@ -22,33 +25,42 @@ pub const MANIFEST_BASENAME: &str = "build-pacman-repo.yaml";
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct Manifest<Repository, Container, Pacman, Packager, Directory>
+pub struct Manifest<Repository, Container, ArchCollection, Pacman, Packager, Directory>
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
     Directory: DirectoryWrapper,
 {
-    pub global_settings: GlobalSettings<Repository, Container, Pacman, Packager>,
+    pub global_settings: GlobalSettings<Repository, Container, ArchCollection, Pacman, Packager>,
     pub members: Vec<Member<Directory, Pacman>>,
 }
 
-pub type OwnedManifest =
-    Manifest<OwnedRepository, OwnedContainer, OwnedPacman, OwnedPackager, OwnedDirectory>;
+pub type OwnedManifest = Manifest<
+    OwnedRepository,
+    OwnedContainer,
+    OwnedArchCollection,
+    OwnedPacman,
+    OwnedPackager,
+    OwnedDirectory,
+>;
 pub type BorrowedManifest<'a> = Manifest<
     BorrowedRepository<'a>,
     BorrowedContainer<'a>,
+    BorrowedArchCollection<'a>,
     BorrowedPacman<'a>,
     BorrowedPackager<'a>,
     BorrowedDirectory<'a>,
 >;
 
-impl<Repository, Container, Pacman, Packager, Directory>
-    Manifest<Repository, Container, Pacman, Packager, Directory>
+impl<Repository, Container, ArchCollection, Pacman, Packager, Directory>
+    Manifest<Repository, Container, ArchCollection, Pacman, Packager, Directory>
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
     Directory: DirectoryWrapper,
