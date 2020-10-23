@@ -14,7 +14,7 @@ use std::{
 };
 
 pub fn build(args: BuildArgs) -> Status {
-    let BuildArgs { log_dest } = args;
+    let BuildArgs {} = args;
 
     let mut db_init = DbInit::default();
     let DbInitValue {
@@ -135,7 +135,6 @@ pub fn build(args: BuildArgs) -> Status {
             .arg_if("--cleanbuild", clean_before_build)
             .arg_if("--force", force_rebuild)
             .may_env("PACMAN", pacman)
-            .may_env("LOGDEST", log_dest.as_ref())
             .may_env("PACKAGER", packager)
             .with_current_dir(directory)
             .with_stdin(Stdio::null())
