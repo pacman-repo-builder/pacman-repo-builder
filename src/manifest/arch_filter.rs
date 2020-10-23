@@ -57,4 +57,15 @@ impl OwnedArchFilter {
                 .pipe(ArchFilter::Selective)
         })
     }
+
+    pub fn from_str_iter<Iter>(iter: Iter) -> Option<Self>
+    where
+        Iter: IntoIterator,
+        Iter::Item: ToString,
+    {
+        iter.into_iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .pipe(OwnedArchFilter::from_arch_vec)
+    }
 }

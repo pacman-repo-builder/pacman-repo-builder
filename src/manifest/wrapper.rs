@@ -1,6 +1,9 @@
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::{
+    iter::FromIterator,
+    path::{Path, PathBuf},
+};
 
 pub trait Wrapper<Inner, OwnedInner, BorrowedInner: ?Sized> {
     fn from_inner(inner: Inner) -> Self;
@@ -155,3 +158,12 @@ wrapper_type!(
     OwnedArchVec,
     OwnedArchArray
 );
+
+impl<Item: Into<String>> FromIterator<Item> for OwnedArchCollection {
+    fn from_iter<Iter: IntoIterator<Item = Item>>(iter: Iter) -> Self {
+        iter.into_iter()
+            .map(Into::into)
+            .collect::<Vec<_>>()
+            .pipe(OwnedArchCollection::from_inner)
+    }
+}
