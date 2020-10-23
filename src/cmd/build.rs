@@ -1,6 +1,6 @@
 use super::super::{
     args::BuildArgs,
-    manifest::Member,
+    manifest::{GlobalSettings, Member},
     srcinfo::database::DatabaseValue,
     status::{Code, Failure, Status},
     utils::{create_makepkg_command, run_deref_db, CommandUtils, DbInit, DbInitValue},
@@ -14,17 +14,7 @@ use std::{
 };
 
 pub fn build(args: BuildArgs) -> Status {
-    let BuildArgs {
-        syncdeps,
-        clean,
-        cleanbuild,
-        force,
-        pacman,
-        log_dest,
-        packager,
-        allow_failure,
-        deref_db,
-    } = args;
+    let BuildArgs { log_dest } = args;
 
     let mut db_init = DbInit::default();
     let DbInitValue {
@@ -32,6 +22,14 @@ pub fn build(args: BuildArgs) -> Status {
         error_count,
         manifest,
     } = db_init.init()?;
+
+    let GlobalSettings {
+        packager,
+        dereference_database_symlinks,
+        ..
+    } = &manifest.global_settings;
+    let packager: Option<&str> = packager.as_ref().map(AsRef::as_ref);
+    let dereference_database_symlinks = dereference_database_symlinks.unwrap_or(false);
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
@@ -59,7 +57,16 @@ pub fn build(args: BuildArgs) -> Status {
             panic!("cannot lookup value")
         });
 
-        let Member { directory, .. } = members
+        let Member {
+            directory,
+            install_missing_dependencies,
+            clean_before_build,
+            clean_after_build,
+            force_rebuild,
+            pacman,
+            allow_failure,
+            ..
+        } = members
             .iter()
             .find(|member| member.directory.as_ref() == *directory)
             .unwrap_or_else(|| {
@@ -68,6 +75,12 @@ pub fn build(args: BuildArgs) -> Status {
             });
 
         let directory: &Path = directory.as_ref();
+        let force_rebuild = force_rebuild.unwrap_or(false);
+        let install_missing_dependencies = install_missing_dependencies.unwrap_or(false);
+        let clean_before_build = clean_before_build.unwrap_or(false);
+        let clean_after_build = clean_after_build.unwrap_or(false);
+        let pacman: Option<&str> = pacman.as_ref().map(AsRef::as_ref);
+        let allow_failure = allow_failure.unwrap_or(false);
 
         eprintln!();
         eprintln!();
@@ -87,11 +100,10 @@ pub fn build(args: BuildArgs) -> Status {
             .map(|name| repository_directory.join(name.to_string()))
             .collect();
 
-        if !force && future_package_files.iter().all(|path| path.exists()) {
+        if !force_rebuild && future_package_files.iter().all(|path| path.exists()) {
             eprintln!("🛈 All packages are already built. Skip.");
 
             let status = pacman
-                .as_deref()
                 .unwrap_or("pacman")
                 .pipe(Command::new)
                 .with_arg("--upgrade")
@@ -118,13 +130,13 @@ pub fn build(args: BuildArgs) -> Status {
             .with_arg("--install")
             .with_arg("--noconfirm")
             .with_arg("--asdeps")
-            .arg_if("--syncdeps", syncdeps)
-            .arg_if("--clean", clean)
-            .arg_if("--cleanbuild", cleanbuild)
-            .arg_if("--force", force)
-            .may_env("PACMAN", pacman.as_ref())
+            .arg_if("--syncdeps", install_missing_dependencies)
+            .arg_if("--clean", clean_after_build)
+            .arg_if("--cleanbuild", clean_before_build)
+            .arg_if("--force", force_rebuild)
+            .may_env("PACMAN", pacman)
             .may_env("LOGDEST", log_dest.as_ref())
-            .may_env("PACKAGER", packager.as_ref())
+            .may_env("PACKAGER", packager)
             .with_current_dir(directory)
             .with_stdin(Stdio::null())
             .with_stdout(Stdio::inherit())
@@ -173,7 +185,7 @@ pub fn build(args: BuildArgs) -> Status {
                 }
             }
 
-            if clean {
+            if clean_after_build {
                 eprintln!("  → clean");
                 if let Err(error) = remove_file(pkg_src_file) {
                     eprintln!("⚠ {}", error);
@@ -206,7 +218,7 @@ pub fn build(args: BuildArgs) -> Status {
         }
     }
 
-    if deref_db {
+    if dereference_database_symlinks {
         eprintln!();
         eprintln!();
         eprintln!("Resolving all symlinks to repository database into real files");
@@ -216,7 +228,7 @@ pub fn build(args: BuildArgs) -> Status {
         })?;
     }
 
-    if allow_failure && !failed_builds.is_empty() {
+    if !failed_builds.is_empty() {
         eprintln!();
         eprintln!();
         eprintln!("🛈 Some builds failed:");
