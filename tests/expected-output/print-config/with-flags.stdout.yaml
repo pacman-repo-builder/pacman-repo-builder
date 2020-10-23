@@ -1,0 +1,20 @@
+---
+global-settings:
+  repository: repo/repo.db.tar.gz
+  read-build-metadata: either
+  install-missing-dependencies: false
+  clean-before-build: true
+  clean-after-build: false
+  force-rebuild: true
+  pacman: pacman
+  packager: Bob <bob@example.com>
+  allow-failure: false
+  dereference-database-symlinks: true
+members:
+  - directory: mixed/either
+  - directory: mixed/empty-dir
+  - directory: mixed/pkgbuild
+  - directory: mixed/srcinfo
+  - directory: pkgbuild-and-srcinfo/pkgbuild-and-srcinfo
+  - directory: pkgbuild-only/pkgbuild-only
+  - directory: srcinfo-only/srcinfo-only

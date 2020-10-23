@@ -88,3 +88,24 @@ fn require_pkgbuild_and_srcinfo() {
     );
     assert_eq!(actual, expected);
 }
+
+#[test]
+fn with_flags() {
+    let (stdout, stderr, success) = init()
+        .with_args(&["--with-install-missing-dependencies", "false"])
+        .with_args(&["--with-clean-before-build", "true"])
+        .with_args(&["--with-clean-after-build", "false"])
+        .with_args(&["--with-force-rebuild", "true"])
+        .with_args(&["--with-pacman", "pacman"])
+        .with_args(&["--with-packager", "Bob <bob@example.com>"])
+        .with_args(&["--with-allow-failure", "false"])
+        .with_args(&["--with-dereference-database-symlinks", "true"])
+        .pipe(output);
+    let actual = (stdout.trim(), stderr.trim(), success);
+    let expected = (
+        include_str!("./expected-output/print-config/with-flags.stdout.yaml").trim(),
+        "",
+        true,
+    );
+    assert_eq!(actual, expected);
+}
