@@ -62,6 +62,18 @@ _Distinct Fields:_
 | `global-settings.container`  | optional, default = `.`  | Directory that contains all build directories (a.k.a. members).                                                                    |
 | `member.directory`           | required                 | Path to build directory of each member (relative to `global-settings.container`).                                                  |
 
+_Shared Fields:_ Fields that exist in both `global-settings` and `member`. If `global-settings` and `member` both contain a field, `member`'s field will be prioritized.
+
+| Field                          | Default<br>(`global-settings`) | Description                                                                                                                                                                                                           |
+|--------------------------------|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `read-build-metadata`          | `either`                       | Where to read build metadata:<br>`srcinfo`: From `.SRCINFO` file.<br>`pkgbuild`: From output of `makepkg --printsrcinfo`.<br>`either`: From `.SRCINFO` file if it exists, otherwise execute `makepkg --printsrcinfo`. |
+| `install-missing-dependencies` | `false`                        | Install packages found in `depends` and `makedepends` before each build.                                                                                                                                              |
+| `clean-before-build`           | `false`                        | Clean `$srcdir` and `$pkgdir` before each build.                                                                                                                                                                      |
+| `clean-after-build`            | `false`                        | Clean up after each build.                                                                                                                                                                                            |
+| `force-rebuild`                | `false`                        | Force build even if target package already exists.                                                                                                                                                                    |
+| `pacman`                       | `pacman`                       | Package manager program to use.<br>The program must recognize `pacman`'s CLI arguments and options.                                                                                                                   |
+| `allow-failure`                | `false`                        | If `false`, exits immediately when a build fails.<br>If `true`, ignore build failure should one occurs.                                                                                                               |
+
 ### Generate manifest file
 
 Listing every member in a manifest file can be a chore. So when there are no members with customized properties, you can generate the manifest file the reflect the build directories instead:
