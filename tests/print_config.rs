@@ -37,6 +37,14 @@ fn output(mut command: Command) -> (String, String, bool) {
     (stdout, stderr, success)
 }
 
+fn inspect((stdout, stderr, success): (&str, &str, bool)) {
+    eprintln!();
+    eprintln!();
+    eprintln!("STDOUT:\n\n{}\n\n", stdout);
+    eprintln!("STDERR:\n\n{}\n\n", stderr);
+    eprintln!("SUCCESS: {}\n\n", success);
+}
+
 #[test]
 fn require_nothing() {
     let (stdout, stderr, success) = output(init());
@@ -53,6 +61,7 @@ fn require_nothing() {
 fn require_pkgbuild() {
     let (stdout, stderr, success) = init().with_arg("--require-pkgbuild").pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
     let expected = (
         include_str!("./expected-output/print-config/require-pkgbuild.stdout.yaml").trim(),
         "",
@@ -65,6 +74,7 @@ fn require_pkgbuild() {
 fn require_srcinfo() {
     let (stdout, stderr, success) = init().with_arg("--require-srcinfo").pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
     let expected = (
         include_str!("./expected-output/print-config/require-srcinfo.stdout.yaml").trim(),
         "",
@@ -80,6 +90,7 @@ fn require_pkgbuild_and_srcinfo() {
         .with_arg("--require-srcinfo")
         .pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
     let expected = (
         include_str!("./expected-output/print-config/require-pkgbuild-and-srcinfo.stdout.yaml")
             .trim(),
@@ -102,6 +113,7 @@ fn with_flags() {
         .with_args(&["--with-dereference-database-symlinks", "true"])
         .pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
     let expected = (
         include_str!("./expected-output/print-config/with-flags.stdout.yaml").trim(),
         "",
