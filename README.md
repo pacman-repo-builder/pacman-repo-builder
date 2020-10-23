@@ -54,13 +54,15 @@ members:
 
 _Distinct Fields:_
 
-| Field                        | Required/Optional        | Description                                                                                                                        |
-|------------------------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| `global-settings`            | required                 | Includes global settings from which all members inherit from.<br>Some settings can be overwritten by member customized properties. |
-| `member`                     | optional, default = `[]` | List all members.                                                                                                                  |
-| `global-settings.repository` | required                 | Path to repository file (typically ends with `.db.tar.gz`).<br>It will be passed to `repo-add` command after each build.           |
-| `global-settings.container`  | optional, default = `.`  | Directory that contains all build directories (a.k.a. members).                                                                    |
-| `member.directory`           | required                 | Path to build directory of each member (relative to `global-settings.container`).                                                  |
+| Field                           | Required/Optional                      | Description                                                                                                                        |
+|---------------------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `global-settings`               | required                               | Includes global settings from which all members inherit from.<br>Some settings can be overwritten by member customized properties. |
+| `member`                        | optional, default = `[]`               | List all members.                                                                                                                  |
+| `global-settings.repository`    | required                               | Path to repository file (typically ends with `.db.tar.gz`).<br>It will be passed to `repo-add` command after each build.           |
+| `global-settings.container`     | optional, default = `.`                | Directory that contains all build directories (a.k.a. members).                                                                    |
+| `global-settings.packager`      | optional, default = `Unknown Packager` | Identity of person or entity that produces the packages (i.e. the one who run this program).                                       |
+| `dereference-database-symlinks` | optional, default = `false`            | If `true`, all `*.db` and `*.files` symlinks will be converted to real files.                                                      |
+| `member.directory`              | required                               | Path to build directory of each member (relative to `global-settings.container`).                                                  |
 
 _Shared Fields:_ Fields that exist in both `global-settings` and `member`. If `global-settings` and `member` both contain a field, `member`'s field will be prioritized.
 
