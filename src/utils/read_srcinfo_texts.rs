@@ -1,4 +1,4 @@
-use super::super::manifest::{BuildMetadata, Manifest, Member};
+use super::super::manifest::{BuildMetadata, Member, OwnedManifest, OwnedMember};
 use super::{read_srcinfo_from_pkgbuild, Pair};
 use pipe_trait::*;
 use rayon::prelude::*;
@@ -8,9 +8,9 @@ use std::{
 };
 
 pub fn read_srcinfo_texts(
-    manifest: &Manifest<PathBuf>,
+    manifest: &OwnedManifest,
     mut handle_error: impl FnMut(String),
-) -> Vec<Pair<String, Member<PathBuf>>> {
+) -> Vec<Pair<String, OwnedMember>> {
     manifest
         .resolve_members()
         .collect::<Vec<_>>()
@@ -22,10 +22,12 @@ pub fn read_srcinfo_texts(
                 ..
             } = &member;
 
+            let directory: &Path = directory.as_ref();
+
             (
                 match read_build_metadata.unwrap_or_default() {
-                    BuildMetadata::Either => read_either(&directory),
-                    BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(&directory),
+                    BuildMetadata::Either => read_either(directory),
+                    BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(directory),
                     BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
                 },
                 member,

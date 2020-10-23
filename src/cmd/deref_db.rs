@@ -16,6 +16,7 @@ pub fn deref_db(args: DerefDbArgs) -> Status {
         })?
         .global_settings
         .repository
+        .as_ref()
         .parent()
         .expect("get repository directory")
         .pipe(run_deref_db)

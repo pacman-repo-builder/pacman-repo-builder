@@ -1,44 +1,73 @@
 mod build_metadata;
 mod global_settings;
 mod member;
+mod wrapper;
 
 pub use build_metadata::BuildMetadata;
-pub use global_settings::GlobalSettings;
-pub use member::Member;
+pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSettings};
+pub use member::{BorrowedMember, Member, OwnedMember};
+pub use wrapper::{
+    Associations, BorrowedContainer, BorrowedDirectory, BorrowedInner, BorrowedPackager,
+    BorrowedPacman, BorrowedRepository, BorrowedWrapper, Container, ContainerWrapper, Directory,
+    DirectoryWrapper, OwnedContainer, OwnedDirectory, OwnedInner, OwnedPackager, OwnedPacman,
+    OwnedRepository, OwnedWrapper, Packager, PackagerWrapper, Pacman, PacmanWrapper, Repository,
+    RepositoryWrapper, Wrapper,
+};
 
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
-use std::{
-    fs::File,
-    io::ErrorKind,
-    path::{Path, PathBuf},
-};
+use std::{fs::File, io::ErrorKind, path::Path};
 
 pub const MANIFEST_BASENAME: &str = "build-pacman-repo.yaml";
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct Manifest<P: AsRef<Path>> {
-    pub global_settings: GlobalSettings<P>,
-    pub members: Vec<Member<P>>,
+pub struct Manifest<Repository, Container, Pacman, Packager, Directory>
+where
+    Repository: RepositoryWrapper,
+    Container: ContainerWrapper,
+    Pacman: PacmanWrapper,
+    Packager: PackagerWrapper,
+    Directory: DirectoryWrapper,
+{
+    pub global_settings: GlobalSettings<Repository, Container, Pacman, Packager>,
+    pub members: Vec<Member<Directory, Pacman>>,
 }
 
-impl<P: AsRef<Path>> Manifest<P> {
-    pub fn as_path(&self) -> Manifest<&Path> {
+pub type OwnedManifest =
+    Manifest<OwnedRepository, OwnedContainer, OwnedPacman, OwnedPackager, OwnedDirectory>;
+pub type BorrowedManifest<'a> = Manifest<
+    BorrowedRepository<'a>,
+    BorrowedContainer<'a>,
+    BorrowedPacman<'a>,
+    BorrowedPackager<'a>,
+    BorrowedDirectory<'a>,
+>;
+
+impl<Repository, Container, Pacman, Packager, Directory>
+    Manifest<Repository, Container, Pacman, Packager, Directory>
+where
+    Repository: RepositoryWrapper,
+    Container: ContainerWrapper,
+    Pacman: PacmanWrapper,
+    Packager: PackagerWrapper,
+    Directory: DirectoryWrapper,
+{
+    pub fn as_path(&self) -> BorrowedManifest<'_> {
         Manifest {
             global_settings: self.global_settings.as_path(),
             members: self.members.iter().map(Member::as_path).collect(),
         }
     }
 
-    pub fn resolve_members(&self) -> impl Iterator<Item = Member<PathBuf>> + '_ {
+    pub fn resolve_members(&self) -> impl Iterator<Item = OwnedMember> + '_ {
         self.members
             .iter()
             .map(move |member| member.resolve(&self.global_settings))
     }
 }
 
-impl Manifest<PathBuf> {
+impl OwnedManifest {
     pub fn from_env() -> Result<Self, String> {
         Manifest::from_file(MANIFEST_BASENAME.as_ref())
     }
@@ -46,7 +75,7 @@ impl Manifest<PathBuf> {
     pub fn from_file(file: &Path) -> Result<Self, String> {
         match File::open(file) {
             Ok(content) => content
-                .pipe(serde_yaml::from_reader::<_, Manifest<PathBuf>>)
+                .pipe(serde_yaml::from_reader::<_, OwnedManifest>)
                 .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
                 .pipe(Ok),
             Err(error) => match error.kind() {

@@ -1,5 +1,8 @@
 use pacman_repo_builder::{
-    manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
+    manifest::{
+        BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedGlobalSettings, OwnedManifest,
+        OwnedMember, Wrapper,
+    },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
 use pipe_trait::*;
@@ -9,34 +12,118 @@ fn manifest_list_yaml() -> &'static str {
     include_str!("./assets/manifest-list.yaml").trim()
 }
 
-fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
+fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
     let make_members = || {
         vec![
-            Member {
-                directory: PathBuf::from("foo"),
+            OwnedMember {
+                directory: "foo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: None,
+                install_missing_dependencies: None,
+                clean_before_build: None,
+                clean_after_build: None,
+                force_rebuild: None,
+                pacman: None,
+                allow_failure: None,
             },
-            Member {
-                directory: PathBuf::from("bar"),
+            OwnedMember {
+                directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
+                install_missing_dependencies: None,
+                clean_before_build: Some(false),
+                clean_after_build: None,
+                force_rebuild: Some(true),
+                pacman: None,
+                allow_failure: Some(false),
             },
-            Member {
-                directory: PathBuf::from("baz"),
+            OwnedMember {
+                directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+                read_build_metadata: None,
+                install_missing_dependencies: Some(true),
+                clean_before_build: None,
+                clean_after_build: Some(false),
+                force_rebuild: None,
+                pacman: Some("yay".to_owned_wrapper()),
+                allow_failure: None,
+            },
+            OwnedMember {
+                directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
+                install_missing_dependencies: Some(false),
+                clean_before_build: Some(true),
+                clean_after_build: Some(false),
+                force_rebuild: Some(true),
+                pacman: Some("yay".to_owned_wrapper()),
+                allow_failure: Some(false),
             },
         ]
     };
 
     [
-        || GlobalSettings {
+        || OwnedGlobalSettings {
             container: None,
             read_build_metadata: None,
-            repository: PathBuf::from("repo"),
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            install_missing_dependencies: None,
+            clean_before_build: None,
+            clean_after_build: None,
+            force_rebuild: None,
+            pacman: None,
+            packager: None,
+            allow_failure: None,
+            dereference_database_symlinks: None,
         },
-        || GlobalSettings {
-            container: "container".pipe(PathBuf::from).pipe(Some),
+        || OwnedGlobalSettings {
+            container: "container"
+                .pipe(PathBuf::from)
+                .pipe(OwnedContainer::from_inner)
+                .pipe(Some),
             read_build_metadata: Some(BuildMetadata::Either),
-            repository: PathBuf::from("repo"),
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            install_missing_dependencies: Some(false),
+            clean_before_build: None,
+            clean_after_build: Some(false),
+            force_rebuild: None,
+            pacman: Some("pacman".to_owned_wrapper()),
+            packager: None,
+            allow_failure: Some(true),
+            dereference_database_symlinks: None,
+        },
+        || OwnedGlobalSettings {
+            container: None,
+            read_build_metadata: None,
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            install_missing_dependencies: None,
+            clean_before_build: Some(true),
+            clean_after_build: None,
+            force_rebuild: Some(false),
+            pacman: None,
+            packager: Some("Bob <bob@example.com>".to_owned_wrapper()),
+            allow_failure: None,
+            dereference_database_symlinks: Some(false),
+        },
+        || OwnedGlobalSettings {
+            container: "container"
+                .pipe(PathBuf::from)
+                .pipe(OwnedContainer::from_inner)
+                .pipe(Some),
+            read_build_metadata: Some(BuildMetadata::Either),
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            install_missing_dependencies: Some(false),
+            clean_before_build: Some(false),
+            clean_after_build: Some(false),
+            force_rebuild: Some(true),
+            pacman: Some("pacman".to_owned_wrapper()),
+            packager: Some("Bob <bob@example.com>".to_owned_wrapper()),
+            allow_failure: Some(true),
+            dereference_database_symlinks: Some(true),
         },
     ]
     .iter()
@@ -49,16 +136,19 @@ fn manifest_list() -> impl Iterator<Item = Manifest<PathBuf>> {
 #[test]
 fn serialize() {
     let yaml = serialize_iter_yaml(manifest_list()).unwrap();
-    assert_eq!(yaml.trim(), manifest_list_yaml());
+    let actual = yaml.trim();
+    eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
+    assert_eq!(actual, manifest_list_yaml());
 }
 
 #[test]
 fn deserialize() {
     let actual = manifest_list_yaml()
-        .pipe(deserialize_multi_docs_yaml::<Manifest<PathBuf>>)
+        .pipe(deserialize_multi_docs_yaml::<OwnedManifest>)
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
     let expected: Vec<_> = manifest_list().collect();
+    dbg!(&actual);
     assert_eq!(&actual, &expected);
 }
 
@@ -80,6 +170,8 @@ fn resolve_members() {
         .map(|x| x.resolve_members().collect::<Vec<_>>())
         .pipe(serialize_iter_yaml)
         .unwrap();
-    let expected = include_str!("./assets/resolved-members.yaml");
-    assert_eq!(actual.trim(), expected.trim());
+    let actual = actual.trim();
+    let expected = include_str!("./assets/resolved-members.yaml").trim();
+    eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
+    assert_eq!(actual, expected);
 }

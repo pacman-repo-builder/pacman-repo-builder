@@ -1,5 +1,5 @@
 use super::super::{
-    manifest::{Manifest, Member},
+    manifest::{Manifest, OwnedManifest, OwnedMember},
     srcinfo::{database::SimpleDatabase, SrcInfo},
     status::{Code, Failure},
 };
@@ -10,8 +10,8 @@ use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct DbInit<'a> {
-    srcinfo_texts: Vec<Pair<String, Member<PathBuf>>>,
-    srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a Member<PathBuf>>>,
+    srcinfo_texts: Vec<Pair<String, OwnedMember>>,
+    srcinfo_collection: Vec<Pair<SrcInfo<&'a str>, &'a OwnedMember>>,
 }
 
 impl<'a> DbInit<'a> {
@@ -46,7 +46,7 @@ impl<'a> DbInit<'a> {
         let mut duplications: IndexMap<String, IndexSet<PathBuf>> = Default::default();
         for pair in srcinfo_collection {
             let (srcinfo, member) = pair.to_ref().into_tuple();
-            match database.insert_srcinfo(srcinfo, member.directory.as_path()) {
+            match database.insert_srcinfo(srcinfo, member.directory.as_ref()) {
                 Err(error) => {
                     eprintln!("⮾ Error in directory {:?}: {}", member.directory, error);
                     error_count += 1;
@@ -85,7 +85,7 @@ impl<'a> DbInit<'a> {
 }
 
 pub struct DbInitValue<'a> {
-    pub manifest: Manifest<PathBuf>,
+    pub manifest: OwnedManifest,
     pub database: SimpleDatabase<'a>,
     pub error_count: usize,
 }

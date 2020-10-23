@@ -1,6 +1,6 @@
 use super::super::{
     args::PrintConfigArgs,
-    manifest::{BuildMetadata, GlobalSettings, Manifest, Member},
+    manifest::{BuildMetadata, Manifest, Member, OwnedGlobalSettings, OwnedMember, Wrapper},
     status::{Code, Status},
 };
 use pipe_trait::*;
@@ -17,6 +17,14 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         repository,
         require_pkgbuild,
         require_srcinfo,
+        with_install_missing_dependencies,
+        with_clean_before_build,
+        with_clean_after_build,
+        with_force_rebuild,
+        with_pacman,
+        with_packager,
+        with_allow_failure,
+        with_dereference_database_symlinks,
     } = args;
 
     let read_build_metadata = Some(match (args.require_pkgbuild, args.require_srcinfo) {
@@ -25,10 +33,18 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         (true, false) => BuildMetadata::PkgBuild,
     });
 
-    let global_settings = GlobalSettings {
+    let global_settings = OwnedGlobalSettings {
         container: None,
+        repository: Wrapper::from_inner(repository),
         read_build_metadata,
-        repository,
+        install_missing_dependencies: with_install_missing_dependencies,
+        clean_before_build: with_clean_before_build,
+        clean_after_build: with_clean_after_build,
+        force_rebuild: with_force_rebuild,
+        pacman: with_pacman.map(Wrapper::from_inner),
+        packager: with_packager.map(Wrapper::from_inner),
+        allow_failure: with_allow_failure,
+        dereference_database_symlinks: with_dereference_database_symlinks,
     };
 
     let mut members = Vec::new();
@@ -73,9 +89,10 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
             if require_srcinfo && !file_exists(".SRCINFO") {
                 continue;
             }
-            members.push(Member {
+            members.push(OwnedMember {
                 read_build_metadata: None,
-                directory,
+                directory: Wrapper::from_inner(directory),
+                ..Default::default()
             });
         }
     }

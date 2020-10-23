@@ -38,6 +38,8 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
                 ..
             } = member;
 
+            let directory: &Path = directory.as_ref();
+
             if read_build_metadata.unwrap_or_default() != BuildMetadata::PkgBuild
                 && !directory.join("PKGBUILD").exists()
             {
