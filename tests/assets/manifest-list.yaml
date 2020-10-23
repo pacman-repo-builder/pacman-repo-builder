@@ -27,6 +27,7 @@ global-settings:
   read-build-metadata: either
   install-missing-dependencies: false
   clean-after-build: false
+  arch-filter: any
   pacman: pacman
   allow-failure: true
 members:
@@ -53,6 +54,9 @@ global-settings:
   repository: repo/repo.db.tar.gz
   clean-before-build: true
   force-rebuild: false
+  arch-filter:
+    - x86_64
+    - i686
   packager: Bob <bob@example.com>
   dereference-database-symlinks: false
 members:
@@ -83,6 +87,9 @@ global-settings:
   clean-before-build: false
   clean-after-build: false
   force-rebuild: true
+  arch-filter:
+    - x86_64
+    - i686
   pacman: pacman
   packager: Bob <bob@example.com>
   allow-failure: true
