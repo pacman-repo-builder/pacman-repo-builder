@@ -42,3 +42,19 @@ where
         }
     }
 }
+
+impl OwnedArchFilter {
+    pub fn from_arch_vec(arch_vec: Vec<String>) -> Option<Self> {
+        if arch_vec.is_empty() {
+            return None;
+        }
+
+        Some(if arch_vec.iter().any(|x| x == "any") {
+            ArchFilter::Any
+        } else {
+            arch_vec
+                .pipe(OwnedArchCollection::from_inner)
+                .pipe(ArchFilter::Selective)
+        })
+    }
+}
