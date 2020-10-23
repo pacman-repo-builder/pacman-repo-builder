@@ -3,7 +3,10 @@ use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Copy, Clone)]
-#[serde(untagged, rename_all = "kebab-case")]
+#[serde(
+    from = "ArchFilterSerdeHelper<ArchCollection>",
+    into = "ArchFilterSerdeHelper<ArchCollection>"
+)]
 pub enum ArchFilter<ArchCollection>
 where
     ArchCollection: ArchCollectionWrapper,
@@ -68,4 +71,81 @@ impl OwnedArchFilter {
             .collect::<Vec<_>>()
             .pipe(OwnedArchFilter::from_arch_vec)
     }
+}
+
+/* SERDE HELPER */
+
+#[derive(Serialize, Deserialize, Copy, Clone)]
+#[serde(untagged)]
+pub enum ArchFilterSerdeHelper<ArchCollection>
+where
+    ArchCollection: ArchCollectionWrapper,
+{
+    MonoVariant(MonoVariantSerdeHelper),
+    Selective(ArchCollection),
+}
+
+#[derive(Serialize, Deserialize, Copy, Clone)]
+#[serde(rename_all = "kebab-case")]
+pub enum MonoVariantSerdeHelper {
+    Any,
+}
+
+impl<ArchCollection> From<ArchFilterSerdeHelper<ArchCollection>> for ArchFilter<ArchCollection>
+where
+    ArchCollection: ArchCollectionWrapper,
+{
+    fn from(source: ArchFilterSerdeHelper<ArchCollection>) -> Self {
+        match source {
+            ArchFilterSerdeHelper::MonoVariant(MonoVariantSerdeHelper::Any) => ArchFilter::Any,
+            ArchFilterSerdeHelper::Selective(collection) => ArchFilter::Selective(collection),
+        }
+    }
+}
+
+impl<ArchCollection> From<ArchFilter<ArchCollection>> for ArchFilterSerdeHelper<ArchCollection>
+where
+    ArchCollection: ArchCollectionWrapper,
+{
+    fn from(arch_filter: ArchFilter<ArchCollection>) -> Self {
+        match arch_filter {
+            ArchFilter::Any => ArchFilterSerdeHelper::MonoVariant(MonoVariantSerdeHelper::Any),
+            ArchFilter::Selective(collection) => ArchFilterSerdeHelper::Selective(collection),
+        }
+    }
+}
+
+#[test]
+fn test_serialize() {
+    use super::super::utils::serialize_iter_yaml;
+    use std::fmt::Write;
+
+    let actual = serialize_iter_yaml(&[
+        OwnedArchFilter::Any,
+        OwnedArchFilter::from_str_iter(&["x86_64", "i686"]).unwrap(),
+    ])
+    .unwrap();
+    eprintln!("\n\nACTUAL:\n\n{}\n\n", actual.trim());
+
+    let mut expected = String::new();
+    writeln!(expected, "---").unwrap();
+    writeln!(expected, "any").unwrap();
+    writeln!(expected, "---").unwrap();
+    writeln!(expected, "- x86_64").unwrap();
+    writeln!(expected, "- i686").unwrap();
+
+    assert_eq!(&actual, &expected);
+}
+
+#[test]
+fn test_deserialize() {
+    let actual = (
+        serde_yaml::from_str("any").unwrap(),
+        serde_yaml::from_str("[x86_64, i686]").unwrap(),
+    );
+    let expected = (
+        OwnedArchFilter::Any,
+        OwnedArchFilter::from_str_iter(&["x86_64", "i686"]).unwrap(),
+    );
+    assert_eq!(&actual, &expected);
 }
