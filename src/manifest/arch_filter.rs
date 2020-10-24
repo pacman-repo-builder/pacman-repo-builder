@@ -56,7 +56,7 @@ where
         }
     }
 
-    pub fn as_predicate<Text: AsRef<str>>(&self) -> impl Fn(&Text) -> bool + '_ {
+    pub fn as_predicate<Text: AsRef<str>>(&self) -> impl Fn(&Text) -> bool + Copy + '_ {
         move |arch| self.test(arch)
     }
 }
