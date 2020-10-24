@@ -71,6 +71,52 @@ impl OwnedArchFilter {
             .collect::<Vec<_>>()
             .pipe(OwnedArchFilter::from_arch_vec)
     }
+
+    pub fn test(&self, arch: impl AsRef<str>) -> bool {
+        let arch = arch.as_ref();
+        if arch == "any" {
+            return true;
+        }
+        match self {
+            ArchFilter::Any => true,
+            ArchFilter::Selective(collections) => collections.as_ref().iter().any(|x| x == arch),
+        }
+    }
+
+    pub fn as_predicate<Text: AsRef<str>>(&self) -> impl Fn(&Text) -> bool + '_ {
+        move |arch| self.test(arch)
+    }
+}
+
+#[test]
+fn test_filter() {
+    let arch_list = ["x86_64", "i686", "any"];
+    let any = OwnedArchFilter::Any;
+    let x86_64 = OwnedArchFilter::from_str_iter(&["x86_64"]).unwrap();
+    let i686 = OwnedArchFilter::from_str_iter(&["i686"]).unwrap();
+    let x86_64_i686 = OwnedArchFilter::from_str_iter(&["x86_64", "i686"]).unwrap();
+    let filter = |arch_filter: &OwnedArchFilter| -> Vec<&str> {
+        arch_list
+            .iter()
+            .filter(arch_filter.as_predicate())
+            .copied()
+            .collect()
+    };
+    dbg!(&any, &x86_64, &i686, &x86_64_i686);
+    let actual = (
+        filter(&any),
+        filter(&x86_64),
+        filter(&i686),
+        filter(&x86_64_i686),
+    );
+    dbg!(&actual);
+    let expected = (
+        vec!["x86_64", "i686", "any"],
+        vec!["x86_64", "any"],
+        vec!["i686", "any"],
+        vec!["x86_64", "i686", "any"],
+    );
+    assert_eq!(&actual, &expected);
 }
 
 /* SERDE HELPER */
