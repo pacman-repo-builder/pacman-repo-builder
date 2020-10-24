@@ -119,6 +119,17 @@ fn test_filter() {
     assert_eq!(&actual, &expected);
 }
 
+/* OPTION HELPER */
+
+impl<ArchCollection> Default for ArchFilter<ArchCollection>
+where
+    ArchCollection: ArchCollectionWrapper,
+{
+    fn default() -> Self {
+        ArchFilter::Any
+    }
+}
+
 /* SERDE HELPER */
 
 #[derive(Serialize, Deserialize, Copy, Clone)]
