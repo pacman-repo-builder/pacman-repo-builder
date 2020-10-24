@@ -104,6 +104,7 @@ fn require_pkgbuild_and_srcinfo() {
 #[test]
 fn with_flags() {
     let (stdout, stderr, success) = init()
+        .with_args(&["--with-record-failed-builds", "failed-builds.log"])
         .with_args(&["--with-install-missing-dependencies", "false"])
         .with_args(&["--with-clean-before-build", "true"])
         .with_args(&["--with-clean-after-build", "false"])

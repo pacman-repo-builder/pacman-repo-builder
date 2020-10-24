@@ -1,7 +1,7 @@
 use pacman_repo_builder::{
     manifest::{
-        ArchFilter, BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedGlobalSettings,
-        OwnedManifest, OwnedMember, Wrapper,
+        ArchFilter, BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedFailedBuildRecord,
+        OwnedGlobalSettings, OwnedManifest, OwnedMember, Wrapper,
     },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
@@ -102,7 +102,10 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
-            record_failed_builds: None,
+            record_failed_builds: "failed-builds.log"
+                .pipe(PathBuf::from)
+                .pipe(OwnedFailedBuildRecord::from_inner)
+                .pipe(Some),
             install_missing_dependencies: None,
             clean_before_build: Some(true),
             clean_after_build: None,
@@ -122,7 +125,10 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
-            record_failed_builds: None,
+            record_failed_builds: "failed-builds.log"
+                .pipe(PathBuf::from)
+                .pipe(OwnedFailedBuildRecord::from_inner)
+                .pipe(Some),
             install_missing_dependencies: Some(false),
             clean_before_build: Some(false),
             clean_after_build: Some(false),
