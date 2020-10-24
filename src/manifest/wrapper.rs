@@ -116,6 +116,7 @@ wrapper_type!(
     PathBuf,
     Path
 );
+
 wrapper_type!(
     Container,
     ContainerWrapper,
@@ -124,6 +125,7 @@ wrapper_type!(
     PathBuf,
     Path
 );
+
 wrapper_type!(
     Directory,
     DirectoryWrapper,
@@ -132,6 +134,7 @@ wrapper_type!(
     PathBuf,
     Path
 );
+
 wrapper_type!(
     Pacman,
     PacmanWrapper,
@@ -140,6 +143,7 @@ wrapper_type!(
     String,
     str
 );
+
 wrapper_type!(
     Packager,
     PackagerWrapper,
@@ -148,6 +152,7 @@ wrapper_type!(
     String,
     str
 );
+
 type OwnedArchVec = Vec<String>;
 type OwnedArchArray = [String];
 wrapper_type!(
@@ -158,7 +163,6 @@ wrapper_type!(
     OwnedArchVec,
     OwnedArchArray
 );
-
 impl<Item: Into<String>> FromIterator<Item> for OwnedArchCollection {
     fn from_iter<Iter: IntoIterator<Item = Item>>(iter: Iter) -> Self {
         iter.into_iter()
