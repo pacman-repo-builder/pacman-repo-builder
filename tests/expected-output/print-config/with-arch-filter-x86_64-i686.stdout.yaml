@@ -3,7 +3,7 @@ global-settings:
   repository: repo/repo.db.tar.gz
   read-build-metadata: either
   arch-filter:
-    - x86
+    - x86_64
     - i686
 members:
   - directory: mixed/either

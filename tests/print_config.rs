@@ -139,9 +139,9 @@ fn with_arch_filter_any() {
 }
 
 #[test]
-fn with_arch_filter_x86_any_i686_any() {
+fn with_arch_filter_x86_64_any_i686_any() {
     let (stdout, stderr, success) = init()
-        .with_args(&["--with-arch-filter", "x86"])
+        .with_args(&["--with-arch-filter", "x86_64"])
         .with_args(&["--with-arch-filter", "any"])
         .with_args(&["--with-arch-filter", "i686"])
         .with_args(&["--with-arch-filter", "any"])
@@ -157,15 +157,16 @@ fn with_arch_filter_x86_any_i686_any() {
 }
 
 #[test]
-fn with_arch_filter_no_any() {
+fn with_arch_filter_x86_64_i686() {
     let (stdout, stderr, success) = init()
-        .with_args(&["--with-arch-filter", "x86"])
+        .with_args(&["--with-arch-filter", "x86_64"])
         .with_args(&["--with-arch-filter", "i686"])
         .pipe(output);
     let actual = (stdout.trim(), stderr.trim(), success);
     inspect(actual);
     let expected = (
-        include_str!("./expected-output/print-config/with-arch-filter-x86-i686.stdout.yaml").trim(),
+        include_str!("./expected-output/print-config/with-arch-filter-x86_64-i686.stdout.yaml")
+            .trim(),
         "",
         true,
     );
