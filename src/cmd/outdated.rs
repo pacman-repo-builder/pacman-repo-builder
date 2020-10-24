@@ -82,8 +82,9 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         .global_settings
         .record_failed_builds
         .pipe_ref(load_failed_build_record)
-        .map_err(|error| {
-            eprintln!("⮾ {}", error);
+        .map_err(|error_pair| {
+            let (error, file) = error_pair.into_tuple();
+            eprintln!("⮾ Cannot open {:?} as a file: {}", file.as_ref(), error);
             Failure::from(Code::FailedBuildRecordLoadingFailure)
         })?;
 

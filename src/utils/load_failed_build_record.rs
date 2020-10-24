@@ -1,4 +1,5 @@
 use super::super::manifest::OwnedFailedBuildRecord;
+use super::Pair;
 use pipe_trait::*;
 use std::{
     fs::read_to_string,
@@ -7,7 +8,7 @@ use std::{
 
 pub fn load_failed_build_record(
     failed_build_record: &Option<OwnedFailedBuildRecord>,
-) -> Result<Vec<String>, io::Error> {
+) -> Result<Vec<String>, Pair<io::Error, &OwnedFailedBuildRecord>> {
     let failed_build_record = if let Some(failed_build_record) = failed_build_record {
         failed_build_record
     } else {
@@ -26,7 +27,7 @@ pub fn load_failed_build_record(
             if error.kind() == ErrorKind::NotFound {
                 Ok(Vec::new())
             } else {
-                Err(error)
+                Err(Pair::new(error, failed_build_record))
             }
         }
     }
