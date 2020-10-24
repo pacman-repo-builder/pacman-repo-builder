@@ -60,6 +60,7 @@ _Distinct Fields:_
 | `member`                        | optional, default = `[]`               | List all members.                                                                                                                  |
 | `global-settings.repository`    | required                               | Path to repository file (typically ends with `.db.tar.gz`).<br>It will be passed to `repo-add` command after each build.           |
 | `global-settings.container`     | optional, default = `.`                | Directory that contains all build directories (a.k.a. members).                                                                    |
+| `global-settings.arch-filter`   | optional, default = `any`              | Specify all CPU architectures to build.<br>Either `any` or an array of strings (e.g. `[x86_64, i686]`).                            |
 | `global-settings.packager`      | optional, default = `Unknown Packager` | Identity of person or entity that produces the packages (i.e. the one who run this program).                                       |
 | `dereference-database-symlinks` | optional, default = `false`            | If `true`, all `*.db` and `*.files` symlinks will be converted to real files.                                                      |
 | `member.directory`              | required                               | Path to build directory of each member (relative to `global-settings.container`).                                                  |
