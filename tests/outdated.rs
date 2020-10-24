@@ -10,6 +10,7 @@ fn work_dir() -> PathBuf {
         .join("tests")
         .join("fixtures")
         .join("outdated")
+        .join("simple")
 }
 
 fn init() -> Command {
@@ -50,25 +51,25 @@ macro_rules! test_case {
 test_case!(
     details_pkgname,
     "pkgname",
-    "./expected-output/outdated/details-pkgname.stdout.txt"
+    "./expected-output/outdated/simple/details-pkgname.stdout.txt"
 );
 
 test_case!(
     details_pkg_file_path,
     "pkg-file-path",
-    "./expected-output/outdated/details-pkg-file-path.stdout.txt"
+    "./expected-output/outdated/simple/details-pkg-file-path.stdout.txt"
 );
 
 test_case!(
     details_lossy_yaml,
     "lossy-yaml",
-    "./expected-output/outdated/details-lossy-yaml.stdout.yaml"
+    "./expected-output/outdated/simple/details-lossy-yaml.stdout.yaml"
 );
 
 test_case!(
     details_strict_yaml,
     "strict-yaml",
-    "./expected-output/outdated/details-strict-yaml.stdout.yaml"
+    "./expected-output/outdated/simple/details-strict-yaml.stdout.yaml"
 );
 
 #[test]
@@ -85,7 +86,7 @@ fn validate_yaml_output() {
         };
     }
     assert_eq!(
-        load!("./expected-output/outdated/details-lossy-yaml.stdout.yaml"),
-        load!("./expected-output/outdated/details-strict-yaml.stdout.yaml"),
+        load!("./expected-output/outdated/simple/details-lossy-yaml.stdout.yaml"),
+        load!("./expected-output/outdated/simple/details-strict-yaml.stdout.yaml"),
     );
 }
