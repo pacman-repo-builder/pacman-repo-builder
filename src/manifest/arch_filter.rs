@@ -55,10 +55,6 @@ where
             ArchFilter::Selective(collections) => collections.as_ref().iter().any(|x| x == arch),
         }
     }
-
-    pub fn as_predicate<Text: AsRef<str>>(&self) -> impl Fn(&Text) -> bool + Copy + '_ {
-        move |arch| self.test(arch)
-    }
 }
 
 impl OwnedArchFilter {
@@ -98,7 +94,7 @@ fn test_filter() {
     let filter = |arch_filter: &OwnedArchFilter| -> Vec<&str> {
         arch_list
             .iter()
-            .filter(arch_filter.as_predicate())
+            .filter(|arch| arch_filter.test(arch))
             .copied()
             .collect()
     };
