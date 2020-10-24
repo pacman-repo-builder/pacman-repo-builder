@@ -5,17 +5,17 @@ use std::{path::PathBuf, process::Command};
 const EXE: &str = env!("CARGO_BIN_EXE_build-pacman-repo");
 const ROOT: &str = env!("CARGO_MANIFEST_DIR");
 
-fn work_dir() -> PathBuf {
+fn work_dir(branch: &'static str) -> PathBuf {
     ROOT.pipe(PathBuf::from)
         .join("tests")
         .join("fixtures")
         .join("outdated")
-        .join("simple")
+        .join(branch)
 }
 
-fn init() -> Command {
+fn init(branch: &'static str) -> Command {
     Command::new(EXE)
-        .with_current_dir(work_dir())
+        .with_current_dir(work_dir(branch))
         .with_arg("outdated")
 }
 
@@ -34,11 +34,13 @@ fn output(mut command: Command) -> (String, String, bool) {
 }
 
 macro_rules! test_case {
-    ($name:ident, $details:literal, $expected:literal) => {
+    ($name:ident, $branch:literal, $details:literal, $expected:literal) => {
         #[test]
         fn $name() {
-            let (stdout, stderr, success) =
-                init().with_arg("--details").with_arg($details).pipe(output);
+            let (stdout, stderr, success) = init($branch)
+                .with_arg("--details")
+                .with_arg($details)
+                .pipe(output);
             eprintln!("    ==> command stdout\n{}", stdout.as_str());
             eprintln!("    ==> command stderr\n{}", stderr.as_str());
             let actual = (stdout.as_str(), stderr.trim(), success);
@@ -50,24 +52,28 @@ macro_rules! test_case {
 
 test_case!(
     details_pkgname,
+    "simple",
     "pkgname",
     "./expected-output/outdated/simple/details-pkgname.stdout.txt"
 );
 
 test_case!(
     details_pkg_file_path,
+    "simple",
     "pkg-file-path",
     "./expected-output/outdated/simple/details-pkg-file-path.stdout.txt"
 );
 
 test_case!(
     details_lossy_yaml,
+    "simple",
     "lossy-yaml",
     "./expected-output/outdated/simple/details-lossy-yaml.stdout.yaml"
 );
 
 test_case!(
     details_strict_yaml,
+    "simple",
     "strict-yaml",
     "./expected-output/outdated/simple/details-strict-yaml.stdout.yaml"
 );
