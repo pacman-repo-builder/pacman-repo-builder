@@ -54,3 +54,6 @@ features = ["derive"]
 [dev-dependencies]
 tempfile = "^3.1.0"
 fs_extra = "^1.2.0"
+
+[profile.release]
+opt-level = "s"
