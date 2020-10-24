@@ -1,6 +1,9 @@
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::{
+    iter::FromIterator,
+    path::{Path, PathBuf},
+};
 
 pub trait Wrapper<Inner, OwnedInner, BorrowedInner: ?Sized> {
     fn from_inner(inner: Inner) -> Self;
@@ -44,8 +47,8 @@ macro_rules! wrapper_type {
         pub type $owned_alias = $name<$owned_inner>;
         pub type $borrowed_alias<'a> = $name<&'a $borrowed_inner>;
 
-        pub trait $trait_name: Associations + AsRef<$borrowed_inner> {}
-        impl<Inner: AsRef<$borrowed_inner>> $trait_name for $name<Inner> {}
+        pub trait $trait_name: Associations + AsRef<$borrowed_inner> + Clone {}
+        impl<Inner: AsRef<$borrowed_inner> + Clone> $trait_name for $name<Inner> {}
 
         impl<Inner: AsRef<$borrowed_inner>> Wrapper<Inner, $owned_inner, $borrowed_inner>
             for $name<Inner>
@@ -145,3 +148,22 @@ wrapper_type!(
     String,
     str
 );
+type OwnedArchVec = Vec<String>;
+type OwnedArchArray = [String];
+wrapper_type!(
+    ArchCollection,
+    ArchCollectionWrapper,
+    OwnedArchCollection,
+    BorrowedArchCollection,
+    OwnedArchVec,
+    OwnedArchArray
+);
+
+impl<Item: Into<String>> FromIterator<Item> for OwnedArchCollection {
+    fn from_iter<Iter: IntoIterator<Item = Item>>(iter: Iter) -> Self {
+        iter.into_iter()
+            .map(Into::into)
+            .collect::<Vec<_>>()
+            .pipe(OwnedArchCollection::from_inner)
+    }
+}

@@ -86,11 +86,12 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
 
     pub fn package_file_base_names(
         &self,
+        filter_arch: impl Fn(&&str) -> bool,
     ) -> Result<impl Iterator<Item = PackageFileName<&str, String, &str>> + '_, String> {
         let version = self.version().map_err(String::from)?.try_to_string()?;
 
         self.pkgname()
-            .cartesian_product(self.arch().collect::<Vec<_>>())
+            .cartesian_product(self.arch().filter(filter_arch).collect::<Vec<_>>())
             .map(move |(pkgname, arch)| PackageFileName {
                 pkgname,
                 arch,

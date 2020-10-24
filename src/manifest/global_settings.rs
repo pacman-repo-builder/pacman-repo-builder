@@ -1,17 +1,19 @@
 use super::{
-    BorrowedContainer, BorrowedPackager, BorrowedPacman, BorrowedRepository, BorrowedWrapper,
-    BuildMetadata, ContainerWrapper, OwnedContainer, OwnedPackager, OwnedPacman, OwnedRepository,
-    OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
+    ArchCollectionWrapper, ArchFilter, BorrowedArchCollection, BorrowedContainer, BorrowedPackager,
+    BorrowedPacman, BorrowedRepository, BorrowedWrapper, BuildMetadata, ContainerWrapper,
+    OwnedArchCollection, OwnedContainer, OwnedPackager, OwnedPacman, OwnedRepository, OwnedWrapper,
+    PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct GlobalSettings<Repository, Container, Pacman, Packager>
+pub struct GlobalSettings<Repository, Container, ArchCollection, Pacman, Packager>
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
 {
@@ -29,6 +31,8 @@ where
     #[serde(skip_serializing_if = "Option::is_none")]
     pub force_rebuild: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub arch_filter: Option<ArchFilter<ArchCollection>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub pacman: Option<Pacman>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub packager: Option<Packager>,
@@ -38,20 +42,27 @@ where
     pub dereference_database_symlinks: Option<bool>,
 }
 
-pub type OwnedGlobalSettings =
-    GlobalSettings<OwnedRepository, OwnedContainer, OwnedPacman, OwnedPackager>;
+pub type OwnedGlobalSettings = GlobalSettings<
+    OwnedRepository,
+    OwnedContainer,
+    OwnedArchCollection,
+    OwnedPacman,
+    OwnedPackager,
+>;
 pub type BorrowedGlobalSettings<'a> = GlobalSettings<
     BorrowedRepository<'a>,
     BorrowedContainer<'a>,
+    BorrowedArchCollection<'a>,
     BorrowedPacman<'a>,
     BorrowedPackager<'a>,
 >;
 
-impl<Repository, Container, Pacman, Packager>
-    GlobalSettings<Repository, Container, Pacman, Packager>
+impl<Repository, Container, ArchCollection, Pacman, Packager>
+    GlobalSettings<Repository, Container, ArchCollection, Pacman, Packager>
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
 {
@@ -64,6 +75,7 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
+            arch_filter: self.arch_filter.as_ref().map(ArchFilter::as_slice),
             pacman: self.pacman.as_ref().map(BorrowedWrapper::from_inner_ref),
             packager: self.packager.as_ref().map(BorrowedWrapper::from_inner_ref),
             allow_failure: self.allow_failure,
@@ -80,6 +92,7 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
+            arch_filter: self.arch_filter.as_ref().map(ArchFilter::to_vec),
             pacman: self.pacman.as_ref().map(OwnedWrapper::new_owned_from),
             packager: self.packager.as_ref().map(OwnedWrapper::new_owned_from),
             allow_failure: self.allow_failure,

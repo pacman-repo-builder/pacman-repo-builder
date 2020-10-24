@@ -1,7 +1,7 @@
 use pacman_repo_builder::{
     manifest::{
-        BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedGlobalSettings, OwnedManifest,
-        OwnedMember, Wrapper,
+        ArchFilter, BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedGlobalSettings,
+        OwnedManifest, OwnedMember, Wrapper,
     },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
@@ -69,6 +69,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             clean_before_build: None,
             clean_after_build: None,
             force_rebuild: None,
+            arch_filter: None,
             pacman: None,
             packager: None,
             allow_failure: None,
@@ -87,6 +88,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             clean_before_build: None,
             clean_after_build: Some(false),
             force_rebuild: None,
+            arch_filter: Some(ArchFilter::Any),
             pacman: Some("pacman".to_owned_wrapper()),
             packager: None,
             allow_failure: Some(true),
@@ -102,6 +104,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             clean_before_build: Some(true),
             clean_after_build: None,
             force_rebuild: Some(false),
+            arch_filter: ArchFilter::from_str_iter(&["x86_64", "i686"]),
             pacman: None,
             packager: Some("Bob <bob@example.com>".to_owned_wrapper()),
             allow_failure: None,
@@ -120,6 +123,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             clean_before_build: Some(false),
             clean_after_build: Some(false),
             force_rebuild: Some(true),
+            arch_filter: ArchFilter::from_str_iter(&["x86_64", "i686"]),
             pacman: Some("pacman".to_owned_wrapper()),
             packager: Some("Bob <bob@example.com>".to_owned_wrapper()),
             allow_failure: Some(true),
