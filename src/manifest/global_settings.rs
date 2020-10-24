@@ -80,39 +80,48 @@ where
     Packager: PackagerWrapper,
 {
     pub fn as_path(&self) -> BorrowedGlobalSettings<'_> {
+        macro_rules! convert_option {
+            ($name:ident) => {
+                self.$name.as_ref().map(BorrowedWrapper::from_inner_ref)
+            };
+        }
+
         GlobalSettings {
             repository: self.repository.as_ref().pipe(Wrapper::from_inner),
-            container: self.container.as_ref().map(BorrowedWrapper::from_inner_ref),
+            container: convert_option!(container),
             read_build_metadata: self.read_build_metadata,
-            record_failed_builds: self
-                .record_failed_builds
-                .as_ref()
-                .map(BorrowedWrapper::from_inner_ref),
+            record_failed_builds: convert_option!(record_failed_builds),
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
             arch_filter: self.arch_filter.as_ref().map(ArchFilter::as_slice),
-            pacman: self.pacman.as_ref().map(BorrowedWrapper::from_inner_ref),
-            packager: self.packager.as_ref().map(BorrowedWrapper::from_inner_ref),
+            pacman: convert_option!(pacman),
+            packager: convert_option!(packager),
             allow_failure: self.allow_failure,
             dereference_database_symlinks: self.dereference_database_symlinks,
         }
     }
 
     pub fn to_path_buf(&self) -> OwnedGlobalSettings {
+        macro_rules! convert_option {
+            ($name:ident) => {
+                self.$name.as_ref().map(OwnedWrapper::new_owned_from)
+            };
+        }
+
         GlobalSettings {
             repository: self.repository.as_ref().pipe(OwnedWrapper::new_owned_from),
-            container: self.container.as_ref().map(OwnedWrapper::new_owned_from),
+            container: convert_option!(container),
             read_build_metadata: self.read_build_metadata,
-            record_failed_builds: self.container.as_ref().map(OwnedWrapper::new_owned_from),
+            record_failed_builds: convert_option!(record_failed_builds),
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
             arch_filter: self.arch_filter.as_ref().map(ArchFilter::to_vec),
-            pacman: self.pacman.as_ref().map(OwnedWrapper::new_owned_from),
-            packager: self.packager.as_ref().map(OwnedWrapper::new_owned_from),
+            pacman: convert_option!(pacman),
+            packager: convert_option!(packager),
             allow_failure: self.allow_failure,
             dereference_database_symlinks: self.dereference_database_symlinks,
         }
