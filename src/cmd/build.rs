@@ -3,7 +3,10 @@ use super::super::{
     manifest::{GlobalSettings, Member},
     srcinfo::database::DatabaseValue,
     status::{Code, Failure, Status},
-    utils::{create_makepkg_command, run_deref_db, CommandUtils, DbInit, DbInitValue},
+    utils::{
+        create_makepkg_command, load_failed_build_record, run_deref_db, CommandUtils, DbInit,
+        DbInitValue,
+    },
 };
 use command_extra::CommandExtra;
 use pipe_trait::*;
@@ -24,6 +27,7 @@ pub fn build(args: BuildArgs) -> Status {
     } = db_init.init()?;
 
     let GlobalSettings {
+        record_failed_builds,
         packager,
         dereference_database_symlinks,
         arch_filter,
@@ -33,6 +37,13 @@ pub fn build(args: BuildArgs) -> Status {
     let dereference_database_symlinks = dereference_database_symlinks.unwrap_or(false);
     let default_arch_filter = Default::default();
     let arch_filter = arch_filter.as_ref().unwrap_or(&default_arch_filter);
+
+    let failed_build_record =
+        load_failed_build_record(record_failed_builds).map_err(|error_pair| {
+            let (error, file) = error_pair.into_tuple();
+            eprintln!("⮾ Cannot load {:?} as a file: {}", file.as_ref(), error);
+            Failure::from(Code::FailedBuildRecordLoadingFailure)
+        })?;
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
@@ -100,7 +111,9 @@ pub fn build(args: BuildArgs) -> Status {
         let future_package_files: Vec<_> = srcinfo
             .package_file_base_names(|arch| arch_filter.test(arch))
             .expect("get future package file base names")
-            .map(|name| repository_directory.join(name.to_string()))
+            .map(|name| name.to_string())
+            .filter(|name| !failed_build_record.contains(name))
+            .map(|name| repository_directory.join(name))
             .collect();
 
         if !force_rebuild && future_package_files.iter().all(|path| path.exists()) {
