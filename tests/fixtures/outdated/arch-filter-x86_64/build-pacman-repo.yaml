@@ -1,0 +1,12 @@
+global-settings:
+  container: build
+  repository: repo/repo.db.tar.gz
+  arch-filter:
+    - x86_64
+members:
+  - directory: out-of-date-by-arch
+  - directory: out-of-date-by-epoch
+  - directory: out-of-date-by-pkgrel
+  - directory: out-of-date-by-pkgver
+  - directory: up-to-date-pkgbuild
+  - directory: up-to-date-srcinfo
