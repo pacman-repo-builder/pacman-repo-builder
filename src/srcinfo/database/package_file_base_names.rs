@@ -12,16 +12,17 @@ where
     SrcInfoContent: AsRef<str>,
     BuildDir: AsRef<Path>,
 {
-    pub fn package_file_base_names(
-        &self,
+    pub fn package_file_base_names<'a>(
+        &'a self,
+        filter_arch: impl Fn(&&str) -> bool + Copy + 'a,
     ) -> impl Iterator<
         Item = Result<PackageFileName<&str, String, &str>, Error<PkgBase, SrcInfoContent>>,
-    > + '_ {
+    > + 'a {
         self.pkgbase()
             .iter()
-            .flat_map(|(pkgbase, value)| -> Box<dyn Iterator<Item = _>> {
+            .flat_map(move |(pkgbase, value)| -> Box<dyn Iterator<Item = _>> {
                 let DatabaseValue { srcinfo, .. } = value;
-                match srcinfo.package_file_base_names() {
+                match srcinfo.package_file_base_names(filter_arch) {
                     Ok(iter) => iter.map(Ok).pipe(Box::new),
                     Err(message) => Error {
                         pkgbase,

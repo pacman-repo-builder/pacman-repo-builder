@@ -17,8 +17,10 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         mut error_count,
     } = db_init.init()?;
 
+    let arch_filter = manifest.global_settings.arch_filter.unwrap_or_default();
+
     let latest_packages: Vec<_> = database
-        .package_file_base_names()
+        .package_file_base_names(|arch| arch_filter.test(arch))
         .filter_map(|item| match item {
             Err(error) => {
                 eprintln!("⮾ Error in pkgbase of {}: {}", error.pkgbase, error.message);

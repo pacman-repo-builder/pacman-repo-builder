@@ -26,10 +26,13 @@ pub fn build(args: BuildArgs) -> Status {
     let GlobalSettings {
         packager,
         dereference_database_symlinks,
+        arch_filter,
         ..
     } = &manifest.global_settings;
     let packager: Option<&str> = packager.as_ref().map(AsRef::as_ref);
     let dereference_database_symlinks = dereference_database_symlinks.unwrap_or(false);
+    let default_arch_filter = Default::default();
+    let arch_filter = arch_filter.as_ref().unwrap_or(&default_arch_filter);
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
@@ -95,7 +98,7 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!();
 
         let future_package_files: Vec<_> = srcinfo
-            .package_file_base_names()
+            .package_file_base_names(|arch| arch_filter.test(arch))
             .expect("get future package file base names")
             .map(|name| repository_directory.join(name.to_string()))
             .collect();
@@ -162,7 +165,7 @@ pub fn build(args: BuildArgs) -> Status {
         }
 
         for pkg_file_name in srcinfo
-            .package_file_base_names()
+            .package_file_base_names(|arch| arch_filter.test(arch))
             .expect("get package file base names")
         {
             let pkg_file_name = &pkg_file_name.to_string();
