@@ -32,6 +32,8 @@ pub struct PrintConfigArgs {
         description = "skip if directory does not contains package info file"
     )]
     pub require_srcinfo: bool,
+    #[argh(option, description = "set record-failed-builds")]
+    pub with_record_failed_builds: Option<PathBuf>,
     #[argh(option, description = "set install-missing-dependencies")]
     pub with_install_missing_dependencies: Option<bool>,
     #[argh(option, description = "set clean-before-build")]

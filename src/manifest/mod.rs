@@ -10,11 +10,12 @@ pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSet
 pub use member::{BorrowedMember, Member, OwnedMember};
 pub use wrapper::{
     ArchCollection, ArchCollectionWrapper, Associations, BorrowedArchCollection, BorrowedContainer,
-    BorrowedDirectory, BorrowedInner, BorrowedPackager, BorrowedPacman, BorrowedRepository,
-    BorrowedWrapper, Container, ContainerWrapper, Directory, DirectoryWrapper, OwnedArchCollection,
-    OwnedContainer, OwnedDirectory, OwnedInner, OwnedPackager, OwnedPacman, OwnedRepository,
-    OwnedWrapper, Packager, PackagerWrapper, Pacman, PacmanWrapper, Repository, RepositoryWrapper,
-    Wrapper,
+    BorrowedDirectory, BorrowedFailedBuildRecord, BorrowedInner, BorrowedPackager, BorrowedPacman,
+    BorrowedRepository, BorrowedWrapper, Container, ContainerWrapper, Directory, DirectoryWrapper,
+    FailedBuildRecord, FailedBuildRecordWrapper, OwnedArchCollection, OwnedContainer,
+    OwnedDirectory, OwnedFailedBuildRecord, OwnedInner, OwnedPackager, OwnedPacman,
+    OwnedRepository, OwnedWrapper, Packager, PackagerWrapper, Pacman, PacmanWrapper, Repository,
+    RepositoryWrapper, Wrapper,
 };
 
 use pipe_trait::*;
@@ -25,22 +26,32 @@ pub const MANIFEST_BASENAME: &str = "build-pacman-repo.yaml";
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct Manifest<Repository, Container, ArchCollection, Pacman, Packager, Directory>
-where
+pub struct Manifest<
+    Repository,
+    Container,
+    FailedBuildRecord,
+    ArchCollection,
+    Pacman,
+    Packager,
+    Directory,
+> where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    FailedBuildRecord: FailedBuildRecordWrapper,
     ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
     Directory: DirectoryWrapper,
 {
-    pub global_settings: GlobalSettings<Repository, Container, ArchCollection, Pacman, Packager>,
+    pub global_settings:
+        GlobalSettings<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager>,
     pub members: Vec<Member<Directory, Pacman>>,
 }
 
 pub type OwnedManifest = Manifest<
     OwnedRepository,
     OwnedContainer,
+    OwnedFailedBuildRecord,
     OwnedArchCollection,
     OwnedPacman,
     OwnedPackager,
@@ -49,17 +60,19 @@ pub type OwnedManifest = Manifest<
 pub type BorrowedManifest<'a> = Manifest<
     BorrowedRepository<'a>,
     BorrowedContainer<'a>,
+    BorrowedFailedBuildRecord<'a>,
     BorrowedArchCollection<'a>,
     BorrowedPacman<'a>,
     BorrowedPackager<'a>,
     BorrowedDirectory<'a>,
 >;
 
-impl<Repository, Container, ArchCollection, Pacman, Packager, Directory>
-    Manifest<Repository, Container, ArchCollection, Pacman, Packager, Directory>
+impl<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager, Directory>
+    Manifest<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager, Directory>
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    FailedBuildRecord: FailedBuildRecordWrapper,
     ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,

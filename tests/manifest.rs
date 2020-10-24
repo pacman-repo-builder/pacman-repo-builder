@@ -65,6 +65,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
+            record_failed_builds: None,
             install_missing_dependencies: None,
             clean_before_build: None,
             clean_after_build: None,
@@ -84,6 +85,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
+            record_failed_builds: None,
             install_missing_dependencies: Some(false),
             clean_before_build: None,
             clean_after_build: Some(false),
@@ -100,6 +102,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
+            record_failed_builds: None,
             install_missing_dependencies: None,
             clean_before_build: Some(true),
             clean_after_build: None,
@@ -119,6 +122,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
+            record_failed_builds: None,
             install_missing_dependencies: Some(false),
             clean_before_build: Some(false),
             clean_after_build: Some(false),

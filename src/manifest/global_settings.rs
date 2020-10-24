@@ -1,18 +1,26 @@
 use super::{
-    ArchCollectionWrapper, ArchFilter, BorrowedArchCollection, BorrowedContainer, BorrowedPackager,
-    BorrowedPacman, BorrowedRepository, BorrowedWrapper, BuildMetadata, ContainerWrapper,
-    OwnedArchCollection, OwnedContainer, OwnedPackager, OwnedPacman, OwnedRepository, OwnedWrapper,
-    PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
+    ArchCollectionWrapper, ArchFilter, BorrowedArchCollection, BorrowedContainer,
+    BorrowedFailedBuildRecord, BorrowedPackager, BorrowedPacman, BorrowedRepository,
+    BorrowedWrapper, BuildMetadata, ContainerWrapper, FailedBuildRecordWrapper,
+    OwnedArchCollection, OwnedContainer, OwnedFailedBuildRecord, OwnedPackager, OwnedPacman,
+    OwnedRepository, OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct GlobalSettings<Repository, Container, ArchCollection, Pacman, Packager>
-where
+pub struct GlobalSettings<
+    Repository,
+    Container,
+    FailedBuildRecord,
+    ArchCollection,
+    Pacman,
+    Packager,
+> where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    FailedBuildRecord: FailedBuildRecordWrapper,
     ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
@@ -22,6 +30,8 @@ where
     pub container: Option<Container>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_build_metadata: Option<BuildMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub record_failed_builds: Option<FailedBuildRecord>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub install_missing_dependencies: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -45,6 +55,7 @@ where
 pub type OwnedGlobalSettings = GlobalSettings<
     OwnedRepository,
     OwnedContainer,
+    OwnedFailedBuildRecord,
     OwnedArchCollection,
     OwnedPacman,
     OwnedPackager,
@@ -52,16 +63,18 @@ pub type OwnedGlobalSettings = GlobalSettings<
 pub type BorrowedGlobalSettings<'a> = GlobalSettings<
     BorrowedRepository<'a>,
     BorrowedContainer<'a>,
+    BorrowedFailedBuildRecord<'a>,
     BorrowedArchCollection<'a>,
     BorrowedPacman<'a>,
     BorrowedPackager<'a>,
 >;
 
-impl<Repository, Container, ArchCollection, Pacman, Packager>
-    GlobalSettings<Repository, Container, ArchCollection, Pacman, Packager>
+impl<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager>
+    GlobalSettings<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager>
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
+    FailedBuildRecord: FailedBuildRecordWrapper,
     ArchCollection: ArchCollectionWrapper,
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
@@ -71,6 +84,10 @@ where
             repository: self.repository.as_ref().pipe(Wrapper::from_inner),
             container: self.container.as_ref().map(BorrowedWrapper::from_inner_ref),
             read_build_metadata: self.read_build_metadata,
+            record_failed_builds: self
+                .record_failed_builds
+                .as_ref()
+                .map(BorrowedWrapper::from_inner_ref),
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
@@ -88,6 +105,7 @@ where
             repository: self.repository.as_ref().pipe(OwnedWrapper::new_owned_from),
             container: self.container.as_ref().map(OwnedWrapper::new_owned_from),
             read_build_metadata: self.read_build_metadata,
+            record_failed_builds: self.container.as_ref().map(OwnedWrapper::new_owned_from),
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
