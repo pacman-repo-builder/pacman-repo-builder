@@ -44,6 +44,21 @@ where
                 .pipe(ArchFilter::Selective),
         }
     }
+
+    pub fn test(&self, arch: impl AsRef<str>) -> bool {
+        let arch = arch.as_ref();
+        if arch == "any" {
+            return true;
+        }
+        match self {
+            ArchFilter::Any => true,
+            ArchFilter::Selective(collections) => collections.as_ref().iter().any(|x| x == arch),
+        }
+    }
+
+    pub fn as_predicate<Text: AsRef<str>>(&self) -> impl Fn(&Text) -> bool + '_ {
+        move |arch| self.test(arch)
+    }
 }
 
 impl OwnedArchFilter {
@@ -70,21 +85,6 @@ impl OwnedArchFilter {
             .map(|x| x.to_string())
             .collect::<Vec<_>>()
             .pipe(OwnedArchFilter::from_arch_vec)
-    }
-
-    pub fn test(&self, arch: impl AsRef<str>) -> bool {
-        let arch = arch.as_ref();
-        if arch == "any" {
-            return true;
-        }
-        match self {
-            ArchFilter::Any => true,
-            ArchFilter::Selective(collections) => collections.as_ref().iter().any(|x| x == arch),
-        }
-    }
-
-    pub fn as_predicate<Text: AsRef<str>>(&self) -> impl Fn(&Text) -> bool + '_ {
-        move |arch| self.test(arch)
     }
 }
 
