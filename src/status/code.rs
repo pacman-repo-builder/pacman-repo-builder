@@ -8,6 +8,7 @@ pub enum Code {
     SrcInfoOutOfSync = 3,
     CyclicDependency = 4,
     UnrecognizedMakePkg = 5,
+    FailedBuildRecordLoadingFailure = 6,
 }
 
 impl Into<Status> for Code {
