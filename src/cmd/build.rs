@@ -143,9 +143,9 @@ pub fn build(args: BuildArgs) -> Status {
         }
 
         let is_failed = |name: PackageFileName<&str, String, &str>| {
-            failed_build_record
-                .iter()
-                .any(|x| name.to_string() == x.to_string())
+            failed_build_record.iter().any(|x| {
+                name.pkgname == x.pkgname && name.arch == x.arch && name.version == x.version
+            })
         };
         if !force_rebuild && package_file_base_names().all(is_failed) {
             eprintln!("⚠ Failures had been recorded. Skip.");
