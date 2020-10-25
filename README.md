@@ -54,19 +54,29 @@ members:
 
 **Field Explanations:**
 
-_Distinct Fields:_
+_Top-Level:_
 
-| Field                                  | Type                            | Required/Optional                      | Description                                                                                                                        |
-|----------------------------------------|---------------------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| `global-settings`                      | object                          | required                               | Includes global settings from which all members inherit from.<br>Some settings can be overwritten by member customized properties. |
-| `member`                               | list                            | optional, default = `[]`               | List all members.                                                                                                                  |
-| `global-settings.repository`           | `string`                        | required                               | Path to repository file (typically ends with `.db.tar.gz`).<br>It will be passed to `repo-add` command after each build.           |
-| `global-settings.container`            | `string`                        | optional, default = `.`                | Directory that contains all build directories (a.k.a. members).                                                                    |
-| `global-settings.record-failed-builds` | `string`                        | optional                               | If specified, old failed builds shall be skipped, and new failed builds shall be added to the file.                                |
-| `global-settings.arch-filter`          | <code>"any" \| string[]</code>  | optional, default = `any`              | Specify all CPU architectures to build.<br>Either `any` or an array of strings (e.g. `[x86_64, i686]`).                            |
-| `global-settings.packager`             | `string`                        | optional, default = `Unknown Packager` | Identity of person or entity that produces the packages (i.e. the one who run this program).                                       |
-| `dereference-database-symlinks`        | `boolean`                       | optional, default = `false`            | If `true`, all `*.db` and `*.files` symlinks will be converted to real files.                                                      |
-| `member.directory`                     | `string`                        | required                               | Path to build directory of each member (relative to `global-settings.container`).                                                  |
+| Field             | Type   | Description                                                                                                                        |
+|-------------------|--------|------------------------------------------------------------------------------------------------------------------------------------|
+| `global-settings` | object | Includes global settings from which all members inherit from.<br>Some settings can be overwritten by member customized properties. |
+| `member`          | list   | List all members.                                                                                                                  |
+
+_`global-settings`'s own fields:_
+
+| Field                            | Type                           | Required/Optional                      | Description                                                                                                                        |
+|----------------------------------|--------------------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `repository`                     | `string`                       | required                               | Path to repository file (typically ends with `.db.tar.gz`).<br>It will be passed to `repo-add` command after each build.           |
+| `container`                      | `string`                       | optional, default = `.`                | Directory that contains all build directories (a.k.a. members).                                                                    |
+| `record-failed-builds`           | `string`                       | optional                               | If specified, old failed builds shall be skipped, and new failed builds shall be added to the file.                                |
+| `arch-filter`                    | <code>"any" \| string[]</code> | optional, default = `any`              | Specify all CPU architectures to build.<br>Either `any` or an array of strings (e.g. `[x86_64, i686]`).                            |
+| `packager`                       | `string`                       | optional, default = `Unknown Packager` | Identity of person or entity that produces the packages (i.e. the one who run this program).                                       |
+| `dereference-database-symlinks`  | `boolean`                      | optional, default = `false`            | If `true`, all `*.db` and `*.files` symlinks will be converted to real files.                                                      |
+
+_`member`'s own fields:_
+
+| Field       | Type     | Required/Optional | Description                                                                       |
+|-------------|----------|-------------------|-----------------------------------------------------------------------------------|
+| `directory` | `string` | required          | Path to build directory of each member (relative to `global-settings.container`). |
 
 _Shared Fields:_ Fields that exist in both `global-settings` and `member`. If `global-settings` and `member` both contain a field, `member`'s field will be prioritized.
 
