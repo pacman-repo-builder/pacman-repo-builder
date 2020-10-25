@@ -113,9 +113,7 @@ pub fn build(args: BuildArgs) -> Status {
         };
 
         let future_package_files: Vec<_> = package_file_base_names()
-            .map(|name| name.to_string())
-            .filter(|name| failed_build_record.iter().all(|x| &x.to_string() != name))
-            .map(|name| repository_directory.join(name))
+            .map(|name| repository_directory.join(name.to_string()))
             .collect();
 
         if !force_rebuild && future_package_files.iter().all(|path| path.exists()) {
@@ -141,6 +139,16 @@ pub fn build(args: BuildArgs) -> Status {
                 return Ok(status);
             }
 
+            continue;
+        }
+
+        let is_failed = |name: PackageFileName<&str, String, &str>| {
+            failed_build_record
+                .iter()
+                .any(|x| name.to_string() == x.to_string())
+        };
+        if !force_rebuild && package_file_base_names().all(is_failed) {
+            eprintln!("⚠ Failures had been recorded. Skip.");
             continue;
         }
 
