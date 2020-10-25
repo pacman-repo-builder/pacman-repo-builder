@@ -102,7 +102,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
-            record_failed_builds: "failed-builds.log"
+            record_failed_builds: "failed-builds.yaml"
                 .pipe(PathBuf::from)
                 .pipe(OwnedFailedBuildRecord::from_inner)
                 .pipe(Some),
@@ -125,7 +125,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             repository: "repo/repo.db.tar.gz"
                 .pipe(PathBuf::from)
                 .pipe(Wrapper::from_inner),
-            record_failed_builds: "failed-builds.log"
+            record_failed_builds: "failed-builds.yaml"
                 .pipe(PathBuf::from)
                 .pipe(OwnedFailedBuildRecord::from_inner)
                 .pipe(Some),

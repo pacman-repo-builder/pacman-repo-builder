@@ -2,7 +2,7 @@
 global-settings:
   repository: repo/repo.db.tar.gz
   read-build-metadata: either
-  record-failed-builds: failed-builds.log
+  record-failed-builds: failed-builds.yaml
   install-missing-dependencies: false
   clean-before-build: true
   clean-after-build: false
