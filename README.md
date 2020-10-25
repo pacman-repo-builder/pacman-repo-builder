@@ -26,6 +26,7 @@ global-settings:
   clean-after-build: false
   force-rebuild: true
   pacman: pacman
+  arch-filter: [x86_64]
   packager: Bob <bob@example.com>
   allow-failure: true
   dereference-database-symlinks: true
