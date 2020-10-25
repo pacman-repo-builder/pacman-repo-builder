@@ -1,13 +1,11 @@
 use super::super::manifest::OwnedFailedBuildRecord;
-use super::FailedBuildRecord;
+use super::PackageFileName;
 use pipe_trait::*;
 use std::{fs::File, io::ErrorKind};
 
-type Record = FailedBuildRecord<String, String, String>;
-
 pub fn load_failed_build_record(
     failed_build_record: &Option<OwnedFailedBuildRecord>,
-) -> Result<Record, String> {
+) -> Result<Vec<PackageFileName<String, String, String>>, String> {
     let failed_build_record = if let Some(failed_build_record) = failed_build_record {
         failed_build_record
     } else {

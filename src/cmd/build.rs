@@ -5,7 +5,7 @@ use super::super::{
     status::{Code, Failure, Status},
     utils::{
         create_makepkg_command, load_failed_build_record, run_deref_db, CommandUtils, DbInit,
-        DbInitValue, FailedBuildRecordItem, PackageFileName,
+        DbInitValue, PackageFileName,
     },
 };
 use command_extra::CommandExtra;
@@ -114,11 +114,7 @@ pub fn build(args: BuildArgs) -> Status {
 
         let future_package_files: Vec<_> = package_file_base_names()
             .map(|name| name.to_string())
-            .filter(|name| {
-                failed_build_record
-                    .iter()
-                    .all(|x| &x.package_file_name.to_string() != name)
-            })
+            .filter(|name| failed_build_record.iter().all(|x| &x.to_string() != name))
             .map(|name| repository_directory.join(name))
             .collect();
 
@@ -175,8 +171,7 @@ pub fn build(args: BuildArgs) -> Status {
             if allow_failure {
                 eprintln!("⚠ makepkg exits with non-zero status code: {}", status);
                 eprintln!("⚠ skip {}", pkgbase);
-                let record = package_file_base_names().map(FailedBuildRecordItem::now);
-                failed_builds.push((*pkgbase, directory, record));
+                failed_builds.push((*pkgbase, directory, package_file_base_names()));
                 continue;
             } else {
                 eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
@@ -261,24 +256,17 @@ pub fn build(args: BuildArgs) -> Status {
         if let Some(record_path) = record_failed_builds {
             let mut failed_build_record = failed_build_record;
             for (_, _, record) in failed_builds {
-                for item in record {
-                    let FailedBuildRecordItem {
-                        date,
-                        package_file_name:
-                            PackageFileName {
-                                pkgname,
-                                version,
-                                arch,
-                            },
-                    } = item;
-                    failed_build_record.push(FailedBuildRecordItem {
-                        date,
-                        package_file_name: PackageFileName {
-                            pkgname: pkgname.to_string(),
-                            version,
-                            arch: arch.to_string(),
-                        },
-                    })
+                for PackageFileName {
+                    pkgname,
+                    version,
+                    arch,
+                } in record
+                {
+                    failed_build_record.push(PackageFileName {
+                        pkgname: pkgname.to_string(),
+                        version,
+                        arch: arch.to_string(),
+                    });
                 }
             }
 

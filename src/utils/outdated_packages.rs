@@ -1,17 +1,13 @@
-use super::FailedBuildRecordItem;
+use super::PackageFileName;
 use std::fmt::Display;
 
 pub fn outdated_packages<'a, Latest: ToString>(
     latest_packages: impl IntoIterator<Item = Latest> + 'a,
     current_packages: &'a [String],
-    failed_builds: &'a [FailedBuildRecordItem<impl Display, impl Display, impl Display>],
+    failed_builds: &'a [PackageFileName<impl Display, impl Display, impl Display>],
 ) -> impl Iterator<Item = (String, Latest)> + 'a {
-    let not_failed = move |filename: &String| {
-        failed_builds
-            .iter()
-            .map(|x| &x.package_file_name)
-            .all(|x| &x.to_string() != filename)
-    };
+    let not_failed =
+        move |filename: &String| failed_builds.iter().all(|x| &x.to_string() != filename);
 
     latest_packages
         .into_iter()
@@ -58,8 +54,7 @@ fn test() {
         pkgname: "jkl",
         version: "3.3.3-3",
         arch: "any",
-    }
-    .into()];
+    }];
 
     let actual: Vec<_> =
         outdated_packages(&latest_packages, &current_packages, &failed_builds).collect();
