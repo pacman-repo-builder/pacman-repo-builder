@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
 use std::fmt::{self, Display, Formatter};
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Copy, Clone)]
+#[serde(rename_all = "kebab-case")]
 pub struct PackageFileName<PkgName, Version, Arch>
 where
     PkgName: Display,
