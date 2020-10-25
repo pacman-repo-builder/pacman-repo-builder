@@ -7,10 +7,10 @@ pub fn outdated_packages<'a, Latest: ToString>(
     failed_builds: &'a [FailedBuildRecordItem<impl Display, impl Display, impl Display>],
 ) -> impl Iterator<Item = (String, Latest)> + 'a {
     let not_failed = move |filename: &String| {
-        !failed_builds
+        failed_builds
             .iter()
             .map(|x| &x.package_file_name)
-            .any(|x| &x.to_string() == filename)
+            .all(|x| &x.to_string() != filename)
     };
 
     latest_packages
