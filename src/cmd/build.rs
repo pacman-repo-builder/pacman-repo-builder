@@ -106,13 +106,13 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!("🛈 target repository: {}", repository.to_string_lossy());
         eprintln!();
 
-        let package_file_base_names = || {
-            srcinfo
-                .package_file_base_names(|arch| arch_filter.test(arch))
-                .expect("get future package file base names")
-        };
+        let package_file_base_names: Vec<_> = srcinfo
+            .package_file_base_names(|arch| arch_filter.test(arch))
+            .expect("get future package file base names")
+            .collect();
 
-        let future_package_files: Vec<_> = package_file_base_names()
+        let future_package_files: Vec<_> = package_file_base_names
+            .iter()
             .map(|name| repository_directory.join(name.to_string()))
             .collect();
 
@@ -142,12 +142,12 @@ pub fn build(args: BuildArgs) -> Status {
             continue;
         }
 
-        let is_failed = |name: PackageFileName<&str, String, &str>| {
+        let is_failed = |name: &PackageFileName<&str, String, &str>| {
             failed_build_record.iter().any(|x| {
                 name.pkgname == x.pkgname && name.arch == x.arch && name.version == x.version
             })
         };
-        if !force_rebuild && package_file_base_names().all(is_failed) {
+        if !force_rebuild && package_file_base_names.iter().all(is_failed) {
             eprintln!("⚠ Failures had been recorded. Skip.");
             continue;
         }
@@ -179,7 +179,7 @@ pub fn build(args: BuildArgs) -> Status {
             if allow_failure {
                 eprintln!("⚠ makepkg exits with non-zero status code: {}", status);
                 eprintln!("⚠ skip {}", pkgbase);
-                failed_builds.push((*pkgbase, directory, package_file_base_names()));
+                failed_builds.push((*pkgbase, directory, package_file_base_names));
                 continue;
             } else {
                 eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
