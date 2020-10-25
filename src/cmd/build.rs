@@ -5,13 +5,13 @@ use super::super::{
     status::{Code, Failure, Status},
     utils::{
         create_makepkg_command, load_failed_build_record, run_deref_db, CommandUtils, DbInit,
-        DbInitValue,
+        DbInitValue, FailedBuildRecordItem, PackageFileName,
     },
 };
 use command_extra::CommandExtra;
 use pipe_trait::*;
 use std::{
-    fs::{copy, remove_file},
+    fs::{copy, remove_file, write},
     path::Path,
     process::{Command, Stdio},
 };
@@ -106,9 +106,13 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!("🛈 target repository: {}", repository.to_string_lossy());
         eprintln!();
 
-        let future_package_files: Vec<_> = srcinfo
-            .package_file_base_names(|arch| arch_filter.test(arch))
-            .expect("get future package file base names")
+        let package_file_base_names = || {
+            srcinfo
+                .package_file_base_names(|arch| arch_filter.test(arch))
+                .expect("get future package file base names")
+        };
+
+        let future_package_files: Vec<_> = package_file_base_names()
             .map(|name| name.to_string())
             .filter(|name| {
                 failed_build_record
@@ -171,7 +175,8 @@ pub fn build(args: BuildArgs) -> Status {
             if allow_failure {
                 eprintln!("⚠ makepkg exits with non-zero status code: {}", status);
                 eprintln!("⚠ skip {}", pkgbase);
-                failed_builds.push((*pkgbase, directory));
+                let record = package_file_base_names().map(FailedBuildRecordItem::now);
+                failed_builds.push((*pkgbase, directory, record));
                 continue;
             } else {
                 eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
@@ -249,8 +254,39 @@ pub fn build(args: BuildArgs) -> Status {
         eprintln!();
         eprintln!();
         eprintln!("🛈 Some builds failed:");
-        for (pkgbase, directory) in failed_builds {
+        for (pkgbase, directory, _) in &failed_builds {
             eprintln!("  ● {} ({})", pkgbase, directory.to_string_lossy());
+        }
+
+        if let Some(record_path) = record_failed_builds {
+            let mut failed_build_record = failed_build_record;
+            for (_, _, record) in failed_builds {
+                for item in record {
+                    let FailedBuildRecordItem {
+                        date,
+                        package_file_name:
+                            PackageFileName {
+                                pkgname,
+                                version,
+                                arch,
+                            },
+                    } = item;
+                    failed_build_record.push(FailedBuildRecordItem {
+                        date,
+                        package_file_name: PackageFileName {
+                            pkgname: pkgname.to_string(),
+                            version,
+                            arch: arch.to_string(),
+                        },
+                    })
+                }
+            }
+
+            let content = serde_yaml::to_string(&failed_build_record).unwrap();
+            write(record_path.as_ref(), content).map_err(|error| {
+                eprintln!("⮾ {}", error);
+                Failure::from(Code::FailedBuildRecordWritingFailure)
+            })?;
         }
     }
 

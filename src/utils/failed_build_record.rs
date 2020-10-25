@@ -1,4 +1,5 @@
 use super::PackageFileName;
+use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
 
@@ -15,6 +16,12 @@ pub struct FailedBuildRecordItem<PkgName, Version, Arch> {
 }
 
 impl<PkgName, Version, Arch> FailedBuildRecordItem<PkgName, Version, Arch> {
+    pub fn now(package_file_name: PackageFileName<PkgName, Version, Arch>) -> Self {
+        package_file_name
+            .pipe(Self::from)
+            .with_date(SystemTime::now())
+    }
+
     pub fn with_date(self, date: SystemTime) -> Self {
         FailedBuildRecordItem {
             date: Some(date),
