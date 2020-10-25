@@ -52,6 +52,7 @@ members:
 ---
 global-settings:
   repository: repo/repo.db.tar.gz
+  record-failed-builds: failed-builds.yaml
   clean-before-build: true
   force-rebuild: false
   arch-filter:
@@ -83,6 +84,7 @@ global-settings:
   repository: repo/repo.db.tar.gz
   container: container
   read-build-metadata: either
+  record-failed-builds: failed-builds.yaml
   install-missing-dependencies: false
   clean-before-build: false
   clean-after-build: false

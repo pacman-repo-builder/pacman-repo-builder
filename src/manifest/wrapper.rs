@@ -127,6 +127,15 @@ wrapper_type!(
 );
 
 wrapper_type!(
+    FailedBuildRecord,
+    FailedBuildRecordWrapper,
+    OwnedFailedBuildRecord,
+    BorrowedFailedBuildRecord,
+    PathBuf,
+    Path
+);
+
+wrapper_type!(
     Directory,
     DirectoryWrapper,
     OwnedDirectory,

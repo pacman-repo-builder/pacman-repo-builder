@@ -1,0 +1,6 @@
+- pkgname: out-of-date-by-arch
+  version: 1.2.3-1
+  arch: arm
+- pkgname: out-of-date-by-pkgrel
+  version: 1.2.3-3
+  arch: any

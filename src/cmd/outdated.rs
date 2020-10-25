@@ -1,7 +1,7 @@
 use super::super::{
     args::{OutdatedArgs, OutdatedDetails},
     status::{Code, Failure, Status},
-    utils::{outdated_packages, DbInit, DbInitValue, PackageFileName},
+    utils::{load_failed_build_record, outdated_packages, DbInit, DbInitValue, PackageFileName},
 };
 use pipe_trait::*;
 use std::{fs::read_dir, path::PathBuf};
@@ -78,6 +78,15 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         }
     }
 
+    let failed_builds = manifest
+        .global_settings
+        .record_failed_builds
+        .pipe_ref(load_failed_build_record)
+        .map_err(|error| {
+            eprintln!("⮾ {}", error);
+            Failure::from(Code::FailedBuildRecordLoadingFailure)
+        })?;
+
     for (
         ref file_name,
         PackageFileName {
@@ -85,7 +94,7 @@ pub fn outdated(args: OutdatedArgs) -> Status {
             version,
             arch,
         },
-    ) in outdated_packages(&latest_packages, &current_packages)
+    ) in outdated_packages(&latest_packages, &current_packages, &failed_builds)
     {
         match details {
             OutdatedDetails::PkgName => {

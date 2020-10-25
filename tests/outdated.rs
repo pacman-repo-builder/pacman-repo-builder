@@ -134,6 +134,48 @@ test_case!(
     "./expected-output/outdated/arch-filter-x86_64/details-strict-yaml.stdout.yaml"
 );
 
+test_case!(
+    details_pkg_file_record_failed_builds_empty,
+    "record-failed-builds-empty",
+    "pkg-file-path",
+    "./expected-output/outdated/record-failed-builds-empty/details-pkg-file-path.stdout.txt"
+);
+
+test_case!(
+    details_lossy_record_failed_builds_empty,
+    "record-failed-builds-empty",
+    "lossy-yaml",
+    "./expected-output/outdated/record-failed-builds-empty/details-lossy-yaml.stdout.yaml"
+);
+
+test_case!(
+    details_strict_record_failed_builds_empty,
+    "record-failed-builds-empty",
+    "strict-yaml",
+    "./expected-output/outdated/record-failed-builds-empty/details-strict-yaml.stdout.yaml"
+);
+
+test_case!(
+    details_pkg_file_record_failed_builds_some,
+    "record-failed-builds-some",
+    "pkg-file-path",
+    "./expected-output/outdated/record-failed-builds-some/details-pkg-file-path.stdout.txt"
+);
+
+test_case!(
+    details_lossy_record_failed_builds_some,
+    "record-failed-builds-some",
+    "lossy-yaml",
+    "./expected-output/outdated/record-failed-builds-some/details-lossy-yaml.stdout.yaml"
+);
+
+test_case!(
+    details_strict_record_failed_builds_some,
+    "record-failed-builds-some",
+    "strict-yaml",
+    "./expected-output/outdated/record-failed-builds-some/details-strict-yaml.stdout.yaml"
+);
+
 #[test]
 fn validate_yaml_output() {
     use serde_yaml::{from_str, Value};
