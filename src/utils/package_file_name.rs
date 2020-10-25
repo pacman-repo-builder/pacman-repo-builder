@@ -3,12 +3,7 @@ use std::fmt::{self, Display, Formatter};
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Copy, Clone)]
 #[serde(rename_all = "kebab-case")]
-pub struct PackageFileName<PkgName, Version, Arch>
-where
-    PkgName: Display,
-    Version: Display,
-    Arch: Display,
-{
+pub struct PackageFileName<PkgName, Version, Arch> {
     pub pkgname: PkgName,
     pub version: Version,
     pub arch: Arch,
