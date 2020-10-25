@@ -15,16 +15,15 @@ pub fn load_failed_build_record(
     };
 
     let record_path = failed_build_record.as_ref();
-    match File::open(record_path) {
-        Ok(file) => file
-            .pipe(serde_yaml::from_reader::<File, Record>)
-            .map_err(|error| {
-                format!(
-                    "Cannot parse file {:?} as a FailedBuildRecord: {}",
-                    record_path, error,
-                )
-            })?
-            .pipe(Ok),
+    match record_path.pipe(File::open).map(serde_yaml::from_reader) {
+        Ok(Ok(record)) => Ok(record),
+        Ok(Err(error)) => {
+            eprintln!(
+                "⚠ Cannot parse file {:?} as a FailedBuildRecord: {}",
+                record_path, error,
+            );
+            Ok(Default::default())
+        }
         Err(error) => {
             if error.kind() == ErrorKind::NotFound {
                 Ok(Default::default())
