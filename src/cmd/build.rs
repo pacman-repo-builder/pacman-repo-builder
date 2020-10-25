@@ -152,39 +152,55 @@ pub fn build(args: BuildArgs) -> Status {
             continue;
         }
 
-        let status = create_makepkg_command()
-            .with_arg("--install")
-            .with_arg("--noconfirm")
-            .with_arg("--asdeps")
-            .arg_if("--syncdeps", install_missing_dependencies)
-            .arg_if("--clean", clean_after_build)
-            .arg_if("--cleanbuild", clean_before_build)
-            .arg_if("--force", force_rebuild)
-            .may_env("PACMAN", pacman)
-            .may_env("PACKAGER", packager)
-            .with_current_dir(directory)
-            .with_stdin(Stdio::null())
-            .with_stdout(Stdio::inherit())
-            .with_stderr(Stdio::inherit())
-            .spawn()
-            .and_then(|mut child| child.wait())
-            .map_err(|error| {
-                eprintln!("⮾ {}", error);
-                Failure::from(error)
-            })?
-            .code()
-            .unwrap_or(1);
-
-        if status != 0 {
-            if allow_failure {
-                eprintln!("⚠ makepkg exits with non-zero status code: {}", status);
-                eprintln!("⚠ skip {}", pkgbase);
-                failed_builds.push((*pkgbase, directory, future_package_file_base_names));
+        let mut build_failed = false;
+        for arch in srcinfo.arch() {
+            if !arch_filter.test(arch) {
+                eprintln!("🛈 Skip architecture {}.", arch);
                 continue;
-            } else {
-                eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
-                return Ok(status);
             }
+
+            eprintln!("🛈 Building for architecture {}...", arch);
+
+            let status = create_makepkg_command()
+                .with_arg("--install")
+                .with_arg("--noconfirm")
+                .with_arg("--asdeps")
+                .arg_if("--syncdeps", install_missing_dependencies)
+                .arg_if("--clean", clean_after_build)
+                .arg_if("--cleanbuild", clean_before_build)
+                .arg_if("--force", force_rebuild)
+                .may_env("PACMAN", pacman)
+                .may_env("PACKAGER", packager)
+                .with_env("CARCH", arch)
+                .with_current_dir(directory)
+                .with_stdin(Stdio::null())
+                .with_stdout(Stdio::inherit())
+                .with_stderr(Stdio::inherit())
+                .spawn()
+                .and_then(|mut child| child.wait())
+                .map_err(|error| {
+                    eprintln!("⮾ {}", error);
+                    Failure::from(error)
+                })?
+                .code()
+                .unwrap_or(1);
+
+            if status != 0 {
+                build_failed = true;
+
+                if allow_failure {
+                    eprintln!("⚠ makepkg exits with non-zero status code: {}", status);
+                    eprintln!("⚠ skip {}", pkgbase);
+                    continue;
+                } else {
+                    eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
+                    return Ok(status);
+                }
+            }
+        }
+
+        if build_failed {
+            failed_builds.push((*pkgbase, directory, future_package_file_base_names));
         }
 
         for pkg_file_name in srcinfo
