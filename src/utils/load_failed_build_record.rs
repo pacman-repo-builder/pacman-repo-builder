@@ -1,33 +1,38 @@
 use super::super::manifest::OwnedFailedBuildRecord;
-use super::Pair;
+use super::FailedBuildRecord;
 use pipe_trait::*;
-use std::{
-    fs::read_to_string,
-    io::{self, ErrorKind},
-};
+use std::{fs::File, io::ErrorKind};
+
+type Record = FailedBuildRecord<String, String, String>;
 
 pub fn load_failed_build_record(
     failed_build_record: &Option<OwnedFailedBuildRecord>,
-) -> Result<Vec<String>, Pair<io::Error, &OwnedFailedBuildRecord>> {
+) -> Result<Record, String> {
     let failed_build_record = if let Some(failed_build_record) = failed_build_record {
         failed_build_record
     } else {
-        return Ok(Vec::new());
+        return Ok(Default::default());
     };
 
-    match read_to_string(failed_build_record.as_ref()) {
-        Ok(content) => content
-            .lines()
-            .map(|x| x.trim())
-            .filter(|x| !x.is_empty())
-            .map(ToString::to_string)
-            .collect::<Vec<_>>()
+    let record_path = failed_build_record.as_ref();
+    match File::open(record_path) {
+        Ok(file) => file
+            .pipe(serde_yaml::from_reader::<File, Record>)
+            .map_err(|error| {
+                format!(
+                    "Cannot parse file {:?} as a FailedBuildRecord: {}",
+                    record_path, error,
+                )
+            })?
             .pipe(Ok),
         Err(error) => {
             if error.kind() == ErrorKind::NotFound {
-                Ok(Vec::new())
+                Ok(Default::default())
             } else {
-                Err(Pair::new(error, failed_build_record))
+                Err(format!(
+                    "Cannot read {:?} as a file: {}",
+                    record_path, error,
+                ))
             }
         }
     }

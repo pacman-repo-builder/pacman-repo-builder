@@ -1,7 +1,7 @@
 global-settings:
   container: build
   repository: repo/repo.db.tar.gz
-  record-failed-builds: failed-builds.txt
+  record-failed-builds: failed-builds.yaml
 members:
   - directory: out-of-date-by-arch
   - directory: out-of-date-by-epoch

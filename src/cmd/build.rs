@@ -38,12 +38,10 @@ pub fn build(args: BuildArgs) -> Status {
     let default_arch_filter = Default::default();
     let arch_filter = arch_filter.as_ref().unwrap_or(&default_arch_filter);
 
-    let failed_build_record =
-        load_failed_build_record(record_failed_builds).map_err(|error_pair| {
-            let (error, file) = error_pair.into_tuple();
-            eprintln!("⮾ Cannot load {:?} as a file: {}", file.as_ref(), error);
-            Failure::from(Code::FailedBuildRecordLoadingFailure)
-        })?;
+    let failed_build_record = load_failed_build_record(record_failed_builds).map_err(|error| {
+        eprintln!("⮾ {}", error);
+        Failure::from(Code::FailedBuildRecordLoadingFailure)
+    })?;
 
     if error_count != 0 {
         eprintln!("{} error occurred", error_count);
@@ -112,7 +110,11 @@ pub fn build(args: BuildArgs) -> Status {
             .package_file_base_names(|arch| arch_filter.test(arch))
             .expect("get future package file base names")
             .map(|name| name.to_string())
-            .filter(|name| !failed_build_record.contains(name))
+            .filter(|name| {
+                failed_build_record
+                    .iter()
+                    .all(|x| &x.package_file_name.to_string() != name)
+            })
             .map(|name| repository_directory.join(name))
             .collect();
 
