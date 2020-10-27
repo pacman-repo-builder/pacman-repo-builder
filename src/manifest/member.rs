@@ -1,19 +1,25 @@
 use super::{
-    ArchCollectionWrapper, BorrowedDirectory, BorrowedPacman, BorrowedWrapper, BuildMetadata,
-    ContainerWrapper, DirectoryWrapper, FailedBuildRecordWrapper, GlobalSettings, OwnedDirectory,
-    OwnedPacman, OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
+    ArchCollectionWrapper, AurNameWrapper, BorrowedAurName, BorrowedDirectory, BorrowedGitUrl,
+    BorrowedPacman, BorrowedWrapper, BuildMetadata, ContainerWrapper, DirectoryWrapper,
+    FailedBuildRecordWrapper, GitUrlWrapper, GlobalSettings, Origin, OwnedAurName, OwnedDirectory,
+    OwnedGitUrl, OwnedPacman, OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper,
+    Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct Member<Directory, Pacman>
+pub struct Member<Directory, GitUrl, AurName, Pacman>
 where
     Directory: DirectoryWrapper,
+    GitUrl: GitUrlWrapper,
+    AurName: AurNameWrapper,
     Pacman: PacmanWrapper,
 {
     pub directory: Directory,
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    pub origin: Option<Origin<GitUrl, AurName>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_build_metadata: Option<BuildMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -30,17 +36,21 @@ where
     pub allow_failure: Option<bool>,
 }
 
-pub type OwnedMember = Member<OwnedDirectory, OwnedPacman>;
-pub type BorrowedMember<'a> = Member<BorrowedDirectory<'a>, BorrowedPacman<'a>>;
+pub type OwnedMember = Member<OwnedDirectory, OwnedGitUrl, OwnedAurName, OwnedPacman>;
+pub type BorrowedMember<'a> =
+    Member<BorrowedDirectory<'a>, BorrowedGitUrl<'a>, BorrowedAurName<'a>, BorrowedPacman<'a>>;
 
-impl<Directory, Pacman> Member<Directory, Pacman>
+impl<Directory, GitUrl, AurName, Pacman> Member<Directory, GitUrl, AurName, Pacman>
 where
     Directory: DirectoryWrapper,
+    GitUrl: GitUrlWrapper,
+    AurName: AurNameWrapper,
     Pacman: PacmanWrapper,
 {
     pub fn as_path(&self) -> BorrowedMember<'_> {
         BorrowedMember {
             directory: self.directory.as_ref().pipe(Wrapper::from_inner),
+            origin: self.origin.as_ref().map(Origin::as_borrowed),
             read_build_metadata: self.read_build_metadata,
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
@@ -58,6 +68,7 @@ where
                 .as_ref()
                 .to_path_buf()
                 .pipe(Wrapper::from_inner),
+            origin: self.origin.as_ref().map(Origin::to_owned),
             read_build_metadata: self.read_build_metadata,
             install_missing_dependencies: self.install_missing_dependencies,
             clean_before_build: self.clean_before_build,
@@ -111,6 +122,7 @@ where
             } else {
                 self.directory.as_ref().to_path_buf()
             }),
+            origin: self.origin.as_ref().map(Origin::to_owned),
             read_build_metadata: resolve_bool_option!(read_build_metadata),
             install_missing_dependencies: resolve_bool_option!(install_missing_dependencies),
             clean_before_build: resolve_bool_option!(clean_before_build),

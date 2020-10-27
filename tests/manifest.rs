@@ -17,6 +17,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
         vec![
             OwnedMember {
                 directory: "foo".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+                origin: None,
                 read_build_metadata: None,
                 install_missing_dependencies: None,
                 clean_before_build: None,
@@ -27,6 +28,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             },
             OwnedMember {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+                origin: None,
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
                 install_missing_dependencies: None,
                 clean_before_build: Some(false),
@@ -37,6 +39,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             },
             OwnedMember {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+                origin: None,
                 read_build_metadata: None,
                 install_missing_dependencies: Some(true),
                 clean_before_build: None,
@@ -47,6 +50,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             },
             OwnedMember {
                 directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
+                origin: None,
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
                 install_missing_dependencies: Some(false),
                 clean_before_build: Some(true),

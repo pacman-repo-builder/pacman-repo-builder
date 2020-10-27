@@ -2,20 +2,23 @@ mod arch_filter;
 mod build_metadata;
 mod global_settings;
 mod member;
+mod origin;
 mod wrapper;
 
 pub use arch_filter::{ArchFilter, BorrowedArchFilter, OwnedArchFilter};
 pub use build_metadata::BuildMetadata;
 pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSettings};
 pub use member::{BorrowedMember, Member, OwnedMember};
+pub use origin::{BorrowedOrigin, Origin, OwnedOrigin};
 pub use wrapper::{
-    ArchCollection, ArchCollectionWrapper, Associations, BorrowedArchCollection, BorrowedContainer,
-    BorrowedDirectory, BorrowedFailedBuildRecord, BorrowedInner, BorrowedPackager, BorrowedPacman,
+    ArchCollection, ArchCollectionWrapper, Associations, AurName, AurNameWrapper,
+    BorrowedArchCollection, BorrowedAurName, BorrowedContainer, BorrowedDirectory,
+    BorrowedFailedBuildRecord, BorrowedGitUrl, BorrowedInner, BorrowedPackager, BorrowedPacman,
     BorrowedRepository, BorrowedWrapper, Container, ContainerWrapper, Directory, DirectoryWrapper,
-    FailedBuildRecord, FailedBuildRecordWrapper, OwnedArchCollection, OwnedContainer,
-    OwnedDirectory, OwnedFailedBuildRecord, OwnedInner, OwnedPackager, OwnedPacman,
-    OwnedRepository, OwnedWrapper, Packager, PackagerWrapper, Pacman, PacmanWrapper, Repository,
-    RepositoryWrapper, Wrapper,
+    FailedBuildRecord, FailedBuildRecordWrapper, GitUrl, GitUrlWrapper, OwnedArchCollection,
+    OwnedAurName, OwnedContainer, OwnedDirectory, OwnedFailedBuildRecord, OwnedGitUrl, OwnedInner,
+    OwnedPackager, OwnedPacman, OwnedRepository, OwnedWrapper, Packager, PackagerWrapper, Pacman,
+    PacmanWrapper, Repository, RepositoryWrapper, Wrapper,
 };
 
 use pipe_trait::*;
@@ -34,6 +37,8 @@ pub struct Manifest<
     Pacman,
     Packager,
     Directory,
+    GitUrl,
+    AurName,
 > where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
@@ -42,10 +47,12 @@ pub struct Manifest<
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
     Directory: DirectoryWrapper,
+    GitUrl: GitUrlWrapper,
+    AurName: AurNameWrapper,
 {
     pub global_settings:
         GlobalSettings<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager>,
-    pub members: Vec<Member<Directory, Pacman>>,
+    pub members: Vec<Member<Directory, GitUrl, AurName, Pacman>>,
 }
 
 pub type OwnedManifest = Manifest<
@@ -56,6 +63,8 @@ pub type OwnedManifest = Manifest<
     OwnedPacman,
     OwnedPackager,
     OwnedDirectory,
+    OwnedGitUrl,
+    OwnedAurName,
 >;
 pub type BorrowedManifest<'a> = Manifest<
     BorrowedRepository<'a>,
@@ -65,10 +74,32 @@ pub type BorrowedManifest<'a> = Manifest<
     BorrowedPacman<'a>,
     BorrowedPackager<'a>,
     BorrowedDirectory<'a>,
+    BorrowedGitUrl<'a>,
+    BorrowedAurName<'a>,
 >;
 
-impl<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager, Directory>
-    Manifest<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager, Directory>
+impl<
+        Repository,
+        Container,
+        FailedBuildRecord,
+        ArchCollection,
+        Pacman,
+        Packager,
+        Directory,
+        GitUrl,
+        AurName,
+    >
+    Manifest<
+        Repository,
+        Container,
+        FailedBuildRecord,
+        ArchCollection,
+        Pacman,
+        Packager,
+        Directory,
+        GitUrl,
+        AurName,
+    >
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
@@ -77,6 +108,8 @@ where
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
     Directory: DirectoryWrapper,
+    GitUrl: GitUrlWrapper,
+    AurName: AurNameWrapper,
 {
     pub fn as_path(&self) -> BorrowedManifest<'_> {
         Manifest {

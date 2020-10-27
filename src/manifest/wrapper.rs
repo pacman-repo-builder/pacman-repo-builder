@@ -162,6 +162,24 @@ wrapper_type!(
     str
 );
 
+wrapper_type!(
+    GitUrl,
+    GitUrlWrapper,
+    OwnedGitUrl,
+    BorrowedGitUrl,
+    String,
+    str
+);
+
+wrapper_type!(
+    AurName,
+    AurNameWrapper,
+    OwnedAurName,
+    BorrowedAurName,
+    String,
+    str
+);
+
 type OwnedArchVec = Vec<String>;
 type OwnedArchArray = [String];
 wrapper_type!(
