@@ -65,7 +65,7 @@ where
 
 #[derive(Serialize, Deserialize, Copy, Clone)]
 #[serde(tag = "origin", rename_all = "kebab-case")]
-pub enum OriginSerdeHelper<GitUrl, AurName> {
+enum OriginSerdeHelper<GitUrl, AurName> {
     Local,
     Git { url: GitUrl },
     Aur { name: AurName },

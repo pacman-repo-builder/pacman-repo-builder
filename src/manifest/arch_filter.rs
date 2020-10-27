@@ -130,7 +130,7 @@ where
 
 #[derive(Serialize, Deserialize, Copy, Clone)]
 #[serde(untagged)]
-pub enum ArchFilterSerdeHelper<ArchCollection>
+enum ArchFilterSerdeHelper<ArchCollection>
 where
     ArchCollection: ArchCollectionWrapper,
 {
@@ -140,7 +140,7 @@ where
 
 #[derive(Serialize, Deserialize, Copy, Clone)]
 #[serde(rename_all = "kebab-case")]
-pub enum MonoVariantSerdeHelper {
+enum MonoVariantSerdeHelper {
     Any,
 }
 
