@@ -1,7 +1,7 @@
 use pacman_repo_builder::{
     manifest::{
         ArchFilter, BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedFailedBuildRecord,
-        OwnedGlobalSettings, OwnedManifest, OwnedMember, Wrapper,
+        OwnedGlobalSettings, OwnedManifest, OwnedMember, OwnedOrigin, Wrapper,
     },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
@@ -28,7 +28,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             },
             OwnedMember {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
-                origin: None,
+                origin: Some(OwnedOrigin::Local),
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
                 install_missing_dependencies: None,
                 clean_before_build: Some(false),
@@ -39,7 +39,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             },
             OwnedMember {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
-                origin: None,
+                origin: Some(OwnedOrigin::new_owned_git("https://example.com/repo.git")),
                 read_build_metadata: None,
                 install_missing_dependencies: Some(true),
                 clean_before_build: None,
@@ -50,7 +50,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             },
             OwnedMember {
                 directory: "baz".pipe(PathBuf::from).pipe(Wrapper::from_inner),
-                origin: None,
+                origin: Some(OwnedOrigin::new_owned_aur("aur-package-name")),
                 read_build_metadata: Some(BuildMetadata::SrcInfo),
                 install_missing_dependencies: Some(false),
                 clean_before_build: Some(true),

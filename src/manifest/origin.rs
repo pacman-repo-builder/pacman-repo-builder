@@ -61,6 +61,22 @@ where
     }
 }
 
+impl OwnedOrigin {
+    pub fn new_owned_git(url: impl AsRef<str>) -> Self {
+        url.as_ref()
+            .to_string()
+            .pipe(OwnedGitUrl::from_inner)
+            .pipe(Origin::Git)
+    }
+
+    pub fn new_owned_aur(name: impl AsRef<str>) -> Self {
+        name.as_ref()
+            .to_string()
+            .pipe(OwnedAurName::from_inner)
+            .pipe(Origin::Aur)
+    }
+}
+
 /* SERDE HELPER */
 
 #[derive(Serialize, Deserialize, Copy, Clone)]

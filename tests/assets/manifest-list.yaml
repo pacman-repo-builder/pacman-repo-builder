@@ -4,15 +4,20 @@ global-settings:
 members:
   - directory: foo
   - directory: bar
+    origin: local
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
     allow-failure: false
   - directory: bar
+    origin: git
+    url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
+    origin: aur
+    name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true
@@ -33,15 +38,20 @@ global-settings:
 members:
   - directory: foo
   - directory: bar
+    origin: local
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
     allow-failure: false
   - directory: bar
+    origin: git
+    url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
+    origin: aur
+    name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true
@@ -63,15 +73,20 @@ global-settings:
 members:
   - directory: foo
   - directory: bar
+    origin: local
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
     allow-failure: false
   - directory: bar
+    origin: git
+    url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
+    origin: aur
+    name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true
@@ -99,15 +114,20 @@ global-settings:
 members:
   - directory: foo
   - directory: bar
+    origin: local
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
     allow-failure: false
   - directory: bar
+    origin: git
+    url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
+    origin: aur
+    name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true
