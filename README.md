@@ -149,6 +149,26 @@ build-pacman-repo $command --help
 
 * https://github.com/KSXGitHub/aur-packages-builder
 
+## Frequently Asked Questions
+
+### What does this program do?
+
+Its main purpose is to build a pacman repository. When the `build` command is called, it will read all source infos from either `.SRCINFO` or `PKGBUILD`, sort them by their dependency relationship, then build them one by one.
+
+### Why does this need to be ran inside a container?
+
+In order for this program to function properly, it must make several changes to your system, such as:
+* Replace `/usr/bin/makepkg` with one that allows running as root, so that it may be used in a CI environment.
+* Install every built package just in case it may be depended upon by another package.
+
+### A simple shell script should be enough
+
+If your use case is simple, good for you, just use shell script. If you are confident that you can provide all the features with shell script alone, also good for you, but I have already provided them with this program, so you don't have to.
+
+### Why YAML?
+
+It is nice.
+
 ## License
 
 [GPLv3](https://git.io/JTBVM) © [Hoàng Văn Khải](https://ksxgithub.github.io).
