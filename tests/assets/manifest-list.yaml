@@ -11,13 +11,13 @@ members:
     allow-failure: false
   - directory: bar
     origin: git
-    url: "https://example.com/repo.git"
+    git-url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
     origin: aur
-    name: aur-package-name
+    aur-name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true
@@ -45,13 +45,13 @@ members:
     allow-failure: false
   - directory: bar
     origin: git
-    url: "https://example.com/repo.git"
+    git-url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
     origin: aur
-    name: aur-package-name
+    aur-name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true
@@ -80,13 +80,13 @@ members:
     allow-failure: false
   - directory: bar
     origin: git
-    url: "https://example.com/repo.git"
+    git-url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
     origin: aur
-    name: aur-package-name
+    aur-name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true
@@ -121,13 +121,13 @@ members:
     allow-failure: false
   - directory: bar
     origin: git
-    url: "https://example.com/repo.git"
+    git-url: "https://example.com/repo.git"
     install-missing-dependencies: true
     clean-after-build: false
     pacman: yay
   - directory: baz
     origin: aur
-    name: aur-package-name
+    aur-name: aur-package-name
     read-build-metadata: srcinfo
     install-missing-dependencies: false
     clean-before-build: true

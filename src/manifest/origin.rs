@@ -83,8 +83,14 @@ impl OwnedOrigin {
 #[serde(tag = "origin", rename_all = "kebab-case")]
 enum OriginSerdeHelper<GitUrl, AurName> {
     Local,
-    Git { url: GitUrl },
-    Aur { name: AurName },
+    Git {
+        #[serde(rename = "git-url")]
+        url: GitUrl,
+    },
+    Aur {
+        #[serde(rename = "aur-name")]
+        name: AurName,
+    },
 }
 
 impl<GitUrl, AurName> From<OriginSerdeHelper<GitUrl, AurName>> for Origin<GitUrl, AurName>
