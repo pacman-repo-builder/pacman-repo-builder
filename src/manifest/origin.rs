@@ -7,7 +7,10 @@ use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
 #[derive(Debug, SmartDefault, Serialize, Deserialize, Eq, PartialEq, Copy, Clone)]
-#[serde(tag = "origin", rename_all = "kebab-case")]
+#[serde(
+    from = "OriginSerdeHelper<GitUrl, AurName>",
+    into = "OriginSerdeHelper<GitUrl, AurName>"
+)]
 pub enum Origin<GitUrl, AurName>
 where
     GitUrl: GitUrlWrapper,
@@ -54,6 +57,44 @@ where
                 .to_string()
                 .pipe(OwnedAurName::from_inner)
                 .pipe(Origin::Aur),
+        }
+    }
+}
+
+/* SERDE HELPER */
+
+#[derive(Serialize, Deserialize, Copy, Clone)]
+#[serde(tag = "origin", rename_all = "kebab-case")]
+pub enum OriginSerdeHelper<GitUrl, AurName> {
+    Local,
+    Git { url: GitUrl },
+    Aur { name: AurName },
+}
+
+impl<GitUrl, AurName> From<OriginSerdeHelper<GitUrl, AurName>> for Origin<GitUrl, AurName>
+where
+    GitUrl: GitUrlWrapper,
+    AurName: AurNameWrapper,
+{
+    fn from(source: OriginSerdeHelper<GitUrl, AurName>) -> Self {
+        match source {
+            OriginSerdeHelper::Local => Origin::Local,
+            OriginSerdeHelper::Git { url } => Origin::Git(url),
+            OriginSerdeHelper::Aur { name } => Origin::Aur(name),
+        }
+    }
+}
+
+impl<GitUrl, AurName> From<Origin<GitUrl, AurName>> for OriginSerdeHelper<GitUrl, AurName>
+where
+    GitUrl: GitUrlWrapper,
+    AurName: AurNameWrapper,
+{
+    fn from(source: Origin<GitUrl, AurName>) -> Self {
+        match source {
+            Origin::Local => OriginSerdeHelper::Local,
+            Origin::Git(url) => OriginSerdeHelper::Git { url },
+            Origin::Aur(name) => OriginSerdeHelper::Aur { name },
         }
     }
 }
