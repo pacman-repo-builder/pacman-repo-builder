@@ -145,6 +145,10 @@ build-pacman-repo $command --help
 
 [pacman-repo-builder/action](https://github.com/pacman-repo-builder/action) let you run `build-pacman-repo` on an Arch Linux container.
 
+## Real-world applications
+
+* https://github.com/KSXGitHub/aur-packages-builder
+
 ## License
 
 [GPLv3](https://git.io/JTBVM) © [Hoàng Văn Khải](https://ksxgithub.github.io).
