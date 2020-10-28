@@ -22,7 +22,7 @@ impl<ArchCollection> ArchFilter<ArchCollection>
 where
     ArchCollection: ArchCollectionWrapper,
 {
-    pub fn as_slice(&self) -> BorrowedArchFilter<'_> {
+    pub fn as_borrowed(&self) -> BorrowedArchFilter<'_> {
         match self {
             ArchFilter::Any => ArchFilter::Any,
             ArchFilter::Selective(collection) => collection
@@ -32,7 +32,7 @@ where
         }
     }
 
-    pub fn to_vec(&self) -> OwnedArchFilter {
+    pub fn to_owned(&self) -> OwnedArchFilter {
         match self {
             ArchFilter::Any => ArchFilter::Any,
             ArchFilter::Selective(collection) => collection

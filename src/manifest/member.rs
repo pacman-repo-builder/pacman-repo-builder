@@ -47,7 +47,7 @@ where
     AurName: AurNameWrapper,
     Pacman: PacmanWrapper,
 {
-    pub fn as_path(&self) -> BorrowedMember<'_> {
+    pub fn as_borrowed(&self) -> BorrowedMember<'_> {
         BorrowedMember {
             directory: self.directory.as_ref().pipe(Wrapper::from_inner),
             origin: self.origin.as_ref().map(Origin::as_borrowed),
@@ -61,7 +61,7 @@ where
         }
     }
 
-    pub fn to_path_buf(&self) -> OwnedMember {
+    pub fn to_owned(&self) -> OwnedMember {
         OwnedMember {
             directory: self
                 .directory
