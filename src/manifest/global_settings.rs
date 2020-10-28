@@ -79,7 +79,7 @@ where
     Pacman: PacmanWrapper,
     Packager: PackagerWrapper,
 {
-    pub fn as_path(&self) -> BorrowedGlobalSettings<'_> {
+    pub fn as_borrowed(&self) -> BorrowedGlobalSettings<'_> {
         macro_rules! convert_option {
             ($name:ident) => {
                 self.$name.as_ref().map(BorrowedWrapper::from_inner_ref)
@@ -95,7 +95,7 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
-            arch_filter: self.arch_filter.as_ref().map(ArchFilter::as_slice),
+            arch_filter: self.arch_filter.as_ref().map(ArchFilter::as_borrowed),
             pacman: convert_option!(pacman),
             packager: convert_option!(packager),
             allow_failure: self.allow_failure,
@@ -103,7 +103,7 @@ where
         }
     }
 
-    pub fn to_path_buf(&self) -> OwnedGlobalSettings {
+    pub fn to_owned(&self) -> OwnedGlobalSettings {
         macro_rules! convert_option {
             ($name:ident) => {
                 self.$name.as_ref().map(OwnedWrapper::new_owned_from)
@@ -119,7 +119,7 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
-            arch_filter: self.arch_filter.as_ref().map(ArchFilter::to_vec),
+            arch_filter: self.arch_filter.as_ref().map(ArchFilter::to_owned),
             pacman: convert_option!(pacman),
             packager: convert_option!(packager),
             allow_failure: self.allow_failure,

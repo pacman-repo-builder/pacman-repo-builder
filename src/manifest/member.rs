@@ -38,7 +38,7 @@ where
     Directory: DirectoryWrapper,
     Pacman: PacmanWrapper,
 {
-    pub fn as_path(&self) -> BorrowedMember<'_> {
+    pub fn as_borrowed(&self) -> BorrowedMember<'_> {
         BorrowedMember {
             directory: self.directory.as_ref().pipe(Wrapper::from_inner),
             read_build_metadata: self.read_build_metadata,
@@ -51,7 +51,7 @@ where
         }
     }
 
-    pub fn to_path_buf(&self) -> OwnedMember {
+    pub fn to_owned(&self) -> OwnedMember {
         OwnedMember {
             directory: self
                 .directory

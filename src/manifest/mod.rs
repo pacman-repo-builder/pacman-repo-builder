@@ -78,10 +78,10 @@ where
     Packager: PackagerWrapper,
     Directory: DirectoryWrapper,
 {
-    pub fn as_path(&self) -> BorrowedManifest<'_> {
+    pub fn as_borrowed(&self) -> BorrowedManifest<'_> {
         Manifest {
-            global_settings: self.global_settings.as_path(),
-            members: self.members.iter().map(Member::as_path).collect(),
+            global_settings: self.global_settings.as_borrowed(),
+            members: self.members.iter().map(Member::as_borrowed).collect(),
         }
     }
 

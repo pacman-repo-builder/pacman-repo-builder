@@ -103,10 +103,10 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
         }
     }
     members.sort_by(|a, b| a.directory.cmp(&b.directory));
-    let members: Vec<_> = members.iter().map(Member::as_path).collect();
+    let members: Vec<_> = members.iter().map(Member::as_borrowed).collect();
 
     let manifest = Manifest {
-        global_settings: global_settings.as_path(),
+        global_settings: global_settings.as_borrowed(),
         members,
     };
     if let Err(error) = serde_yaml::to_writer(stdout(), &manifest) {
