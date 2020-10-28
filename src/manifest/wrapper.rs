@@ -82,15 +82,15 @@ macro_rules! wrapper_type {
             }
         }
 
-        impl<'a, Inner: AsRef<$borrowed_inner>> OwnedInner<'a, $borrowed_alias<'a>> for Inner {
+        impl<'a> OwnedInner<'a, $borrowed_alias<'a>> for $owned_inner {
             fn as_ref_wrapper(&'a self) -> $borrowed_alias<'a> {
-                self.as_ref().pipe($name)
+                $name(self.as_ref())
             }
         }
 
-        impl<'a, Inner: AsRef<$borrowed_inner>> BorrowedInner<$owned_alias> for &'a Inner {
+        impl<'a> BorrowedInner<$owned_alias> for &'a $borrowed_inner {
             fn to_owned_wrapper(self) -> $owned_alias {
-                self.as_ref().to_owned().pipe($name)
+                $name(self.to_owned())
             }
         }
 
