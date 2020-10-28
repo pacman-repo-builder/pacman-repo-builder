@@ -28,7 +28,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
             },
             OwnedMember {
                 directory: "bar".pipe(PathBuf::from).pipe(Wrapper::from_inner),
-                origin: Some(OwnedOrigin::Local),
+                origin: None,
                 read_build_metadata: Some(BuildMetadata::PkgBuild),
                 install_missing_dependencies: None,
                 clean_before_build: Some(false),
