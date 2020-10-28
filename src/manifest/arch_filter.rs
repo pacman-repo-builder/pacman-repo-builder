@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Copy, Clone)]
 #[serde(
-    from = "ArchFilterSerdeHelper<ArchCollection>",
-    into = "ArchFilterSerdeHelper<ArchCollection>"
+    from = "SerdeHelper<ArchCollection>",
+    into = "SerdeHelper<ArchCollection>"
 )]
 pub enum ArchFilter<ArchCollection>
 where
@@ -130,7 +130,7 @@ where
 
 #[derive(Serialize, Deserialize, Copy, Clone)]
 #[serde(untagged)]
-enum ArchFilterSerdeHelper<ArchCollection>
+enum SerdeHelper<ArchCollection>
 where
     ArchCollection: ArchCollectionWrapper,
 {
@@ -144,26 +144,26 @@ enum MonoVariantSerdeHelper {
     Any,
 }
 
-impl<ArchCollection> From<ArchFilterSerdeHelper<ArchCollection>> for ArchFilter<ArchCollection>
+impl<ArchCollection> From<SerdeHelper<ArchCollection>> for ArchFilter<ArchCollection>
 where
     ArchCollection: ArchCollectionWrapper,
 {
-    fn from(source: ArchFilterSerdeHelper<ArchCollection>) -> Self {
+    fn from(source: SerdeHelper<ArchCollection>) -> Self {
         match source {
-            ArchFilterSerdeHelper::MonoVariant(MonoVariantSerdeHelper::Any) => ArchFilter::Any,
-            ArchFilterSerdeHelper::Selective(collection) => ArchFilter::Selective(collection),
+            SerdeHelper::MonoVariant(MonoVariantSerdeHelper::Any) => ArchFilter::Any,
+            SerdeHelper::Selective(collection) => ArchFilter::Selective(collection),
         }
     }
 }
 
-impl<ArchCollection> From<ArchFilter<ArchCollection>> for ArchFilterSerdeHelper<ArchCollection>
+impl<ArchCollection> From<ArchFilter<ArchCollection>> for SerdeHelper<ArchCollection>
 where
     ArchCollection: ArchCollectionWrapper,
 {
     fn from(arch_filter: ArchFilter<ArchCollection>) -> Self {
         match arch_filter {
-            ArchFilter::Any => ArchFilterSerdeHelper::MonoVariant(MonoVariantSerdeHelper::Any),
-            ArchFilter::Selective(collection) => ArchFilterSerdeHelper::Selective(collection),
+            ArchFilter::Any => SerdeHelper::MonoVariant(MonoVariantSerdeHelper::Any),
+            ArchFilter::Selective(collection) => SerdeHelper::Selective(collection),
         }
     }
 }
