@@ -5,6 +5,12 @@
 
 Build a custom pacman repository from a collection of PKGBUILD directories.
 
+## Runtime Dependencies
+
+* pacman
+* makepkg
+* libalpm.so
+
 ## Usage
 
 **⚠ WARNING:** This program is meant to be used within a docker container.
