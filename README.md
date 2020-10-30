@@ -164,7 +164,7 @@ Its main purpose is to build a pacman repository. When the `build` command is ca
 
 ### Why does this need to be ran inside a container?
 
-In order for this program to function properly, it must make several changes to your system, such as:
+In order for this program to function properly, it must make several changes to the host system, such as:
 * Replace `/usr/bin/makepkg` with one that allows running as root, so that it may be used in a CI environment.
 * Install every built package just in case it may be depended upon by another package.
 
