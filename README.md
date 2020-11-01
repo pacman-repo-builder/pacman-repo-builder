@@ -34,6 +34,7 @@ global-settings:
   force-rebuild: true
   pacman: pacman
   arch-filter: [x86_64]
+  check: inherit
   packager: Bob <bob@example.com>
   allow-failure: true
   dereference-database-symlinks: true
@@ -47,6 +48,7 @@ members:
   - directory: bar
     install-missing-dependencies: true
     clean-after-build: false
+    check: enabled
     pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
@@ -54,6 +56,7 @@ members:
     clean-before-build: true
     clean-after-build: false
     force-rebuild: true
+    check: disabled
     pacman: yay
     allow-failure: false
 ```
@@ -93,6 +96,7 @@ _Shared Fields:_ Fields that exist in both `global-settings` and `member`. If `g
 | `clean-before-build`           | `boolean`                       | `false`                        | Clean `$srcdir` and `$pkgdir` before each build.                                                                                                                                                                      |
 | `clean-after-build`            | `boolean`                       | `false`                        | Clean up after each build.                                                                                                                                                                                            |
 | `force-rebuild`                | `boolean`                       | `false`                        | Force build even if target package already exists.                                                                                                                                                                    |
+| `check`                        | `enabled | disabled | inherit`  | `inherit`                      | Whether to add `--check` or `--nocheck` to `makepkg` command.                                                                                                                                                         |
 | `pacman`                       | `string`                        | `pacman`                       | Package manager program to use.<br>The program must recognize `pacman`'s CLI arguments and options.                                                                                                                   |
 | `allow-failure`                | `boolean`                       | `false`                        | If `false`, exits immediately when a build fails.<br>If `true`, ignore build failure should one occurs.                                                                                                               |
 
