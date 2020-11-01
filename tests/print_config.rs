@@ -173,3 +173,42 @@ fn with_arch_filter_x86_64_i686() {
     );
     assert_eq!(actual, expected);
 }
+
+#[test]
+fn with_check_inherit() {
+    let (stdout, stderr, success) = init().with_args(&["--with-check", "inherit"]).pipe(output);
+    let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
+    let expected = (
+        include_str!("./expected-output/print-config/with-check-inherit.stdout.yaml").trim(),
+        "",
+        true,
+    );
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn with_check_enabled() {
+    let (stdout, stderr, success) = init().with_args(&["--with-check", "enabled"]).pipe(output);
+    let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
+    let expected = (
+        include_str!("./expected-output/print-config/with-check-enabled.stdout.yaml").trim(),
+        "",
+        true,
+    );
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn with_check_disabled() {
+    let (stdout, stderr, success) = init().with_args(&["--with-check", "disabled"]).pipe(output);
+    let actual = (stdout.trim(), stderr.trim(), success);
+    inspect(actual);
+    let expected = (
+        include_str!("./expected-output/print-config/with-check-disabled.stdout.yaml").trim(),
+        "",
+        true,
+    );
+    assert_eq!(actual, expected);
+}

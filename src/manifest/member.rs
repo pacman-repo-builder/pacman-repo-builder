@@ -1,7 +1,8 @@
 use super::{
     ArchCollectionWrapper, BorrowedDirectory, BorrowedPacman, BorrowedWrapper, BuildMetadata,
     ContainerWrapper, DirectoryWrapper, FailedBuildRecordWrapper, GlobalSettings, OwnedDirectory,
-    OwnedPacman, OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
+    OwnedPacman, OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, TriState,
+    Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
@@ -25,6 +26,8 @@ where
     #[serde(skip_serializing_if = "Option::is_none")]
     pub force_rebuild: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub check: Option<TriState>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub pacman: Option<Pacman>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_failure: Option<bool>,
@@ -46,6 +49,7 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
+            check: self.check,
             pacman: self.pacman.as_ref().map(BorrowedWrapper::from_inner_ref),
             allow_failure: self.allow_failure,
         }
@@ -63,6 +67,7 @@ where
             clean_before_build: self.clean_before_build,
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
+            check: self.check,
             pacman: self.pacman.as_ref().map(OwnedWrapper::new_owned_from),
             allow_failure: self.allow_failure,
         }
@@ -79,7 +84,7 @@ where
             impl PackagerWrapper,
         >,
     ) -> OwnedMember {
-        macro_rules! resolve_bool_option {
+        macro_rules! resolve_memcpy_option {
             ($field:ident) => {
                 self.$field.or(global_settings.$field)
             };
@@ -111,13 +116,14 @@ where
             } else {
                 self.directory.as_ref().to_path_buf()
             }),
-            read_build_metadata: resolve_bool_option!(read_build_metadata),
-            install_missing_dependencies: resolve_bool_option!(install_missing_dependencies),
-            clean_before_build: resolve_bool_option!(clean_before_build),
-            clean_after_build: resolve_bool_option!(clean_after_build),
-            force_rebuild: resolve_bool_option!(force_rebuild),
+            read_build_metadata: resolve_memcpy_option!(read_build_metadata),
+            install_missing_dependencies: resolve_memcpy_option!(install_missing_dependencies),
+            clean_before_build: resolve_memcpy_option!(clean_before_build),
+            clean_after_build: resolve_memcpy_option!(clean_after_build),
+            force_rebuild: resolve_memcpy_option!(force_rebuild),
+            check: resolve_memcpy_option!(check),
             pacman: resolve_wrapper_option!(pacman, OwnedPacman),
-            allow_failure: resolve_bool_option!(allow_failure),
+            allow_failure: resolve_memcpy_option!(allow_failure),
         }
     }
 }

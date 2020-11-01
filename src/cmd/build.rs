@@ -1,6 +1,6 @@
 use super::super::{
     args::BuildArgs,
-    manifest::{GlobalSettings, Member},
+    manifest::{GlobalSettings, Member, TriState},
     srcinfo::database::DatabaseValue,
     status::{Code, Failure, Status},
     utils::{
@@ -75,6 +75,7 @@ pub fn build(args: BuildArgs) -> Status {
             clean_before_build,
             clean_after_build,
             force_rebuild,
+            check,
             pacman,
             allow_failure,
             ..
@@ -88,6 +89,7 @@ pub fn build(args: BuildArgs) -> Status {
 
         let directory: &Path = directory.as_ref();
         let force_rebuild = force_rebuild.unwrap_or(false);
+        let check = check.unwrap_or(TriState::Inherit);
         let install_missing_dependencies = install_missing_dependencies.unwrap_or(false);
         let clean_before_build = clean_before_build.unwrap_or(false);
         let clean_after_build = clean_after_build.unwrap_or(false);
@@ -169,6 +171,8 @@ pub fn build(args: BuildArgs) -> Status {
                 .arg_if("--clean", clean_after_build)
                 .arg_if("--cleanbuild", clean_before_build)
                 .arg_if("--force", force_rebuild)
+                .arg_if("--check", check == TriState::Enabled)
+                .arg_if("--nocheck", check == TriState::Disabled)
                 .may_env("PACMAN", pacman)
                 .may_env("PACKAGER", packager)
                 .with_env("CARCH", arch)

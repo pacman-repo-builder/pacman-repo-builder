@@ -3,7 +3,8 @@ use super::{
     BorrowedFailedBuildRecord, BorrowedPackager, BorrowedPacman, BorrowedRepository,
     BorrowedWrapper, BuildMetadata, ContainerWrapper, FailedBuildRecordWrapper,
     OwnedArchCollection, OwnedContainer, OwnedFailedBuildRecord, OwnedPackager, OwnedPacman,
-    OwnedRepository, OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
+    OwnedRepository, OwnedWrapper, PackagerWrapper, PacmanWrapper, RepositoryWrapper, TriState,
+    Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
@@ -42,6 +43,8 @@ pub struct GlobalSettings<
     pub force_rebuild: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub arch_filter: Option<ArchFilter<ArchCollection>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub check: Option<TriState>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pacman: Option<Pacman>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -96,6 +99,7 @@ where
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
             arch_filter: self.arch_filter.as_ref().map(ArchFilter::as_borrowed),
+            check: self.check,
             pacman: convert_option!(pacman),
             packager: convert_option!(packager),
             allow_failure: self.allow_failure,
@@ -120,6 +124,7 @@ where
             clean_after_build: self.clean_after_build,
             force_rebuild: self.force_rebuild,
             arch_filter: self.arch_filter.as_ref().map(ArchFilter::to_owned),
+            check: self.check,
             pacman: convert_option!(pacman),
             packager: convert_option!(packager),
             allow_failure: self.allow_failure,

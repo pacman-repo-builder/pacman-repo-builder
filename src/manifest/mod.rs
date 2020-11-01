@@ -2,12 +2,14 @@ mod arch_filter;
 mod build_metadata;
 mod global_settings;
 mod member;
+mod tristate;
 mod wrapper;
 
 pub use arch_filter::{ArchFilter, BorrowedArchFilter, OwnedArchFilter};
 pub use build_metadata::BuildMetadata;
 pub use global_settings::{BorrowedGlobalSettings, GlobalSettings, OwnedGlobalSettings};
 pub use member::{BorrowedMember, Member, OwnedMember};
+pub use tristate::TriState;
 pub use wrapper::{
     ArchCollection, ArchCollectionWrapper, Associations, BorrowedArchCollection, BorrowedContainer,
     BorrowedDirectory, BorrowedFailedBuildRecord, BorrowedInner, BorrowedPackager, BorrowedPacman,

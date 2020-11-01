@@ -1,3 +1,4 @@
+use super::super::manifest::TriState;
 use argh::*;
 use std::path::PathBuf;
 
@@ -44,6 +45,8 @@ pub struct PrintConfigArgs {
     pub with_force_rebuild: Option<bool>,
     #[argh(option, description = "set arch-filter")]
     pub with_arch_filter: Vec<String>,
+    #[argh(option, description = "set check")]
+    pub with_check: Option<TriState>,
     #[argh(option, description = "set pacman")]
     pub with_pacman: Option<String>,
     #[argh(option, description = "set packager")]

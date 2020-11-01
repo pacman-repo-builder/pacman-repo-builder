@@ -4,10 +4,12 @@
   read-build-metadata: pkgbuild
   clean-before-build: false
   force-rebuild: true
+  check: inherit
   allow-failure: false
 - directory: bar
   install-missing-dependencies: true
   clean-after-build: false
+  check: enabled
   pacman: yay
 - directory: baz
   read-build-metadata: srcinfo
@@ -15,6 +17,7 @@
   clean-before-build: true
   clean-after-build: false
   force-rebuild: true
+  check: disabled
   pacman: yay
   allow-failure: false
 ---
@@ -22,6 +25,7 @@
   read-build-metadata: either
   install-missing-dependencies: false
   clean-after-build: false
+  check: inherit
   pacman: pacman
   allow-failure: true
 - directory: container/bar
@@ -30,12 +34,14 @@
   clean-before-build: false
   clean-after-build: false
   force-rebuild: true
+  check: inherit
   pacman: pacman
   allow-failure: false
 - directory: container/bar
   read-build-metadata: either
   install-missing-dependencies: true
   clean-after-build: false
+  check: enabled
   pacman: yay
   allow-failure: true
 - directory: container/baz
@@ -44,22 +50,26 @@
   clean-before-build: true
   clean-after-build: false
   force-rebuild: true
+  check: disabled
   pacman: yay
   allow-failure: false
 ---
 - directory: foo
   clean-before-build: true
   force-rebuild: false
+  check: enabled
 - directory: bar
   read-build-metadata: pkgbuild
   clean-before-build: false
   force-rebuild: true
+  check: inherit
   allow-failure: false
 - directory: bar
   install-missing-dependencies: true
   clean-before-build: true
   clean-after-build: false
   force-rebuild: false
+  check: enabled
   pacman: yay
 - directory: baz
   read-build-metadata: srcinfo
@@ -67,6 +77,7 @@
   clean-before-build: true
   clean-after-build: false
   force-rebuild: true
+  check: disabled
   pacman: yay
   allow-failure: false
 ---
@@ -76,6 +87,7 @@
   clean-before-build: false
   clean-after-build: false
   force-rebuild: true
+  check: disabled
   pacman: pacman
   allow-failure: true
 - directory: container/bar
@@ -84,6 +96,7 @@
   clean-before-build: false
   clean-after-build: false
   force-rebuild: true
+  check: inherit
   pacman: pacman
   allow-failure: false
 - directory: container/bar
@@ -92,6 +105,7 @@
   clean-before-build: false
   clean-after-build: false
   force-rebuild: true
+  check: enabled
   pacman: yay
   allow-failure: true
 - directory: container/baz
@@ -100,5 +114,6 @@
   clean-before-build: true
   clean-after-build: false
   force-rebuild: true
+  check: disabled
   pacman: yay
   allow-failure: false
