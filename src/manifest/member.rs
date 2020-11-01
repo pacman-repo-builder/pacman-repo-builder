@@ -84,7 +84,7 @@ where
             impl PackagerWrapper,
         >,
     ) -> OwnedMember {
-        macro_rules! resolve_bool_option {
+        macro_rules! resolve_memcpy_option {
             ($field:ident) => {
                 self.$field.or(global_settings.$field)
             };
@@ -116,14 +116,14 @@ where
             } else {
                 self.directory.as_ref().to_path_buf()
             }),
-            read_build_metadata: resolve_bool_option!(read_build_metadata),
-            install_missing_dependencies: resolve_bool_option!(install_missing_dependencies),
-            clean_before_build: resolve_bool_option!(clean_before_build),
-            clean_after_build: resolve_bool_option!(clean_after_build),
-            force_rebuild: resolve_bool_option!(force_rebuild),
-            check: resolve_bool_option!(check),
+            read_build_metadata: resolve_memcpy_option!(read_build_metadata),
+            install_missing_dependencies: resolve_memcpy_option!(install_missing_dependencies),
+            clean_before_build: resolve_memcpy_option!(clean_before_build),
+            clean_after_build: resolve_memcpy_option!(clean_after_build),
+            force_rebuild: resolve_memcpy_option!(force_rebuild),
+            check: resolve_memcpy_option!(check),
             pacman: resolve_wrapper_option!(pacman, OwnedPacman),
-            allow_failure: resolve_bool_option!(allow_failure),
+            allow_failure: resolve_memcpy_option!(allow_failure),
         }
     }
 }
