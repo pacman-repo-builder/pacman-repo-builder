@@ -7,10 +7,12 @@ members:
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
+    check: inherit
     allow-failure: false
   - directory: bar
     install-missing-dependencies: true
     clean-after-build: false
+    check: enabled
     pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
@@ -18,6 +20,7 @@ members:
     clean-before-build: true
     clean-after-build: false
     force-rebuild: true
+    check: disabled
     pacman: yay
     allow-failure: false
 ---
@@ -28,6 +31,7 @@ global-settings:
   install-missing-dependencies: false
   clean-after-build: false
   arch-filter: any
+  check: inherit
   pacman: pacman
   allow-failure: true
 members:
@@ -36,10 +40,12 @@ members:
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
+    check: inherit
     allow-failure: false
   - directory: bar
     install-missing-dependencies: true
     clean-after-build: false
+    check: enabled
     pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
@@ -47,6 +53,7 @@ members:
     clean-before-build: true
     clean-after-build: false
     force-rebuild: true
+    check: disabled
     pacman: yay
     allow-failure: false
 ---
@@ -58,6 +65,7 @@ global-settings:
   arch-filter:
     - x86_64
     - i686
+  check: enabled
   packager: Bob <bob@example.com>
   dereference-database-symlinks: false
 members:
@@ -66,10 +74,12 @@ members:
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
+    check: inherit
     allow-failure: false
   - directory: bar
     install-missing-dependencies: true
     clean-after-build: false
+    check: enabled
     pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
@@ -77,6 +87,7 @@ members:
     clean-before-build: true
     clean-after-build: false
     force-rebuild: true
+    check: disabled
     pacman: yay
     allow-failure: false
 ---
@@ -92,6 +103,7 @@ global-settings:
   arch-filter:
     - x86_64
     - i686
+  check: disabled
   pacman: pacman
   packager: Bob <bob@example.com>
   allow-failure: true
@@ -102,10 +114,12 @@ members:
     read-build-metadata: pkgbuild
     clean-before-build: false
     force-rebuild: true
+    check: inherit
     allow-failure: false
   - directory: bar
     install-missing-dependencies: true
     clean-after-build: false
+    check: enabled
     pacman: yay
   - directory: baz
     read-build-metadata: srcinfo
@@ -113,5 +127,6 @@ members:
     clean-before-build: true
     clean-after-build: false
     force-rebuild: true
+    check: disabled
     pacman: yay
     allow-failure: false
