@@ -1,6 +1,6 @@
 use super::super::{
     args::DerefDbArgs,
-    manifest::Manifest,
+    manifest::BuildPacmanRepo,
     status::{Code, Failure, Status},
     utils::run_deref_db,
 };
@@ -9,7 +9,7 @@ use pipe_trait::*;
 pub fn deref_db(args: DerefDbArgs) -> Status {
     let DerefDbArgs {} = args;
 
-    Manifest::from_env()
+    BuildPacmanRepo::from_env()
         .map_err(|error| {
             eprintln!("⮾ {}", error);
             Failure::from(Code::ManifestLoadingFailure)

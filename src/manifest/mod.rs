@@ -24,11 +24,11 @@ use pipe_trait::*;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::ErrorKind, path::Path};
 
-pub const MANIFEST_BASENAME: &str = "build-pacman-repo.yaml";
+pub const BUILD_PACMAN_REPO: &str = "build-pacman-repo.yaml";
 
 #[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub struct Manifest<
+pub struct BuildPacmanRepo<
     Repository,
     Container,
     FailedBuildRecord,
@@ -50,7 +50,7 @@ pub struct Manifest<
     pub members: Vec<Member<Directory, Pacman>>,
 }
 
-pub type OwnedManifest = Manifest<
+pub type OwnedBuildPacmanRepo = BuildPacmanRepo<
     OwnedRepository,
     OwnedContainer,
     OwnedFailedBuildRecord,
@@ -59,7 +59,7 @@ pub type OwnedManifest = Manifest<
     OwnedPackager,
     OwnedDirectory,
 >;
-pub type BorrowedManifest<'a> = Manifest<
+pub type BorrowedBuildPacmanRepo<'a> = BuildPacmanRepo<
     BorrowedRepository<'a>,
     BorrowedContainer<'a>,
     BorrowedFailedBuildRecord<'a>,
@@ -70,7 +70,15 @@ pub type BorrowedManifest<'a> = Manifest<
 >;
 
 impl<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager, Directory>
-    Manifest<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager, Directory>
+    BuildPacmanRepo<
+        Repository,
+        Container,
+        FailedBuildRecord,
+        ArchCollection,
+        Pacman,
+        Packager,
+        Directory,
+    >
 where
     Repository: RepositoryWrapper,
     Container: ContainerWrapper,
@@ -80,8 +88,8 @@ where
     Packager: PackagerWrapper,
     Directory: DirectoryWrapper,
 {
-    pub fn as_borrowed(&self) -> BorrowedManifest<'_> {
-        Manifest {
+    pub fn as_borrowed(&self) -> BorrowedBuildPacmanRepo<'_> {
+        BuildPacmanRepo {
             global_settings: self.global_settings.as_borrowed(),
             members: self.members.iter().map(Member::as_borrowed).collect(),
         }
@@ -94,19 +102,19 @@ where
     }
 }
 
-impl OwnedManifest {
+impl OwnedBuildPacmanRepo {
     pub fn from_env() -> Result<Self, String> {
-        Manifest::from_file(MANIFEST_BASENAME.as_ref())
+        BuildPacmanRepo::from_file(BUILD_PACMAN_REPO.as_ref())
     }
 
     pub fn from_file(file: &Path) -> Result<Self, String> {
         match File::open(file) {
             Ok(content) => content
-                .pipe(serde_yaml::from_reader::<_, OwnedManifest>)
+                .pipe(serde_yaml::from_reader::<_, OwnedBuildPacmanRepo>)
                 .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
                 .pipe(Ok),
             Err(error) => match error.kind() {
-                ErrorKind::NotFound => Ok(Manifest::default()),
+                ErrorKind::NotFound => Ok(BuildPacmanRepo::default()),
                 _ => Err(format!("cannot open {:?} as a file: {}", file, error)),
             },
         }

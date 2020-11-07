@@ -1,4 +1,4 @@
-use super::super::manifest::{BuildMetadata, Member, OwnedManifest, OwnedMember};
+use super::super::manifest::{BuildMetadata, Member, OwnedBuildPacmanRepo, OwnedMember};
 use super::{read_srcinfo_from_pkgbuild, Pair};
 use pipe_trait::*;
 use rayon::prelude::*;
@@ -8,7 +8,7 @@ use std::{
 };
 
 pub fn read_srcinfo_texts(
-    manifest: &OwnedManifest,
+    manifest: &OwnedBuildPacmanRepo,
     mut handle_error: impl FnMut(String),
 ) -> Vec<Pair<String, OwnedMember>> {
     manifest
