@@ -180,3 +180,14 @@ impl<Item: Into<String>> FromIterator<Item> for OwnedArchCollection {
             .pipe(OwnedArchCollection::from_inner)
     }
 }
+
+type OwnedAurVec = Vec<String>;
+type BorrowedAurArray = [String];
+wrapper_type!(
+    AurCollection,
+    AurCollectionWrapper,
+    OwnedAurCollection,
+    BorrowedAurCollection,
+    OwnedAurVec,
+    BorrowedAurArray
+);
