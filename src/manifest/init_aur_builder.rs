@@ -5,7 +5,9 @@ use super::{
     OwnedArchCollection, OwnedAurCollection, OwnedContainer, OwnedFailedBuildRecord, OwnedPackager,
     OwnedPacman, OwnedRepository, PackagerWrapper, PacmanWrapper, RepositoryWrapper,
 };
+use pipe_trait::*;
 use serde::{Deserialize, Serialize};
+use std::{fs::File, io::ErrorKind, path::Path};
 
 pub const INIT_AUR_BUILDER: &str = "init-aur-builder.yaml";
 
@@ -52,3 +54,22 @@ pub type BorrowedInitAurBuilder<'a> = InitAurBuilder<
     BorrowedPackager<'a>,
     BorrowedAurCollection<'a>,
 >;
+
+impl OwnedInitAurBuilder {
+    pub fn from_env() -> Result<Self, String> {
+        InitAurBuilder::from_file(INIT_AUR_BUILDER.as_ref())
+    }
+
+    pub fn from_file(file: &Path) -> Result<Self, String> {
+        match File::open(file) {
+            Ok(content) => content
+                .pipe(serde_yaml::from_reader::<_, OwnedInitAurBuilder>)
+                .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
+                .pipe(Ok),
+            Err(error) => match error.kind() {
+                ErrorKind::NotFound => Ok(InitAurBuilder::default()),
+                _ => Err(format!("cannot open {:?} as a file: {}", file, error)),
+            },
+        }
+    }
+}
