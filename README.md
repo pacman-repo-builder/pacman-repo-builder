@@ -160,6 +160,7 @@ build-pacman-repo $command --help
 * https://github.com/KSXGitHub/aur-packages-builder
 * https://github.com/KSXGitHub/cargo-scripts-builder
 * https://github.com/KSXGitHub/personal-pacman-packages
+* https://github.com/KSXGitHub/personal-crates
 
 ## Frequently Asked Questions
 
