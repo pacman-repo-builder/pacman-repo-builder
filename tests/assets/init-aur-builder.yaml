@@ -1,0 +1,7 @@
+---
+global-settings:
+  repository: repo/repo.db.tar.gz
+aur-package-names:
+  - rust
+  - python
+  - node

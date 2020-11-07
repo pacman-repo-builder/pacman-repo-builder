@@ -1,8 +1,8 @@
 use pacman_repo_builder::{
     manifest::{
         ArchFilter, BorrowedInner, BuildMetadata, BuildPacmanRepo, OwnedBuildPacmanRepo,
-        OwnedContainer, OwnedFailedBuildRecord, OwnedGlobalSettings, OwnedMember, TriState,
-        Wrapper,
+        OwnedContainer, OwnedFailedBuildRecord, OwnedGlobalSettings, OwnedInitAurBuilder,
+        OwnedMember, TriState, Wrapper,
     },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
@@ -195,6 +195,37 @@ fn resolve_members() {
         .unwrap();
     let actual = actual.trim();
     let expected = include_str!("./assets/resolved-members.yaml").trim();
+    eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
+    assert_eq!(actual, expected);
+}
+
+fn init_aur_builder() -> OwnedInitAurBuilder {
+    OwnedInitAurBuilder::default()
+        .with_global_settings(OwnedGlobalSettings {
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            ..Default::default()
+        })
+        .with_package("rust".to_string())
+        .with_package("python".to_string())
+        .with_package("node".to_string())
+}
+
+#[test]
+fn init_aur_builder_deserialize() {
+    let actual: OwnedInitAurBuilder = include_str!("./assets/init-aur-builder.yaml")
+        .pipe(serde_yaml::from_str)
+        .unwrap();
+    let expected = init_aur_builder();
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn init_aur_builder_serialize() {
+    let actual = init_aur_builder().pipe_ref(serde_yaml::to_string).unwrap();
+    let actual = actual.trim();
+    let expected = include_str!("./assets/init-aur-builder.yaml").trim();
     eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
     assert_eq!(actual, expected);
 }
