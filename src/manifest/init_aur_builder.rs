@@ -64,7 +64,9 @@ impl OwnedInitAurBuilder {
         match File::open(file) {
             Ok(content) => content
                 .pipe(serde_yaml::from_reader::<_, OwnedInitAurBuilder>)
-                .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
+                .map_err(|error| {
+                    format!("cannot deserialize {:?} as InitAurBuilder: {}", file, error)
+                })?
                 .pipe(Ok),
             Err(error) => match error.kind() {
                 ErrorKind::NotFound => Ok(InitAurBuilder::default()),

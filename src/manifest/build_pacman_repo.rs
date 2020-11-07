@@ -96,7 +96,12 @@ impl OwnedBuildPacmanRepo {
         match File::open(file) {
             Ok(content) => content
                 .pipe(serde_yaml::from_reader::<_, OwnedBuildPacmanRepo>)
-                .map_err(|error| format!("cannot deserialize {:?} as manifest: {}", file, error))?
+                .map_err(|error| {
+                    format!(
+                        "cannot deserialize {:?} as BuildPacmanRepo: {}",
+                        file, error,
+                    )
+                })?
                 .pipe(Ok),
             Err(error) => match error.kind() {
                 ErrorKind::NotFound => Ok(BuildPacmanRepo::default()),
