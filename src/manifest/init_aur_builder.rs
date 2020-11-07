@@ -3,7 +3,7 @@ use super::{
     BorrowedContainer, BorrowedFailedBuildRecord, BorrowedPackager, BorrowedPacman,
     BorrowedRepository, ContainerWrapper, FailedBuildRecordWrapper, GlobalSettings,
     OwnedArchCollection, OwnedAurCollection, OwnedContainer, OwnedFailedBuildRecord, OwnedPackager,
-    OwnedPacman, OwnedRepository, PackagerWrapper, PacmanWrapper, RepositoryWrapper,
+    OwnedPacman, OwnedRepository, PackagerWrapper, PacmanWrapper, RepositoryWrapper, Wrapper,
 };
 use pipe_trait::*;
 use serde::{Deserialize, Serialize};
@@ -55,6 +55,41 @@ pub type BorrowedInitAurBuilder<'a> = InitAurBuilder<
     BorrowedAurCollection<'a>,
 >;
 
+impl<Repository, Container, FailedBuildRecord, ArchCollection, Pacman, Packager, AurCollection>
+    InitAurBuilder<
+        Repository,
+        Container,
+        FailedBuildRecord,
+        ArchCollection,
+        Pacman,
+        Packager,
+        AurCollection,
+    >
+where
+    Repository: RepositoryWrapper,
+    Container: ContainerWrapper,
+    FailedBuildRecord: FailedBuildRecordWrapper,
+    ArchCollection: ArchCollectionWrapper,
+    Pacman: PacmanWrapper,
+    Packager: PackagerWrapper,
+    AurCollection: AurCollectionWrapper,
+{
+    pub fn with_global_settings(
+        mut self,
+        global_settings: GlobalSettings<
+            Repository,
+            Container,
+            FailedBuildRecord,
+            ArchCollection,
+            Pacman,
+            Packager,
+        >,
+    ) -> Self {
+        self.global_settings = global_settings;
+        self
+    }
+}
+
 impl OwnedInitAurBuilder {
     pub fn from_env() -> Result<Self, String> {
         InitAurBuilder::from_file(INIT_AUR_BUILDER.as_ref())
@@ -73,5 +108,10 @@ impl OwnedInitAurBuilder {
                 _ => Err(format!("cannot open {:?} as a file: {}", file, error)),
             },
         }
+    }
+
+    pub fn with_package(mut self, package_name: String) -> Self {
+        self.aur_package_names.inner_mut().push(package_name);
+        self
     }
 }
