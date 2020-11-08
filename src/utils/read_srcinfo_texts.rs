@@ -1,11 +1,8 @@
 use super::super::manifest::{BuildMetadata, Member, OwnedBuildPacmanRepo, OwnedMember};
-use super::{read_srcinfo_from_pkgbuild, Pair};
+use super::{read_srcinfo_file, read_srcinfo_from_directory, read_srcinfo_from_pkgbuild, Pair};
 use pipe_trait::*;
 use rayon::prelude::*;
-use std::{
-    fs::{metadata, read},
-    path::{Path, PathBuf},
-};
+use std::path::Path;
 
 pub fn read_srcinfo_texts(
     manifest: &OwnedBuildPacmanRepo,
@@ -26,7 +23,7 @@ pub fn read_srcinfo_texts(
 
             (
                 match read_build_metadata.unwrap_or_default() {
-                    BuildMetadata::Either => read_either(directory),
+                    BuildMetadata::Either => read_srcinfo_from_directory(directory),
                     BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(directory),
                     BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
                 },
@@ -43,37 +40,4 @@ pub fn read_srcinfo_texts(
             }
         })
         .collect()
-}
-
-fn read_either(directory: &Path) -> Result<String, String> {
-    let srcinfo_file = directory.join(".SRCINFO");
-    let pkgbuild_file = directory.join("PKGBUILD");
-
-    let file_exists = |file: &Path| match metadata(file) {
-        Ok(metadata) => metadata.is_file(),
-        Err(_) => false,
-    };
-
-    if file_exists(&srcinfo_file) {
-        read_srcinfo_file(srcinfo_file)
-    } else if file_exists(&pkgbuild_file) {
-        read_srcinfo_from_pkgbuild(directory)
-    } else {
-        Err(format!(
-            "⮾ Directory {:?} contains neither .SRCINFO nor PKGBUILD",
-            directory,
-        ))
-    }
-}
-
-fn read_srcinfo_file(file: PathBuf) -> Result<String, String> {
-    file.pipe_ref(read)
-        .map_err(|error| format!("⮾ Cannot read file {:?}: {}", file, error))?
-        .pipe(String::from_utf8)
-        .map_err(|error| {
-            format!(
-                "⮾ Cannot convert content of file {:?} to UTF-8: {}",
-                file, error
-            )
-        })
 }
