@@ -4,7 +4,7 @@ use git2::Repository;
 use indexmap::IndexSet;
 use pipe_trait::*;
 use rayon::prelude::*;
-use std::path::Path;
+use std::{ops::Add, path::Path};
 
 #[derive(Debug)]
 pub struct CloneAur<'a> {
@@ -75,12 +75,7 @@ impl<'a> CloneAur<'a> {
                     ..Default::default()
                 })
             })
-            .reduce(CloneAurEffect::default, |mut acc, cur| {
-                acc.added_package_names.extend(cur.added_package_names);
-                acc.missing_dependencies.extend(cur.missing_dependencies);
-                acc.error_count += cur.error_count;
-                acc
-            });
+            .reduce(CloneAurEffect::default, Add::add);
 
         if effect.missing_dependencies.is_empty() {
             return effect;
@@ -114,6 +109,26 @@ pub struct CloneAurEffect {
     missing_dependencies: IndexSet<String>,
     pub added_package_names: IndexSet<String>,
     pub error_count: u32,
+}
+
+impl Add for CloneAurEffect {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self::Output {
+        macro_rules! sum_set {
+            ($name:ident) => {{
+                let mut sum = self.$name;
+                sum.extend(other.$name);
+                sum
+            }};
+        };
+
+        CloneAurEffect {
+            missing_dependencies: sum_set!(missing_dependencies),
+            added_package_names: sum_set!(added_package_names),
+            error_count: self.error_count + other.error_count,
+        }
+    }
 }
 
 fn contains_str<Container>(container: Container, item: &str) -> bool
