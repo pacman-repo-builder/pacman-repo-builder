@@ -15,13 +15,6 @@ pub struct CloneAur<'a> {
     pub native_packages: &'a [String],
 }
 
-#[derive(Debug, Default, Eq, PartialEq, Clone)]
-pub struct CloneAurEffect {
-    missing_dependencies: IndexSet<String>,
-    pub added_package_names: IndexSet<String>,
-    pub error_count: u32,
-}
-
 impl<'a> CloneAur<'a> {
     pub fn run(self) -> CloneAurEffect {
         let CloneAur {
@@ -114,6 +107,13 @@ impl<'a> CloneAur<'a> {
         next_effect.error_count += effect.error_count;
         next_effect
     }
+}
+
+#[derive(Debug, Default, Eq, PartialEq, Clone)]
+pub struct CloneAurEffect {
+    missing_dependencies: IndexSet<String>,
+    pub added_package_names: IndexSet<String>,
+    pub error_count: u32,
 }
 
 fn contains_str<Container>(container: Container, item: &str) -> bool
