@@ -1,6 +1,9 @@
 use super::super::{
     args::{Args, Command},
-    cmd::{build, copyright, deref_db, outdated, patch_makepkg, print_config, sort, sync_srcinfo},
+    cmd::{
+        build, copyright, deref_db, init_aur_builder, outdated, patch_makepkg, print_config, sort,
+        sync_srcinfo,
+    },
     status::Status,
 };
 use super::App;
@@ -10,6 +13,7 @@ impl App {
         let Args { command } = self.args;
         match command {
             Command::PrintConfig(args) => print_config(args),
+            Command::InitAurBuilder(args) => init_aur_builder(args),
             Command::Sort(args) => sort(args),
             Command::Outdated(args) => outdated(args),
             Command::SyncSrcInfo(args) => sync_srcinfo(args),

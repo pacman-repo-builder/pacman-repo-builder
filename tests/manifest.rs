@@ -1,7 +1,8 @@
 use pacman_repo_builder::{
     manifest::{
-        ArchFilter, BorrowedInner, BuildMetadata, Manifest, OwnedContainer, OwnedFailedBuildRecord,
-        OwnedGlobalSettings, OwnedManifest, OwnedMember, TriState, Wrapper,
+        ArchFilter, BorrowedInner, BuildMetadata, BuildPacmanRepo, OwnedBuildPacmanRepo,
+        OwnedContainer, OwnedFailedBuildRecord, OwnedGlobalSettings, OwnedInitAurBuilder,
+        OwnedMember, TriState, Wrapper,
     },
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
@@ -12,7 +13,7 @@ fn manifest_list_yaml() -> &'static str {
     include_str!("./assets/manifest-list.yaml").trim()
 }
 
-fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
+fn manifest_list() -> impl Iterator<Item = OwnedBuildPacmanRepo> {
     let make_members = || {
         vec![
             OwnedMember {
@@ -149,7 +150,7 @@ fn manifest_list() -> impl Iterator<Item = OwnedManifest> {
         },
     ]
     .iter()
-    .map(move |make_global_settings| Manifest {
+    .map(move |make_global_settings| BuildPacmanRepo {
         global_settings: make_global_settings(),
         members: make_members(),
     })
@@ -166,7 +167,7 @@ fn serialize() {
 #[test]
 fn deserialize() {
     let actual = manifest_list_yaml()
-        .pipe(deserialize_multi_docs_yaml::<OwnedManifest>)
+        .pipe(deserialize_multi_docs_yaml::<OwnedBuildPacmanRepo>)
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
     let expected: Vec<_> = manifest_list().collect();
@@ -179,7 +180,7 @@ fn as_path_serialize() {
     let manifest_list: Vec<_> = manifest_list().collect();
     let actual = manifest_list
         .iter()
-        .map(Manifest::as_borrowed)
+        .map(BuildPacmanRepo::as_borrowed)
         .pipe(serialize_iter_yaml)
         .unwrap();
     let expected = serialize_iter_yaml(&manifest_list).unwrap();
@@ -194,6 +195,37 @@ fn resolve_members() {
         .unwrap();
     let actual = actual.trim();
     let expected = include_str!("./assets/resolved-members.yaml").trim();
+    eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
+    assert_eq!(actual, expected);
+}
+
+fn init_aur_builder() -> OwnedInitAurBuilder {
+    OwnedInitAurBuilder::default()
+        .with_global_settings(OwnedGlobalSettings {
+            repository: "repo/repo.db.tar.gz"
+                .pipe(PathBuf::from)
+                .pipe(Wrapper::from_inner),
+            ..Default::default()
+        })
+        .with_package("rust".to_string())
+        .with_package("python".to_string())
+        .with_package("node".to_string())
+}
+
+#[test]
+fn init_aur_builder_deserialize() {
+    let actual: OwnedInitAurBuilder = include_str!("./assets/init-aur-builder.yaml")
+        .pipe(serde_yaml::from_str)
+        .unwrap();
+    let expected = init_aur_builder();
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn init_aur_builder_serialize() {
+    let actual = init_aur_builder().pipe_ref(serde_yaml::to_string).unwrap();
+    let actual = actual.trim();
+    let expected = include_str!("./assets/init-aur-builder.yaml").trim();
     eprintln!("\n\nACTUAL:\n\n{}\n\n", actual);
     assert_eq!(actual, expected);
 }

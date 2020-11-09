@@ -1,7 +1,8 @@
 use super::super::{
     args::PrintConfigArgs,
     manifest::{
-        ArchFilter, BuildMetadata, Manifest, Member, OwnedGlobalSettings, OwnedMember, Wrapper,
+        ArchFilter, BuildMetadata, BuildPacmanRepo, Member, OwnedGlobalSettings, OwnedMember,
+        Wrapper,
     },
     status::{Code, Status},
 };
@@ -107,7 +108,7 @@ pub fn print_config(args: PrintConfigArgs) -> Status {
     members.sort_by(|a, b| a.directory.cmp(&b.directory));
     let members: Vec<_> = members.iter().map(Member::as_borrowed).collect();
 
-    let manifest = Manifest {
+    let manifest = BuildPacmanRepo {
         global_settings: global_settings.as_borrowed(),
         members,
     };

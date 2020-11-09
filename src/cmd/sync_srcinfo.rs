@@ -1,6 +1,6 @@
 use super::super::{
     args::SyncSrcInfoArgs,
-    manifest::{BuildMetadata, Manifest, Member},
+    manifest::{BuildMetadata, BuildPacmanRepo, Member},
     status::{Code, Failure, Status},
     utils::read_srcinfo_from_pkgbuild,
 };
@@ -18,7 +18,7 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
     let mut outdated = 0u32;
     let mut error_count = 0u32;
 
-    let manifest = Manifest::from_env().map_err(|error| {
+    let manifest = BuildPacmanRepo::from_env().map_err(|error| {
         eprintln!("⮾ {}", error);
         Failure::Expected(Code::ManifestLoadingFailure)
     })?;

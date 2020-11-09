@@ -1,6 +1,7 @@
 mod build;
 mod copyright;
 mod deref_db;
+mod init_aur_builder;
 mod outdated;
 mod patch_makepkg;
 mod print_config;
@@ -10,6 +11,7 @@ mod sync_srcinfo;
 pub use build::BuildArgs;
 pub use copyright::CopyrightArgs;
 pub use deref_db::DerefDbArgs;
+pub use init_aur_builder::InitAurBuilderArgs;
 pub use outdated::{OutdatedArgs, OutdatedDetails};
 pub use patch_makepkg::PatchMakePkgArgs;
 pub use print_config::PrintConfigArgs;
@@ -30,6 +32,7 @@ pub struct Args {
 pub enum Command {
     Sort(SortArgs),
     PrintConfig(PrintConfigArgs),
+    InitAurBuilder(InitAurBuilderArgs),
     Outdated(OutdatedArgs),
     SyncSrcInfo(SyncSrcInfoArgs),
     PatchMakePkg(PatchMakePkgArgs),

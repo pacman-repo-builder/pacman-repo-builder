@@ -16,6 +16,7 @@ pub fn main() {
 
 pub use alpm;
 pub use argh;
+pub use git2;
 pub use indexmap;
 pub use num_bigint;
 pub use num_traits;

@@ -1,5 +1,5 @@
 use command_extra::CommandExtra;
-use pacman_repo_builder::{manifest::OwnedManifest, status::Code::SrcInfoOutOfSync};
+use pacman_repo_builder::{manifest::OwnedBuildPacmanRepo, status::Code::SrcInfoOutOfSync};
 use pipe_trait::*;
 use std::{
     collections::{BTreeMap, BTreeSet},
@@ -21,7 +21,7 @@ fn fixtures(branch: &'static str) -> PathBuf {
         .join(branch)
 }
 
-fn fixture_manifest(branch: &'static str) -> OwnedManifest {
+fn fixture_manifest(branch: &'static str) -> OwnedBuildPacmanRepo {
     branch
         .pipe(fixtures)
         .join("build-pacman-repo.yaml")
@@ -75,7 +75,7 @@ impl Context {
         self
     }
 
-    fn manifest(&self) -> OwnedManifest {
+    fn manifest(&self) -> OwnedBuildPacmanRepo {
         self.work_dir
             .path()
             .join("build-pacman-repo.yaml")

@@ -1,5 +1,5 @@
 use super::super::{
-    manifest::{Manifest, OwnedManifest, OwnedMember},
+    manifest::{BuildPacmanRepo, OwnedBuildPacmanRepo, OwnedMember},
     srcinfo::{database::SimpleDatabase, SrcInfo},
     status::{Code, Failure},
 };
@@ -23,7 +23,7 @@ impl<'a> DbInit<'a> {
 
         let mut error_count = 0;
 
-        let manifest = match Manifest::from_env() {
+        let manifest = match BuildPacmanRepo::from_env() {
             Ok(manifest) => manifest,
             Err(error) => {
                 eprintln!("{}", error);
@@ -85,7 +85,7 @@ impl<'a> DbInit<'a> {
 }
 
 pub struct DbInitValue<'a> {
-    pub manifest: OwnedManifest,
+    pub manifest: OwnedBuildPacmanRepo,
     pub database: SimpleDatabase<'a>,
     pub error_count: usize,
 }

@@ -163,14 +163,14 @@ wrapper_type!(
 );
 
 type OwnedArchVec = Vec<String>;
-type OwnedArchArray = [String];
+type BorrowedArchArray = [String];
 wrapper_type!(
     ArchCollection,
     ArchCollectionWrapper,
     OwnedArchCollection,
     BorrowedArchCollection,
     OwnedArchVec,
-    OwnedArchArray
+    BorrowedArchArray
 );
 impl<Item: Into<String>> FromIterator<Item> for OwnedArchCollection {
     fn from_iter<Iter: IntoIterator<Item = Item>>(iter: Iter) -> Self {
@@ -180,3 +180,14 @@ impl<Item: Into<String>> FromIterator<Item> for OwnedArchCollection {
             .pipe(OwnedArchCollection::from_inner)
     }
 }
+
+type OwnedAurVec = Vec<String>;
+type BorrowedAurArray = [String];
+wrapper_type!(
+    AurCollection,
+    AurCollectionWrapper,
+    OwnedAurCollection,
+    BorrowedAurCollection,
+    OwnedAurVec,
+    BorrowedAurArray
+);
