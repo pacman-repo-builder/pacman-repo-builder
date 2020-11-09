@@ -84,6 +84,7 @@ impl<'a> CloneAur<'a> {
             })
             .reduce(CloneAurEffect::default, |mut acc, cur| {
                 acc.added_package_names.extend(cur.added_package_names);
+                acc.missing_dependencies.extend(cur.missing_dependencies);
                 acc.error_count += cur.error_count;
                 acc
             });
