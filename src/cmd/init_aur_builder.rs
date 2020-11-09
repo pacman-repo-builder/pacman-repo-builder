@@ -1,11 +1,13 @@
 use super::super::{
     args::InitAurBuilderArgs,
-    manifest::{GlobalSettings, InitAurBuilder, Wrapper},
+    manifest::{
+        BuildPacmanRepo, GlobalSettings, InitAurBuilder, OwnedMember, Wrapper, BUILD_PACMAN_REPO,
+    },
     status::{Code, Failure, Status},
     utils::{list_all_native_packages, CloneAur},
 };
 use pipe_trait::*;
-use std::path::PathBuf;
+use std::{fs::OpenOptions, path::PathBuf};
 
 pub fn init_aur_builder(args: InitAurBuilderArgs) -> Status {
     let InitAurBuilderArgs {} = args;
@@ -25,6 +27,16 @@ pub fn init_aur_builder(args: InitAurBuilderArgs) -> Status {
         ..
     } = &global_settings;
 
+    let manifest_file = OpenOptions::new()
+        .write(true)
+        .read(true)
+        .create(true)
+        .open(BUILD_PACMAN_REPO)
+        .map_err(|error| {
+            eprintln!("⮾ {}", error);
+            Failure::from(error)
+        })?;
+
     let current_directory = PathBuf::from(".");
 
     let container = container
@@ -42,7 +54,7 @@ pub fn init_aur_builder(args: InitAurBuilderArgs) -> Status {
         Err(status) => return status,
     };
 
-    CloneAur {
+    let effect = CloneAur {
         container,
         native_packages: &native_packages,
         package_names: aur_package_names.as_ref(),
@@ -51,5 +63,32 @@ pub fn init_aur_builder(args: InitAurBuilderArgs) -> Status {
     }
     .run();
 
-    unimplemented!()
+    let mut error_count = effect.error_count;
+    let members = effect
+        .added_package_names
+        .into_iter()
+        .map(PathBuf::from)
+        .map(Wrapper::from_inner)
+        .map(|directory| OwnedMember {
+            directory,
+            ..Default::default()
+        })
+        .collect();
+
+    let manifest_content = BuildPacmanRepo {
+        global_settings,
+        members,
+    };
+
+    if let Err(error) = serde_yaml::to_writer(manifest_file, &manifest_content) {
+        eprintln!("⮾ {}", error);
+        error_count += 1;
+    }
+
+    if error_count != 0 {
+        eprintln!("{} error occurred", error_count);
+        return Code::GenericFailure.into();
+    }
+
+    Ok(0)
 }
