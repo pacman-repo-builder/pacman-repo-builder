@@ -101,6 +101,9 @@ impl<'a> CloneAur<'a> {
 
         next_effect.error_count += effect.error_count;
         next_effect
+            .added_package_names
+            .extend(effect.added_package_names);
+        next_effect
     }
 }
 
