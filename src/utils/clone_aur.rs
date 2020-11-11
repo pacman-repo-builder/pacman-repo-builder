@@ -99,11 +99,16 @@ impl<'a> CloneAur<'a> {
             "no remaining missing dependencies",
         );
 
-        next_effect.error_count += effect.error_count;
-        next_effect
-            .added_package_names
-            .extend(effect.added_package_names);
-        next_effect
+        CloneAurEffect {
+            missing_dependencies: next_effect.missing_dependencies,
+            added_package_names: {
+                next_effect
+                    .added_package_names
+                    .extend(effect.added_package_names);
+                next_effect.added_package_names
+            },
+            error_count: next_effect.error_count + effect.error_count,
+        }
     }
 }
 
