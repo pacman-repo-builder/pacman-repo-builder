@@ -4,7 +4,7 @@ use super::super::{
         BuildPacmanRepo, GlobalSettings, InitAurBuilder, OwnedMember, Wrapper, BUILD_PACMAN_REPO,
     },
     status::{Code, Failure, Status},
-    utils::{list_all_native_packages, CloneAur},
+    utils::{list_all_native_targets, CloneAur},
 };
 use pipe_trait::*;
 use std::{fs::OpenOptions, path::PathBuf};
@@ -44,19 +44,19 @@ pub fn init_aur_builder(args: InitAurBuilderArgs) -> Status {
         .map(Wrapper::inner)
         .unwrap_or(&current_directory);
 
-    let native_packages = match pacman
+    let native_targets = match pacman
         .as_ref()
         .map(AsRef::as_ref)
         .unwrap_or("pacman")
-        .pipe(list_all_native_packages)
+        .pipe(list_all_native_targets)
     {
-        Ok(native_packages) => native_packages,
+        Ok(native_targets) => native_targets,
         Err(status) => return status,
     };
 
     let effect = CloneAur {
         container,
-        native_packages: &native_packages,
+        native_targets: &native_targets,
         package_names: aur_package_names.as_ref(),
         read_build_metadata: read_build_metadata.unwrap_or_default(),
         installed_dependencies: Default::default(),

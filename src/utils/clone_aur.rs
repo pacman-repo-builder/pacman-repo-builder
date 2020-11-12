@@ -12,7 +12,7 @@ pub struct CloneAur<'a> {
     pub read_build_metadata: BuildMetadata,
     pub package_names: &'a [String],
     pub installed_dependencies: IndexSet<String>,
-    pub native_packages: &'a [String],
+    pub native_targets: &'a [String],
 }
 
 impl<'a> CloneAur<'a> {
@@ -22,7 +22,7 @@ impl<'a> CloneAur<'a> {
             read_build_metadata,
             package_names,
             installed_dependencies,
-            native_packages,
+            native_targets,
         } = self;
 
         let effect = package_names
@@ -59,7 +59,7 @@ impl<'a> CloneAur<'a> {
                 .all_required_dependencies()
                 .filter(|x| !contains_str(package_names.iter(), x.name))
                 .filter(|x| !contains_str(installed_dependencies.iter(), x.name))
-                .filter(|x| !contains_str(native_packages.iter(), x.name))
+                .filter(|x| !contains_str(native_targets.iter(), x.name))
                 .map(|x| x.name.to_string())
                 .collect();
 
@@ -87,7 +87,7 @@ impl<'a> CloneAur<'a> {
         let mut next_effect = CloneAur {
             container,
             read_build_metadata,
-            native_packages,
+            native_targets,
             installed_dependencies: next_installed_dependencies,
             package_names: &next_package_names,
         }
