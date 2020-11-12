@@ -4,7 +4,7 @@ use super::super::{
         BuildPacmanRepo, GlobalSettings, InitAurBuilder, OwnedMember, Wrapper, BUILD_PACMAN_REPO,
     },
     status::{Code, Failure, Status},
-    utils::CloneAur,
+    utils::{AlpmWrapper, CloneAur},
 };
 use std::{fs::OpenOptions, path::PathBuf};
 
@@ -47,6 +47,7 @@ pub fn init_aur_builder(args: InitAurBuilderArgs) -> Status {
         package_names: aur_package_names.as_ref(),
         read_build_metadata: read_build_metadata.unwrap_or_default(),
         installed_dependencies: Default::default(),
+        alpm: AlpmWrapper::from_env(),
     }
     .run();
 
