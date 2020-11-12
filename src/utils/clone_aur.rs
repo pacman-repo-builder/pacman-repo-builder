@@ -1,5 +1,7 @@
 use super::super::{manifest::BuildMetadata, srcinfo::SrcInfo};
-use super::{read_srcinfo_file, read_srcinfo_from_directory, read_srcinfo_from_pkgbuild};
+use super::{
+    read_srcinfo_file, read_srcinfo_from_directory, read_srcinfo_from_pkgbuild, AlpmWrapper,
+};
 use git2::Repository;
 use indexmap::IndexSet;
 use pipe_trait::*;
@@ -12,7 +14,6 @@ pub struct CloneAur<'a> {
     pub read_build_metadata: BuildMetadata,
     pub package_names: &'a [String],
     pub installed_dependencies: IndexSet<String>,
-    pub native_packages: &'a [String],
 }
 
 impl<'a> CloneAur<'a> {
@@ -22,7 +23,6 @@ impl<'a> CloneAur<'a> {
             read_build_metadata,
             package_names,
             installed_dependencies,
-            native_packages,
         } = self;
 
         let effect = package_names
@@ -47,6 +47,8 @@ impl<'a> CloneAur<'a> {
                 }
                 eprintln!("🛈 Cloned {:?} from {:?}", package_name, url);
 
+                let alpm_database = AlpmWrapper::from_env();
+
                 let missing_dependencies: IndexSet<_> = match read_build_metadata {
                     BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
                     BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(&directory),
@@ -59,7 +61,7 @@ impl<'a> CloneAur<'a> {
                 .all_required_dependencies()
                 .filter(|x| !contains_str(package_names.iter(), x.name))
                 .filter(|x| !contains_str(installed_dependencies.iter(), x.name))
-                .filter(|x| !contains_str(native_packages.iter(), x.name))
+                .filter(|x| !alpm_database.provides(x.name))
                 .map(|x| x.name.to_string())
                 .collect();
 
@@ -87,7 +89,6 @@ impl<'a> CloneAur<'a> {
         let mut next_effect = CloneAur {
             container,
             read_build_metadata,
-            native_packages,
             installed_dependencies: next_installed_dependencies,
             package_names: &next_package_names,
         }
