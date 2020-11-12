@@ -1,3 +1,4 @@
+mod alpm_wrapper;
 mod clone_aur;
 mod command_utils;
 mod copyright_terms;
@@ -7,7 +8,6 @@ mod db_init;
 mod deserialize_multi_docs_yaml;
 mod extract_pkgname_prefix;
 mod extract_value_from_line;
-mod list_all_native_packages;
 mod load_failed_build_record;
 mod outdated_packages;
 mod package_file_name;
@@ -20,6 +20,7 @@ mod run_deref_db;
 mod serialize_iter_yaml;
 mod split_str_once;
 
+pub use alpm_wrapper::AlpmWrapper;
 pub use clone_aur::{CloneAur, CloneAurEffect};
 pub use command_utils::CommandUtils;
 pub use copyright_terms::COPYING;
@@ -29,7 +30,6 @@ pub use db_init::{DbInit, DbInitValue};
 pub use deserialize_multi_docs_yaml::deserialize_multi_docs_yaml;
 pub use extract_pkgname_prefix::extract_pkgname_prefix;
 pub use extract_value_from_line::extract_value_from_line;
-pub use list_all_native_packages::list_all_native_packages;
 pub use load_failed_build_record::load_failed_build_record;
 pub use outdated_packages::outdated_packages;
 pub use package_file_name::PackageFileName;

@@ -1,5 +1,7 @@
 use super::super::{manifest::BuildMetadata, srcinfo::SrcInfo};
-use super::{read_srcinfo_file, read_srcinfo_from_directory, read_srcinfo_from_pkgbuild};
+use super::{
+    read_srcinfo_file, read_srcinfo_from_directory, read_srcinfo_from_pkgbuild, AlpmWrapper,
+};
 use git2::Repository;
 use indexmap::IndexSet;
 use pipe_trait::*;
@@ -12,7 +14,7 @@ pub struct CloneAur<'a> {
     pub read_build_metadata: BuildMetadata,
     pub package_names: &'a [String],
     pub installed_dependencies: IndexSet<String>,
-    pub native_packages: &'a [String],
+    pub alpm: AlpmWrapper,
 }
 
 impl<'a> CloneAur<'a> {
@@ -22,20 +24,17 @@ impl<'a> CloneAur<'a> {
             read_build_metadata,
             package_names,
             installed_dependencies,
-            native_packages,
+            alpm,
         } = self;
 
         let effect = package_names
             .par_iter()
-            .map(|package_name| {
+            .flat_map(|package_name| {
                 let directory = container.join(package_name);
                 if directory.exists() {
                     eprintln!("🛈 Skip {:?} (already exists)", directory);
-                    return Ok(CloneAurEffect::default());
+                    return None;
                 }
-
-                let mut added_package_names = IndexSet::new();
-                added_package_names.insert(package_name.to_string());
 
                 let url = format!("https://aur.archlinux.org/{}.git", package_name);
                 if let Err(error) = Repository::clone(&url, &directory) {
@@ -43,30 +42,42 @@ impl<'a> CloneAur<'a> {
                         "⮾ Failed to clone {:?} into {:?}: {}",
                         url, package_name, error,
                     );
-                    return Err(());
+                    return Some(Err(()));
                 }
                 eprintln!("🛈 Cloned {:?} from {:?}", package_name, url);
 
-                let missing_dependencies: IndexSet<_> = match read_build_metadata {
-                    BuildMetadata::SrcInfo => directory.join(".SRCINFO").pipe(read_srcinfo_file),
-                    BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(&directory),
-                    BuildMetadata::Either => read_srcinfo_from_directory(&directory),
-                }
-                .map_err(|error| {
-                    eprintln!("{}", error);
-                })?
-                .pipe(SrcInfo)
-                .all_required_dependencies()
-                .filter(|x| !contains_str(package_names.iter(), x.name))
-                .filter(|x| !contains_str(installed_dependencies.iter(), x.name))
-                .filter(|x| !contains_str(native_packages.iter(), x.name))
-                .map(|x| x.name.to_string())
-                .collect();
+                Some(Ok((package_name, directory)))
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .map(|item| {
+                item.and_then(|(package_name, directory)| {
+                    let mut added_package_names = IndexSet::new();
+                    added_package_names.insert(package_name.to_string());
 
-                Ok(CloneAurEffect {
-                    added_package_names,
-                    missing_dependencies,
-                    error_count: 0,
+                    let missing_dependencies: IndexSet<_> = match read_build_metadata {
+                        BuildMetadata::SrcInfo => {
+                            directory.join(".SRCINFO").pipe(read_srcinfo_file)
+                        }
+                        BuildMetadata::PkgBuild => read_srcinfo_from_pkgbuild(&directory),
+                        BuildMetadata::Either => read_srcinfo_from_directory(&directory),
+                    }
+                    .map_err(|error| {
+                        eprintln!("{}", error);
+                    })?
+                    .pipe(SrcInfo)
+                    .all_required_dependencies()
+                    .filter(|x| !contains_str(package_names.iter(), x.name))
+                    .filter(|x| !contains_str(installed_dependencies.iter(), x.name))
+                    .filter(|x| !alpm.provides(x.name))
+                    .map(|x| x.name.to_string())
+                    .collect();
+
+                    Ok(CloneAurEffect {
+                        added_package_names,
+                        missing_dependencies,
+                        error_count: 0,
+                    })
                 })
             })
             .map(|effect| {
@@ -75,7 +86,7 @@ impl<'a> CloneAur<'a> {
                     ..Default::default()
                 })
             })
-            .reduce(CloneAurEffect::default, Add::add);
+            .fold(CloneAurEffect::default(), Add::add);
 
         if effect.missing_dependencies.is_empty() {
             return effect;
@@ -87,7 +98,7 @@ impl<'a> CloneAur<'a> {
         let mut next_effect = CloneAur {
             container,
             read_build_metadata,
-            native_packages,
+            alpm,
             installed_dependencies: next_installed_dependencies,
             package_names: &next_package_names,
         }
