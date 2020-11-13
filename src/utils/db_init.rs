@@ -27,9 +27,7 @@ impl<'a> DbInit<'a> {
             Ok(manifest) => manifest,
             Err(error) => {
                 eprintln!("{}", error);
-                return Code::ManifestLoadingFailure
-                    .pipe(Failure::Expected)
-                    .pipe(Err);
+                return Code::ManifestLoadingFailure.pipe(Failure::Code).pipe(Err);
             }
         };
 

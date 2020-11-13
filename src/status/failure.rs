@@ -3,28 +3,28 @@ use std::io::Error;
 
 #[derive(Debug)]
 pub enum Failure {
-    Unexpected(Error),
-    Expected(Code),
+    Os(Error),
+    Code(Code),
 }
 
 impl Failure {
     pub fn code(&self) -> i32 {
         match self {
-            Failure::Unexpected(error) => error.raw_os_error().unwrap_or(1),
-            Failure::Expected(code) => *code as i32,
+            Failure::Os(error) => error.raw_os_error().unwrap_or(1),
+            Failure::Code(code) => *code as i32,
         }
     }
 }
 
 impl From<Error> for Failure {
     fn from(error: Error) -> Self {
-        Failure::Unexpected(error)
+        Failure::Os(error)
     }
 }
 
 impl From<Code> for Failure {
     fn from(code: Code) -> Self {
-        Failure::Expected(code)
+        Failure::Code(code)
     }
 }
 

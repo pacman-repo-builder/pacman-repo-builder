@@ -20,7 +20,7 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
 
     let manifest = BuildPacmanRepo::from_env().map_err(|error| {
         eprintln!("⮾ {}", error);
-        Failure::Expected(Code::ManifestLoadingFailure)
+        Failure::Code(Code::ManifestLoadingFailure)
     })?;
 
     struct SyncStatus<'a> {
