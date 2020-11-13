@@ -25,5 +25,5 @@ pub fn deref_db(args: DerefDbArgs) -> Status {
             Failure::from(error)
         })?;
 
-    Ok(0)
+    Ok(())
 }

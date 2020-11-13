@@ -122,7 +122,7 @@ pub fn sync_srcinfo(args: SyncSrcInfoArgs) -> Status {
     }
 
     match (update, outdated) {
-        (_, 0) | (true, _) => Ok(0),
+        (_, 0) | (true, _) => Ok(()),
         _ => Code::SrcInfoOutOfSync.into(),
     }
 }

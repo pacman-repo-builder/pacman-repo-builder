@@ -2,7 +2,7 @@ use super::super::{
     args::BuildArgs,
     manifest::{GlobalSettings, Member, TriState},
     srcinfo::database::DatabaseValue,
-    status::{Code, Failure, Status},
+    status::{status_of_code, Code, Failure, Status},
     utils::{
         create_makepkg_command, load_failed_build_record, run_deref_db, CommandUtils, DbInit,
         DbInitValue, PackageFileName,
@@ -138,7 +138,7 @@ pub fn build(args: BuildArgs) -> Status {
                 .unwrap_or(1);
             if status != 0 {
                 eprintln!("⮾ pacman -U exits with non-zero status code: {}", status);
-                return Ok(status);
+                return status_of_code(status);
             }
 
             continue;
@@ -198,7 +198,7 @@ pub fn build(args: BuildArgs) -> Status {
                     continue;
                 } else {
                     eprintln!("⮾ makepkg exits with non-zero status code: {}", status);
-                    return Ok(status);
+                    return status_of_code(status);
                 }
             }
         }
@@ -257,7 +257,7 @@ pub fn build(args: BuildArgs) -> Status {
                     .unwrap_or(1);
                 if status != 0 {
                     eprintln!("⮾ repo-add exits with non-zero status code: {}", status);
-                    return Ok(status);
+                    return status_of_code(status);
                 }
             }
         }
@@ -306,5 +306,5 @@ pub fn build(args: BuildArgs) -> Status {
         }
     }
 
-    Ok(0)
+    Ok(())
 }

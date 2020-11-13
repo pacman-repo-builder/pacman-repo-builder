@@ -78,5 +78,5 @@ pub fn init_aur_builder(args: InitAurBuilderArgs) -> Status {
         return Code::GenericFailure.into();
     }
 
-    Ok(0)
+    Ok(())
 }

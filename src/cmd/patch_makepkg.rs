@@ -55,5 +55,5 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
         eprintln!("# NOTE: Run again with --replace flag to replace system's makepkg");
     }
 
-    Ok(0)
+    Ok(())
 }

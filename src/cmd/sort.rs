@@ -27,7 +27,7 @@ pub fn sort(args: SortArgs) -> Status {
     }
 
     if error_count == 0 {
-        Ok(0)
+        Ok(())
     } else {
         eprintln!("{} errors occurred", error_count);
         Code::GenericFailure.into()
