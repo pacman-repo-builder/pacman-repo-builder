@@ -1,5 +1,6 @@
 use super::{Failure, Status};
 use pipe_trait::*;
+use std::num::NonZeroI32;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum Code {
@@ -15,5 +16,11 @@ pub enum Code {
 impl Into<Status> for Code {
     fn into(self) -> Status {
         self.pipe(Into::<Failure>::into).into()
+    }
+}
+
+impl Into<NonZeroI32> for Code {
+    fn into(self) -> NonZeroI32 {
+        unsafe { NonZeroI32::new_unchecked(self as i32) }
     }
 }
