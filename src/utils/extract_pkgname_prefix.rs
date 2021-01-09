@@ -1,10 +1,11 @@
 use super::split_str_once;
+use std::ops::Not;
 
 pub fn extract_pkgname_prefix(text: &str) -> (&str, &str) {
-    split_str_once(
-        text,
-        |current_char, _| !matches!(current_char, 'a'..='z' | 'A'..='Z' | '0'..='9' | '@' | '.' | '_' | '+' | '-'),
-    )
+    split_str_once(text, |current_char, _| {
+        matches!(current_char, 'a'..='z' | 'A'..='Z' | '0'..='9' | '@' | '.' | '_' | '+' | '-')
+            .not()
+    })
 }
 
 #[test]
