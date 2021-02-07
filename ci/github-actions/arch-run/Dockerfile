@@ -3,6 +3,7 @@ from archlinux:base-devel
 copy pacman.conf /etc/pacman.conf
 
 run pacman -Syu --noconfirm
+run locate libalpm
 run ls -lA /var/lib/pacman
 run pacman -S --noconfirm --needed --overwrite '*' bash rustup gcc llvm pkgconf
 
