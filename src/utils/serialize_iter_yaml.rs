@@ -7,7 +7,6 @@ pub fn serialize_iter_yaml(
 
     for value in values {
         result += serde_yaml::to_string(&value)?.as_str();
-        result += "\n";
     }
 
     Ok(result)
