@@ -6,8 +6,7 @@ pub fn serialize_iter_yaml(
     let mut result = String::new();
 
     for value in values {
-        result += serde_yaml::to_string(&value)?.as_str().trim_end();
-        result += "\n";
+        result += serde_yaml::to_string(&value)?.as_str();
     }
 
     Ok(result)
