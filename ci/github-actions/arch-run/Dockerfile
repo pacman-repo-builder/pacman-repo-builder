@@ -1,4 +1,4 @@
-from archlinux/base
+from archlinux:base-devel
 
 copy pacman.conf /etc/pacman.conf
 
