@@ -1,4 +1,4 @@
-from archlinux:base-devel
+from archlinux:base-devel-20210110.0.13332
 
 copy pacman.conf /etc/pacman.conf
 
