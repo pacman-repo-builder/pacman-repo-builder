@@ -1,4 +1,4 @@
-from archlinux:base-devel
+from manjarolinux/base
 copy pacman.conf /etc/pacman.conf
 copy init.bash /init.bash
 run /init.bash
