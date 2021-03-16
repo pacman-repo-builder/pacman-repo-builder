@@ -1,20 +1,19 @@
+use command_extra::CommandExtra;
 use std::process::Command;
 
 pub fn create_makepkg_command() -> Command {
-    let mut command = Command::new("makepkg");
-    command
-        .env_remove("PACMAN")
-        .env_remove("MAKEPKG_CONF")
-        .env_remove("PKGDEST")
-        .env_remove("SRCDEST")
-        .env_remove("LOGDEST")
-        .env_remove("PACKAGER")
-        .env_remove("SRCPKGDEST")
-        .env_remove("BUILDDIR")
-        .env_remove("GNUPGHOME")
-        .env_remove("GPGKEY")
-        .env_remove("SOURCE_DATE_EPOCH")
-        .env("PKGEXT", ".pkg.tar.zst")
-        .env("SRCEXT", ".src.tar.gz");
-    command
+    Command::new("makepkg")
+        .without_env("PACMAN")
+        .without_env("MAKEPKG_CONF")
+        .without_env("PKGDEST")
+        .without_env("SRCDEST")
+        .without_env("LOGDEST")
+        .without_env("PACKAGER")
+        .without_env("SRCPKGDEST")
+        .without_env("BUILDDIR")
+        .without_env("GNUPGHOME")
+        .without_env("GPGKEY")
+        .without_env("SOURCE_DATE_EPOCH")
+        .with_env("PKGEXT", ".pkg.tar.zst")
+        .with_env("SRCEXT", ".src.tar.gz")
 }
