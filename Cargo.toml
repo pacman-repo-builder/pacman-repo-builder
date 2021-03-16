@@ -34,23 +34,23 @@ path = "src/main.rs"
 argh = "^0.1.4"
 pipe-trait = "^0.2.1"
 smart-default = "^0.6.0"
-serde_yaml = "^0.8.15"
-num-bigint = "^0.3.1"
+serde_yaml = "^0.8.17"
+num-bigint = "^0.4.0"
 num-traits = "^0.2.14"
 alpm = "^1.1.8"
 git2 = "^0.13.17"
 petgraph = "^0.5.1"
-indexmap = "^1.6.1"
+indexmap = "^1.6.2"
 itertools = "^0.10.0"
 rayon = "^1.5.0"
-sha-1 = "^0.9.3"
+sha-1 = "^0.9.4"
 hex-literal = "^0.3.1"
 hex_fmt = "^0.3.0"
 command-extra = "^1.0.0"
 pacman = "^0.1.3"
 
 [dependencies.serde]
-version = "^1.0.123"
+version = "^1.0.124"
 features = ["derive"]
 
 [dev-dependencies]
