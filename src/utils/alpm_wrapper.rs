@@ -22,10 +22,9 @@ impl AlpmWrapper {
 
     pub fn provides(&self, pkgname: &str) -> bool {
         let db_list = || {
-            self.alpm
-                .localdb()
-                .pipe(once)
-                .chain(self.alpm.syncdbs().into_iter())
+            let local = self.alpm.localdb().pipe(once);
+            let sync = self.alpm.syncdbs().into_iter();
+            local.chain(sync)
         };
 
         for db in db_list() {
