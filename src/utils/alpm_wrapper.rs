@@ -28,14 +28,12 @@ impl AlpmWrapper {
                 .chain(self.alpm.syncdbs().into_iter())
         };
 
-        let by_name = db_list().any(|db| match db.pkg(pkgname) {
-            Ok(_) => true,
-            Err(Error::PkgNotFound) => false,
-            Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
-        });
-
-        if by_name {
-            return true;
+        for db in db_list() {
+            match db.pkg(pkgname) {
+                Ok(_) => return true,
+                Err(Error::PkgNotFound) => continue,
+                Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
+            }
         }
 
         db_list()
