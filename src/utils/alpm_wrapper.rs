@@ -1,4 +1,4 @@
-use alpm::{Alpm, Error, SigLevel};
+use alpm::{Alpm, Db, SigLevel};
 use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
 use std::iter::once;
@@ -32,12 +32,7 @@ impl AlpmWrapper {
         let local_packages = || self.alpm.localdb().pkgs().into_iter();
 
         let wanted: Vec<String> = packages
-            .filter(|target| {
-                local_packages().all(|pkg| {
-                    pkg.name() != *target
-                        && pkg.provides().into_iter().all(|pkg| pkg.name() != *target)
-                })
-            })
+            .filter(|pkgname| !self.is_installed(pkgname))
             .map(ToString::to_string)
             .collect();
 
@@ -54,24 +49,15 @@ impl AlpmWrapper {
     }
 
     pub fn provides(&self, pkgname: &str) -> bool {
-        let db_list = || {
-            let local = self.alpm.localdb().pipe(once);
-            let sync = self.alpm.syncdbs().into_iter();
-            local.chain(sync)
-        };
+        self.is_installed(pkgname) || self.is_available(pkgname)
+    }
 
-        for db in db_list() {
-            match db.pkg(pkgname) {
-                Ok(_) => return true,
-                Err(Error::PkgNotFound) => continue,
-                Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
-            }
-        }
+    fn is_installed(&self, pkgname: &str) -> bool {
+        db_list_provides(self.alpm.localdb().pipe(once), pkgname)
+    }
 
-        db_list()
-            .flat_map(|db| db.pkgs())
-            .flat_map(|pkg| pkg.provides())
-            .any(|pkg| pkg.name() == pkgname)
+    fn is_available(&self, pkgname: &str) -> bool {
+        db_list_provides(self.alpm.syncdbs(), pkgname)
     }
 }
 
@@ -84,4 +70,18 @@ struct LoadedPackageParam {
 pub struct InstallationPlan {
     pub wanted: Vec<String>,
     pub unwanted: Vec<String>,
+}
+
+fn db_list_provides<'a>(db_list: impl IntoIterator<Item = Db<'a>>, pkgname: &str) -> bool {
+    db_list
+        .into_iter()
+        .flat_map(|db| db.pkgs())
+        .map(|pkg| {
+            (
+                pkg.name().pipe(once),
+                pkg.provides().into_iter().map(|target| target.name()),
+            )
+        })
+        .flat_map(|(names, provides)| names.chain(provides))
+        .any(|name| name == pkgname)
 }
