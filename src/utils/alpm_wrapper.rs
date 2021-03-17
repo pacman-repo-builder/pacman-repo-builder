@@ -21,27 +21,24 @@ impl AlpmWrapper {
     }
 
     pub fn provides(&self, pkgname: &str) -> bool {
-        let localdb = || self.alpm.localdb().pipe(once);
-
-        let by_name =
+        let db_list = || {
             self.alpm
-                .syncdbs()
-                .into_iter()
-                .chain(localdb())
-                .any(|db| match db.pkg(pkgname) {
-                    Ok(_) => true,
-                    Err(Error::PkgNotFound) => false,
-                    Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
-                });
+                .localdb()
+                .pipe(once)
+                .chain(self.alpm.syncdbs().into_iter())
+        };
+
+        let by_name = db_list().any(|db| match db.pkg(pkgname) {
+            Ok(_) => true,
+            Err(Error::PkgNotFound) => false,
+            Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
+        });
 
         if by_name {
             return true;
         }
 
-        self.alpm
-            .syncdbs()
-            .into_iter()
-            .chain(localdb())
+        db_list()
             .flat_map(|db| db.pkgs())
             .flat_map(|pkg| pkg.provides())
             .any(|pkg| pkg.name() == pkgname)
