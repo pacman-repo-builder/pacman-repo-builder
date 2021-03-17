@@ -1,5 +1,7 @@
 use alpm::{Alpm, Error, SigLevel};
 use pacman::pacman_conf::get_config;
+use pipe_trait::Pipe;
+use std::iter::once;
 
 const DATABASE_PATH: &str = "/var/lib/pacman";
 
@@ -19,15 +21,18 @@ impl AlpmWrapper {
     }
 
     pub fn provides(&self, pkgname: &str) -> bool {
-        let by_name = self
-            .alpm
-            .syncdbs()
-            .into_iter()
-            .any(|db| match db.pkg(pkgname) {
-                Ok(_) => true,
-                Err(Error::PkgNotFound) => false,
-                Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
-            });
+        let localdb = || self.alpm.localdb().pipe(once);
+
+        let by_name =
+            self.alpm
+                .syncdbs()
+                .into_iter()
+                .chain(localdb())
+                .any(|db| match db.pkg(pkgname) {
+                    Ok(_) => true,
+                    Err(Error::PkgNotFound) => false,
+                    Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
+                });
 
         if by_name {
             return true;
@@ -36,6 +41,7 @@ impl AlpmWrapper {
         self.alpm
             .syncdbs()
             .into_iter()
+            .chain(localdb())
             .flat_map(|db| db.pkgs())
             .flat_map(|pkg| pkg.provides())
             .any(|pkg| pkg.name() == pkgname)
