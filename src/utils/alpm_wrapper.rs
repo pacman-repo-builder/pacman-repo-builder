@@ -56,13 +56,14 @@ impl AlpmWrapper {
                     };
                 }
 
-                if let Some(pkg) = self
-                    .alpm
-                    .syncdbs()
-                    .into_iter()
-                    .flat_map(|db| db.pkgs())
-                    .find(|pkg| pkg.name() == pkgname)
-                {
+                let find_pkgname = || {
+                    self.alpm
+                        .syncdbs()
+                        .into_iter()
+                        .flat_map(|db| db.pkgs())
+                        .find(|pkg| pkg.name() == pkgname)
+                };
+                if let Some(pkg) = find_pkgname() {
                     return get_result!(pkg);
                 }
 
