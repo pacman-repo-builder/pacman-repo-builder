@@ -30,10 +30,10 @@ impl AlpmWrapper {
 
     pub fn needed<'a>(
         &self,
-        packages: impl Iterator<Item = &'a str>,
+        srcinfo_all_depends: impl Iterator<Item = &'a str>,
         srcinfo_conflicts: impl Iterator<Item = &'a str>,
     ) -> InstallationPlan {
-        let mut wanted: Vec<String> = packages
+        let mut wanted: Vec<String> = srcinfo_all_depends
             .filter(|pkgname| !self.is_installed(pkgname))
             .map(ToString::to_string)
             .collect();
