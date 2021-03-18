@@ -102,10 +102,7 @@ impl AlpmWrapper {
         wanted.extend(addend);
 
         let left_unwanted = self
-            .alpm
-            .localdb()
-            .pkgs()
-            .into_iter()
+            .installed_packages()
             .filter(|pkg| {
                 pkg.conflicts()
                     .into_iter()
