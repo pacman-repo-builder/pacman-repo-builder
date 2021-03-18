@@ -84,15 +84,13 @@ impl AlpmWrapper {
                     })
                     .collect();
 
-                if let Some(pkg) = loaded_packages
-                    .iter()
-                    .find(|pkg| pkg.name() == pkgname)
-                    .or_else(|| {
-                        loaded_packages
-                            .iter()
-                            .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
-                    })
-                {
+                let find_pkgname = || loaded_packages.iter().find(|pkg| pkg.name() == pkgname);
+                let find_provider = || {
+                    loaded_packages
+                        .iter()
+                        .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
+                };
+                if let Some(pkg) = find_pkgname().or_else(find_provider) {
                     return get_result!(pkg);
                 }
 
