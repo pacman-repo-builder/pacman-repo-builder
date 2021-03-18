@@ -85,9 +85,10 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
     pub fn all_required_dependencies(
         &self,
     ) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
-        self.depends()
-            .chain(self.makedepends())
-            .chain(self.checkdepends())
+        let depends = self.depends();
+        let makedepends = self.makedepends();
+        let checkdepends = self.checkdepends();
+        depends.chain(makedepends).chain(checkdepends)
     }
 
     pub fn package_file_base_names(
