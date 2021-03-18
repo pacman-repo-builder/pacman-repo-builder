@@ -56,21 +56,21 @@ impl AlpmWrapper {
                     };
                 }
 
-                let find_pkgname = || {
+                let local_pkg_by_name = || {
                     self.alpm
                         .syncdbs()
                         .into_iter()
                         .flat_map(|db| db.pkgs())
                         .find(|pkg| pkg.name() == pkgname)
                 };
-                let find_provider = || {
+                let local_pkg_by_provider = || {
                     self.alpm
                         .syncdbs()
                         .into_iter()
                         .flat_map(|db| db.pkgs())
                         .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
                 };
-                if let Some(pkg) = find_pkgname().or_else(find_provider) {
+                if let Some(pkg) = local_pkg_by_name().or_else(local_pkg_by_provider) {
                     return get_result!(pkg);
                 }
 
@@ -92,13 +92,14 @@ impl AlpmWrapper {
                     })
                     .collect();
 
-                let find_pkgname = || loaded_packages.iter().find(|pkg| pkg.name() == pkgname);
-                let find_provider = || {
+                let loaded_pkg_by_name =
+                    || loaded_packages.iter().find(|pkg| pkg.name() == pkgname);
+                let loaded_pkg_by_provider = || {
                     loaded_packages
                         .iter()
                         .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
                 };
-                if let Some(pkg) = find_pkgname().or_else(find_provider) {
+                if let Some(pkg) = loaded_pkg_by_name().or_else(loaded_pkg_by_provider) {
                     return get_result!(pkg);
                 }
 
