@@ -130,7 +130,7 @@ impl AlpmWrapper {
         InstallationPlan { wanted, unwanted }
     }
 
-    pub fn provides(&self, pkgname: &str) -> bool {
+    pub fn is_provided(&self, pkgname: &str) -> bool {
         self.is_installed(pkgname) || self.is_available(pkgname)
     }
 
