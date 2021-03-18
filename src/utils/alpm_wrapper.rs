@@ -43,6 +43,18 @@ impl AlpmWrapper {
         let addend: Vec<String> = wanted
             .iter()
             .flat_map(|pkgname| -> Box<dyn Iterator<Item = String>> {
+                macro_rules! find_pkg {
+                    ($list:expr) => {{
+                        let find_by_name = || $list.find(|pkg| pkg.name() == pkgname);
+                        let find_by_provider = || {
+                            $list.find(|pkg| {
+                                pkg.provides().into_iter().any(|dep| dep.name() == pkgname)
+                            })
+                        };
+                        find_by_name().or_else(find_by_provider)
+                    }};
+                }
+
                 macro_rules! get_result {
                     ($pkg:expr) => {
                         $pkg.depends()
@@ -56,13 +68,7 @@ impl AlpmWrapper {
                     };
                 }
 
-                let local_pkg_by_name =
-                    || self.available_packages().find(|pkg| pkg.name() == pkgname);
-                let local_pkg_by_provider = || {
-                    self.available_packages()
-                        .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
-                };
-                if let Some(pkg) = local_pkg_by_name().or_else(local_pkg_by_provider) {
+                if let Some(pkg) = find_pkg!(self.available_packages()) {
                     return get_result!(pkg);
                 }
 
@@ -84,14 +90,7 @@ impl AlpmWrapper {
                     })
                     .collect();
 
-                let loaded_pkg_by_name =
-                    || loaded_packages.iter().find(|pkg| pkg.name() == pkgname);
-                let loaded_pkg_by_provider = || {
-                    loaded_packages
-                        .iter()
-                        .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
-                };
-                if let Some(pkg) = loaded_pkg_by_name().or_else(loaded_pkg_by_provider) {
+                if let Some(pkg) = find_pkg!(loaded_packages.iter()) {
                     return get_result!(pkg);
                 }
 
