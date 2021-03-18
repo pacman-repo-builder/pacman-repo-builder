@@ -1,4 +1,4 @@
-use alpm::{Alpm, Db, SigLevel};
+use alpm::{Alpm, Db, Package, SigLevel};
 use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
 use std::iter::{empty, once};
@@ -134,11 +134,11 @@ impl AlpmWrapper {
         self.is_installed(pkgname) || self.is_available(pkgname)
     }
 
-    fn is_installed(&self, pkgname: &str) -> bool {
+    pub fn is_installed(&self, pkgname: &str) -> bool {
         db_list_provides(self.alpm.localdb().pipe(once), pkgname)
     }
 
-    fn is_available(&self, pkgname: &str) -> bool {
+    pub fn is_available(&self, pkgname: &str) -> bool {
         db_list_provides(self.alpm.syncdbs(), pkgname)
     }
 
