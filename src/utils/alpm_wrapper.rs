@@ -124,11 +124,11 @@ impl AlpmWrapper {
     }
 
     pub fn is_installed(&self, pkgname: &str) -> bool {
-        db_list_provides(self.alpm.localdb().pipe(once), pkgname)
+        does_db_list_provide(self.alpm.localdb().pipe(once), pkgname)
     }
 
     pub fn is_available(&self, pkgname: &str) -> bool {
-        db_list_provides(self.alpm.syncdbs(), pkgname)
+        does_db_list_provide(self.alpm.syncdbs(), pkgname)
     }
 
     pub fn installed_packages(&self) -> impl Iterator<Item = Package<'_>> {
@@ -151,7 +151,7 @@ pub struct InstallationPlan {
     pub unwanted: Vec<String>,
 }
 
-fn db_list_provides<'a>(db_list: impl IntoIterator<Item = Db<'a>>, pkgname: &str) -> bool {
+fn does_db_list_provide<'a>(db_list: impl IntoIterator<Item = Db<'a>>, pkgname: &str) -> bool {
     db_list
         .into_iter()
         .flat_map(|db| db.pkgs())
