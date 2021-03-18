@@ -39,6 +39,18 @@ impl AlpmWrapper {
         let addend: Vec<String> = wanted
             .iter()
             .flat_map(|pkgname| -> Box<dyn Iterator<Item = String>> {
+                macro_rules! get_result {
+                    ($pkg:expr) => {
+                        $pkg.depends()
+                            .into_iter()
+                            .chain($pkg.makedepends())
+                            .map(|pkg| pkg.name())
+                            .filter(|pkgname| !self.is_installed(pkgname))
+                            .map(ToString::to_string)
+                            .pipe(Box::new)
+                    };
+                }
+
                 if let Some(pkg) = self
                     .alpm
                     .syncdbs()
@@ -46,14 +58,7 @@ impl AlpmWrapper {
                     .flat_map(|db| db.pkgs())
                     .find(|pkg| pkg.name() == pkgname)
                 {
-                    return pkg
-                        .depends()
-                        .into_iter()
-                        .chain(pkg.makedepends())
-                        .map(|pkg| pkg.name())
-                        .filter(|pkgname| !self.is_installed(pkgname))
-                        .map(ToString::to_string)
-                        .pipe(Box::new);
+                    return get_result!(pkg);
                 }
 
                 let loaded_packages: Vec<_> = self
@@ -83,14 +88,7 @@ impl AlpmWrapper {
                             .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
                     })
                 {
-                    return pkg
-                        .depends()
-                        .into_iter()
-                        .chain(pkg.makedepends())
-                        .map(|pkg| pkg.name())
-                        .filter(|pkgname| !self.is_installed(pkgname))
-                        .map(ToString::to_string)
-                        .pipe(Box::new);
+                    return get_result!(pkg);
                 }
 
                 Box::new(empty())
