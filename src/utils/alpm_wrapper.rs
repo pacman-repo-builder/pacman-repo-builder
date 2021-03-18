@@ -141,6 +141,14 @@ impl AlpmWrapper {
     fn is_available(&self, pkgname: &str) -> bool {
         db_list_provides(self.alpm.syncdbs(), pkgname)
     }
+
+    pub fn installed_packages(&self) -> impl Iterator<Item = Package<'_>> {
+        self.alpm.localdb().pkgs().into_iter()
+    }
+
+    pub fn available_packages(&self) -> impl Iterator<Item = Package<'_>> {
+        self.alpm.syncdbs().into_iter().flat_map(|db| db.pkgs())
+    }
 }
 
 #[derive(Debug)]
