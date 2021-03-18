@@ -44,6 +44,7 @@ impl AlpmWrapper {
                         $pkg.depends()
                             .into_iter()
                             .chain($pkg.makedepends())
+                            .chain($pkg.checkdepends())
                             .map(|pkg| pkg.name())
                             .filter(|pkgname| !self.is_installed(pkgname))
                             .map(ToString::to_string)
