@@ -56,18 +56,10 @@ impl AlpmWrapper {
                     };
                 }
 
-                let local_pkg_by_name = || {
-                    self.alpm
-                        .syncdbs()
-                        .into_iter()
-                        .flat_map(|db| db.pkgs())
-                        .find(|pkg| pkg.name() == pkgname)
-                };
+                let local_pkg_by_name =
+                    || self.available_packages().find(|pkg| pkg.name() == pkgname);
                 let local_pkg_by_provider = || {
-                    self.alpm
-                        .syncdbs()
-                        .into_iter()
-                        .flat_map(|db| db.pkgs())
+                    self.available_packages()
                         .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
                 };
                 if let Some(pkg) = local_pkg_by_name().or_else(local_pkg_by_provider) {
