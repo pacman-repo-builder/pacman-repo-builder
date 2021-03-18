@@ -1,7 +1,7 @@
 use alpm::{Alpm, Db, SigLevel};
 use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
-use std::iter::once;
+use std::iter::{empty, once};
 
 const DATABASE_PATH: &str = "/var/lib/pacman";
 
@@ -29,10 +29,75 @@ impl AlpmWrapper {
     }
 
     pub fn needed<'a>(&self, packages: impl Iterator<Item = &'a str>) -> InstallationPlan {
-        let wanted: Vec<String> = packages
+        let mut wanted: Vec<String> = packages
             .filter(|pkgname| !self.is_installed(pkgname))
             .map(ToString::to_string)
             .collect();
+
+        // Q: Why also add indirect dependencies?
+        // A: To enable finding all possible conflicts later.
+        let addend: Vec<String> = wanted
+            .iter()
+            .flat_map(|pkgname| -> Box<dyn Iterator<Item = String>> {
+                if let Some(pkg) = self
+                    .alpm
+                    .syncdbs()
+                    .into_iter()
+                    .flat_map(|db| db.pkgs())
+                    .find(|pkg| pkg.name() == pkgname)
+                {
+                    return pkg
+                        .depends()
+                        .into_iter()
+                        .chain(pkg.makedepends())
+                        .map(|pkg| pkg.name())
+                        .filter(|pkgname| !self.is_installed(pkgname))
+                        .map(ToString::to_string)
+                        .pipe(Box::new);
+                }
+
+                let loaded_packages: Vec<_> = self
+                    .loaded_packages
+                    .iter()
+                    .filter_map(|LoadedPackageParam { filename }| {
+                        match self.alpm.pkg_load(filename.clone(), true, SigLevel::NONE) {
+                            Err(error) => {
+                                eprintln!(
+                                    "⚠ Failed to load {:?} as an alpm package: {}",
+                                    String::from_utf8_lossy(filename),
+                                    error,
+                                );
+                                None
+                            }
+                            Ok(pkg) => Some(pkg),
+                        }
+                    })
+                    .collect();
+
+                if let Some(pkg) = loaded_packages
+                    .iter()
+                    .find(|pkg| pkg.name() == pkgname)
+                    .or_else(|| {
+                        loaded_packages
+                            .iter()
+                            .find(|pkg| pkg.provides().into_iter().any(|dep| dep.name() == pkgname))
+                    })
+                {
+                    return pkg
+                        .depends()
+                        .into_iter()
+                        .chain(pkg.makedepends())
+                        .map(|pkg| pkg.name())
+                        .filter(|pkgname| !self.is_installed(pkgname))
+                        .map(ToString::to_string)
+                        .pipe(Box::new);
+                }
+
+                Box::new(empty())
+            })
+            .collect();
+
+        wanted.extend(addend);
 
         let unwanted: Vec<String> = self
             .alpm
