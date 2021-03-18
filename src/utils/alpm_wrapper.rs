@@ -1,7 +1,11 @@
 use alpm::{Alpm, Db, Package, SigLevel};
 use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
-use std::iter::{empty, once};
+use std::{
+    ffi::OsStr,
+    iter::{empty, once},
+    os::unix::prelude::OsStrExt,
+};
 
 const DATABASE_PATH: &str = "/var/lib/pacman";
 
@@ -80,7 +84,7 @@ impl AlpmWrapper {
                             Err(error) => {
                                 eprintln!(
                                     "⚠ Failed to load {:?} as an alpm package: {}",
-                                    String::from_utf8_lossy(filename),
+                                    OsStr::from_bytes(&filename),
                                     error,
                                 );
                                 None
