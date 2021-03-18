@@ -29,14 +29,16 @@ impl AlpmWrapper {
     }
 
     pub fn needed<'a>(&self, packages: impl Iterator<Item = &'a str>) -> InstallationPlan {
-        let local_packages = || self.alpm.localdb().pkgs().into_iter();
-
         let wanted: Vec<String> = packages
             .filter(|pkgname| !self.is_installed(pkgname))
             .map(ToString::to_string)
             .collect();
 
-        let unwanted: Vec<String> = local_packages()
+        let unwanted: Vec<String> = self
+            .alpm
+            .localdb()
+            .pkgs()
+            .into_iter()
             .filter(|pkg| {
                 pkg.conflicts()
                     .into_iter()
