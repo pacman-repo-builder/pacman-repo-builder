@@ -28,7 +28,11 @@ impl AlpmWrapper {
         self.loaded_packages.push(LoadedPackageParam { filename })
     }
 
-    pub fn needed<'a>(&self, packages: impl Iterator<Item = &'a str>) -> InstallationPlan {
+    pub fn needed<'a>(
+        &self,
+        packages: impl Iterator<Item = &'a str>,
+        srcinfo_conflicts: impl Iterator<Item = &'a str>,
+    ) -> InstallationPlan {
         let mut wanted: Vec<String> = packages
             .filter(|pkgname| !self.is_installed(pkgname))
             .map(ToString::to_string)
@@ -98,7 +102,7 @@ impl AlpmWrapper {
 
         wanted.extend(addend);
 
-        let unwanted: Vec<String> = self
+        let left_unwanted = self
             .alpm
             .localdb()
             .pkgs()
@@ -108,8 +112,13 @@ impl AlpmWrapper {
                     .into_iter()
                     .any(|dep| wanted.iter().any(|pkgname| dep.name() == pkgname))
             })
-            .map(|pkg| pkg.name().to_string())
-            .collect();
+            .map(|pkg| pkg.name().to_string());
+
+        let right_unwanted = srcinfo_conflicts
+            .filter(|pkgname| self.is_installed(pkgname))
+            .map(ToString::to_string);
+
+        let unwanted: Vec<String> = left_unwanted.chain(right_unwanted).collect();
 
         InstallationPlan { wanted, unwanted }
     }
