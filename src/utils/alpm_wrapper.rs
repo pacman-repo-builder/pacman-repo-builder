@@ -148,6 +148,9 @@ impl AlpmWrapper {
 
         let right_unwanted = srcinfo_conflicts
             .filter(|pkgname| {
+                // NOTE: do not use self.is_installed since it also includes providers
+                // NOTE: do not add explicitly installed packages to unwanted
+
                 self.installed_packages()
                     .find(|pkg| pkg.name() == *pkgname)
                     .map(|pkg| pkg.reason() == PackageReason::Depend)
