@@ -82,6 +82,10 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
             .map(ReasonedDependency::new)
     }
 
+    pub fn conflicts(&self) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
+        self.get_dependencies("conflicts")
+    }
+
     pub fn all_required_dependencies(
         &self,
     ) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
