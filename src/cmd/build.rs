@@ -184,15 +184,11 @@ pub fn build(args: BuildArgs) -> Status {
                         .map(|status| status.code().unwrap_or(1))
                     {
                         Ok(0) => {}
-                        Ok(status) => {
-                            eprintln!(
-                                "⚠ pacman {} exits with non-zero status code: {}",
-                                $short, status,
-                            );
-                        }
-                        Err(error) => {
-                            eprintln!("⚠ {}", error);
-                        }
+                        Ok(status) => eprintln!(
+                            "⚠ pacman {} exits with non-zero status code: {}",
+                            $short, status,
+                        ),
+                        Err(error) => eprintln!("⚠ {}", error),
                     }
                 };
             }
