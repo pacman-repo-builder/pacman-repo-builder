@@ -185,7 +185,6 @@ pub fn build(args: BuildArgs) -> Status {
                     {
                         Ok(0) => {}
                         Ok(status) => {
-                            debug_assert_ne!(status, 0);
                             eprintln!(
                                 "⚠ pacman {} exits with non-zero status code: {}",
                                 $short, status,
