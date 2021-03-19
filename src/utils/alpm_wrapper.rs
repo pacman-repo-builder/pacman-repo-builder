@@ -150,6 +150,7 @@ impl AlpmWrapper {
             .filter(|pkgname| {
                 // NOTE: do not use self.is_installed since it also includes providers
                 // NOTE: do not add explicitly installed packages to unwanted
+                // TODO: only add orphan packages (direct or indirect) to unwanted
 
                 self.installed_packages()
                     .find(|pkg| pkg.name() == *pkgname)
