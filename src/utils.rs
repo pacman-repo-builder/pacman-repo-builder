@@ -20,7 +20,7 @@ mod run_deref_db;
 mod serialize_iter_yaml;
 mod split_str_once;
 
-pub use alpm_wrapper::{AlpmWrapper, InstallationPlan};
+pub use alpm_wrapper::{AlpmWrapper, InstallationPlan, InstallationTarget};
 pub use clone_aur::{CloneAur, CloneAurEffect};
 pub use command_utils::CommandUtils;
 pub use copyright_terms::COPYING;
