@@ -34,7 +34,7 @@ impl AlpmWrapper {
         srcinfo_all_depends: impl Iterator<Item = &'a str>,
         srcinfo_conflicts: impl Iterator<Item = &'a str>,
     ) -> InstallationPlan {
-        // TODO: consider version ranges
+        // TODO: consider version ranges (how to check version satisfaction?)
         // TODO: `wanted` should clarify whether a package is "available" or "external"
 
         let mut wanted: IndexSet<String> = srcinfo_all_depends
