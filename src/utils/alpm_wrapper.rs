@@ -35,7 +35,7 @@ impl AlpmWrapper {
         srcinfo_conflicts: impl Iterator<Item = &'a str>,
     ) -> InstallationPlan {
         // TODO: consider version ranges (how to check version satisfaction?)
-        // TODO: only packages that are installed-as-a-dependency to unwanted
+        // TODO: only add packages that are installed-as-a-dependency to unwanted
 
         let make_installation_target = |name: String| {
             if self.is_available(&name) {
