@@ -266,7 +266,7 @@ pub fn build(args: BuildArgs) -> Status {
     if dereference_database_symlinks {
         eprintln!();
         eprintln!();
-        eprintln!("Resolving all symlinks to repository database into real files");
+        eprintln!("🛈 Resolving all symlinks to repository database into real files");
         run_deref_db(repository_directory).map_err(|error| {
             eprintln!("⮾ {}", error);
             Failure::from(error)
