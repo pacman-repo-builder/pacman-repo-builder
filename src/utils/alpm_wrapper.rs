@@ -9,7 +9,7 @@ const DATABASE_PATH: &str = "/var/lib/pacman";
 #[derive(Debug)]
 pub struct AlpmWrapper {
     alpm: Alpm,
-    loaded_packages: Vec<LoadedPackageParam>,
+    external_packages: Vec<LoadedPackageParam>,
 }
 
 impl AlpmWrapper {
@@ -21,12 +21,12 @@ impl AlpmWrapper {
         }
         AlpmWrapper {
             alpm,
-            loaded_packages: Default::default(),
+            external_packages: Default::default(),
         }
     }
 
-    pub fn load_package(&mut self, filename: Vec<u8>) {
-        self.loaded_packages.push(LoadedPackageParam { filename })
+    pub fn add_external_package(&mut self, filename: Vec<u8>) {
+        self.external_packages.push(LoadedPackageParam { filename })
     }
 
     pub fn needed<'a>(
@@ -73,8 +73,8 @@ impl AlpmWrapper {
                     return get_result!(pkg);
                 }
 
-                let loaded_packages: Vec<_> = self
-                    .loaded_packages
+                let external_packages: Vec<_> = self
+                    .external_packages
                     .iter()
                     .filter_map(|LoadedPackageParam { filename }| {
                         match self.alpm.pkg_load(filename.clone(), true, SigLevel::NONE) {
@@ -91,7 +91,7 @@ impl AlpmWrapper {
                     })
                     .collect();
 
-                if let Some(pkg) = find_pkg!(loaded_packages.iter()) {
+                if let Some(pkg) = find_pkg!(external_packages.iter()) {
                     return get_result!(pkg);
                 }
 
