@@ -1,11 +1,7 @@
 use alpm::{Alpm, Db, Package, SigLevel};
 use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
-use std::{
-    ffi::OsStr,
-    iter::{empty, once},
-    os::unix::prelude::OsStrExt,
-};
+use std::{ffi::OsStr, iter::once, os::unix::prelude::OsStrExt};
 
 const DATABASE_PATH: &str = "/var/lib/pacman";
 
@@ -46,7 +42,7 @@ impl AlpmWrapper {
         // A: To enable finding all possible conflicts later.
         let addend: Vec<String> = wanted
             .iter()
-            .flat_map(|pkgname| -> Box<dyn Iterator<Item = String>> {
+            .flat_map(|pkgname| -> Vec<String> {
                 macro_rules! find_pkg {
                     ($list:expr) => {{
                         let find_by_name = || $list.find(|pkg| pkg.name() == pkgname);
@@ -68,7 +64,7 @@ impl AlpmWrapper {
                             .map(|pkg| pkg.name())
                             .filter(|pkgname| !self.is_installed(pkgname))
                             .map(ToString::to_string)
-                            .pipe(Box::new)
+                            .collect()
                     };
                 }
 
@@ -98,7 +94,7 @@ impl AlpmWrapper {
                     return get_result!(pkg);
                 }
 
-                Box::new(empty())
+                Vec::new()
             })
             .collect();
 
