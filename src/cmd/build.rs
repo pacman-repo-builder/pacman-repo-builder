@@ -168,12 +168,12 @@ pub fn build(args: BuildArgs) -> Status {
             let has_unwanted = !unwanted.is_empty();
             if has_wanted {
                 eprintln!(
-                    "🛈 Missing dependencies: {:?}",
+                    "🛈 Missing dependencies: {}",
                     wanted.iter().map(|target| &target.name).join(" ")
                 );
             }
             if has_unwanted {
-                eprintln!("🛈 Conflicts: {:?}", unwanted.iter().join(" "));
+                eprintln!("🛈 Conflicts: {}", unwanted.iter().join(" "));
             }
 
             macro_rules! spawn_and_warn {
