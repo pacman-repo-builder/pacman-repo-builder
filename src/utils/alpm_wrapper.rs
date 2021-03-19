@@ -1,4 +1,5 @@
 use alpm::{Alpm, Db, Package, SigLevel};
+use indexmap::IndexSet;
 use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
 use std::{ffi::OsStr, iter::once, os::unix::prelude::OsStrExt};
@@ -33,7 +34,7 @@ impl AlpmWrapper {
         srcinfo_all_depends: impl Iterator<Item = &'a str>,
         srcinfo_conflicts: impl Iterator<Item = &'a str>,
     ) -> InstallationPlan {
-        let mut wanted: Vec<String> = srcinfo_all_depends
+        let mut wanted: IndexSet<String> = srcinfo_all_depends
             .filter(|pkgname| !self.is_installed(pkgname))
             .map(ToString::to_string)
             .collect();
@@ -113,7 +114,7 @@ impl AlpmWrapper {
             .filter(|pkgname| self.is_installed(pkgname))
             .map(ToString::to_string);
 
-        let unwanted: Vec<String> = left_unwanted.chain(right_unwanted).collect();
+        let unwanted: IndexSet<String> = left_unwanted.chain(right_unwanted).collect();
 
         InstallationPlan { wanted, unwanted }
     }
@@ -146,8 +147,8 @@ struct LoadedPackageParam {
 
 #[derive(Debug)]
 pub struct InstallationPlan {
-    pub wanted: Vec<String>,
-    pub unwanted: Vec<String>,
+    pub wanted: IndexSet<String>,
+    pub unwanted: IndexSet<String>,
 }
 
 fn does_db_list_provide<'a>(db_list: impl IntoIterator<Item = Db<'a>>, pkgname: &str) -> bool {
