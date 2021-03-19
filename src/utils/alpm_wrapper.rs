@@ -148,7 +148,7 @@ impl AlpmWrapper {
             .map(|pkg| pkg.name().to_string());
 
         let right_unwanted = srcinfo_conflicts
-            .filter(|pkgname| self.is_installed(pkgname))
+            .filter(|pkgname| self.installed_packages().any(|pkg| pkg.name() == *pkgname))
             .map(ToString::to_string);
 
         let unwanted: IndexSet<String> = left_unwanted.chain(right_unwanted).collect();
