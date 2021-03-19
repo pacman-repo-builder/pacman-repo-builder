@@ -35,24 +35,53 @@ impl AlpmWrapper {
         srcinfo_conflicts: impl Iterator<Item = &'a str>,
     ) -> InstallationPlan {
         // TODO: consider version ranges (how to check version satisfaction?)
-        // TODO: `wanted` should clarify whether a package is "available" or "external"
 
-        let mut wanted: IndexSet<String> = srcinfo_all_depends
+        let make_installation_target = |name: String| InstallationTarget {
+            external: {
+                if self.is_available(&name) {
+                    None
+                } else {
+                    self.external_packages
+                        .iter()
+                        .find(|param| {
+                            match self
+                                .alpm
+                                .pkg_load(param.filename.clone(), true, SigLevel::NONE)
+                            {
+                                Err(error) => {
+                                    eprintln!(
+                                        "⚠ Failed to load {:?} as an alpm package: {}",
+                                        OsStr::from_bytes(&param.filename),
+                                        error,
+                                    );
+                                    false
+                                }
+                                Ok(pkg) => pkg.name() == name,
+                            }
+                        })
+                        .map(|param| param.filename.clone())
+                }
+            },
+            name,
+        };
+
+        let mut wanted: IndexSet<InstallationTarget> = srcinfo_all_depends
             .filter(|pkgname| !self.is_installed(pkgname))
             .map(ToString::to_string)
+            .map(make_installation_target)
             .collect();
 
         // Q: Why also add indirect dependencies?
         // A: To enable finding all possible conflicts later.
-        let addend: Vec<String> = wanted
+        let addend: Vec<InstallationTarget> = wanted
             .iter()
-            .flat_map(|pkgname| -> Vec<String> {
+            .flat_map(|InstallationTarget { name, .. }| -> Vec<String> {
                 macro_rules! find_pkg {
                     ($list:expr) => {{
-                        let find_by_name = || $list.find(|pkg| pkg.name() == pkgname);
+                        let find_by_name = || $list.find(|pkg| pkg.name() == name);
                         let find_by_provider = || {
                             $list.find(|pkg| {
-                                pkg.provides().into_iter().any(|dep| dep.name() == pkgname)
+                                pkg.provides().into_iter().any(|dep| dep.name() == name)
                             })
                         };
                         find_by_name().or_else(find_by_provider)
@@ -100,6 +129,7 @@ impl AlpmWrapper {
 
                 Vec::new()
             })
+            .map(make_installation_target)
             .collect();
 
         wanted.extend(addend);
@@ -109,7 +139,7 @@ impl AlpmWrapper {
             .filter(|pkg| {
                 pkg.conflicts()
                     .into_iter()
-                    .any(|dep| wanted.iter().any(|pkgname| dep.name() == pkgname))
+                    .any(|dep| wanted.iter().any(|target| dep.name() == target.name))
             })
             .map(|pkg| pkg.name().to_string());
 
@@ -150,8 +180,14 @@ struct LoadedPackageParam {
 
 #[derive(Debug)]
 pub struct InstallationPlan {
-    pub wanted: IndexSet<String>,
+    pub wanted: IndexSet<InstallationTarget>,
     pub unwanted: IndexSet<String>,
+}
+
+#[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub struct InstallationTarget {
+    pub name: String,
+    pub external: Option<Vec<u8>>,
 }
 
 fn does_db_list_provide<'a>(db_list: impl IntoIterator<Item = Db<'a>>, pkgname: &str) -> bool {
