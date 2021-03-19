@@ -36,33 +36,36 @@ impl AlpmWrapper {
     ) -> InstallationPlan {
         // TODO: consider version ranges (how to check version satisfaction?)
 
-        let make_installation_target = |name: String| InstallationTarget {
-            external: {
-                if self.is_available(&name) {
-                    None
-                } else {
-                    self.external_packages
-                        .iter()
-                        .find(|param| {
-                            match self
-                                .alpm
-                                .pkg_load(param.filename.clone(), true, SigLevel::NONE)
-                            {
-                                Err(error) => {
-                                    eprintln!(
-                                        "⚠ Failed to load {:?} as an alpm package: {}",
-                                        OsStr::from_bytes(&param.filename),
-                                        error,
-                                    );
-                                    false
-                                }
-                                Ok(pkg) => pkg.name() == name,
-                            }
-                        })
-                        .map(|param| param.filename.clone())
-                }
-            },
-            name,
+        let make_installation_target = |name: String| {
+            if self.is_available(&name) {
+                return InstallationTarget {
+                    name,
+                    external: None,
+                };
+            }
+
+            let external = self
+                .external_packages
+                .iter()
+                .find(|param| {
+                    match self
+                        .alpm
+                        .pkg_load(param.filename.clone(), true, SigLevel::NONE)
+                    {
+                        Err(error) => {
+                            eprintln!(
+                                "⚠ Failed to load {:?} as an alpm package: {}",
+                                OsStr::from_bytes(&param.filename),
+                                error,
+                            );
+                            false
+                        }
+                        Ok(pkg) => pkg.name() == name,
+                    }
+                })
+                .map(|param| param.filename.clone());
+
+            InstallationTarget { name, external }
         };
 
         let mut wanted: IndexSet<InstallationTarget> = srcinfo_all_depends
