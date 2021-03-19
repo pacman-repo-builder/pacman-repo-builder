@@ -210,6 +210,7 @@ pub fn build(args: BuildArgs) -> Status {
                                 .with_args($target)
                                 .with_arg("--noconfirm")
                                 .with_arg("--asdeps")
+                                .with_arg("--needed")
                         );
                     };
                 }
