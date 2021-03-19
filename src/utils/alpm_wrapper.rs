@@ -1,4 +1,4 @@
-use alpm::{Alpm, Db, Package, SigLevel};
+use alpm::{Alpm, Db, Package, PackageReason, SigLevel};
 use indexmap::IndexSet;
 use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
@@ -35,7 +35,6 @@ impl AlpmWrapper {
         srcinfo_conflicts: impl Iterator<Item = &'a str>,
     ) -> InstallationPlan {
         // TODO: consider version ranges (how to check version satisfaction?)
-        // TODO: only add packages that are installed-as-a-dependency to unwanted
 
         let make_installation_target = |name: String| {
             if self.is_available(&name) {
@@ -148,7 +147,12 @@ impl AlpmWrapper {
             .map(|pkg| pkg.name().to_string());
 
         let right_unwanted = srcinfo_conflicts
-            .filter(|pkgname| self.installed_packages().any(|pkg| pkg.name() == *pkgname))
+            .filter(|pkgname| {
+                self.installed_packages()
+                    .find(|pkg| pkg.name() == *pkgname)
+                    .map(|pkg| pkg.reason() == PackageReason::Depend)
+                    .unwrap_or(false)
+            })
             .map(ToString::to_string);
 
         let unwanted: IndexSet<String> = left_unwanted.chain(right_unwanted).collect();
