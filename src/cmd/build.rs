@@ -4,8 +4,8 @@ use super::super::{
     srcinfo::database::DatabaseValue,
     status::{status_of_code, Code, Failure, Status},
     utils::{
-        create_makepkg_command, load_failed_build_record, run_deref_db, AlpmWrapper, CommandUtils,
-        DbInit, DbInitValue, InstallationPlan, PackageFileName,
+        create_makepkg_command, load_failed_build_record, run_deref_db, CommandUtils, DbInit,
+        DbInitValue, ExternalPackageList, InstallationPlan, PackageFileName,
     },
 };
 use command_extra::CommandExtra;
@@ -63,7 +63,7 @@ pub fn build(args: BuildArgs) -> Status {
     let repository_directory = repository.parent().expect("get repository directory");
     let members: Vec<_> = manifest.resolve_members().collect();
     let mut failed_builds = Vec::new();
-    let mut alpm_wrapper = AlpmWrapper::from_env();
+    let mut built_packages = ExternalPackageList::from_env();
 
     for pkgbase in build_order {
         let DatabaseValue {
@@ -160,7 +160,7 @@ pub fn build(args: BuildArgs) -> Status {
 
         {
             eprintln!("🛈 Checking for missing dependencies...");
-            let InstallationPlan { wanted, unwanted } = alpm_wrapper.needed(
+            let InstallationPlan { wanted, unwanted } = built_packages.needed(
                 srcinfo.all_required_dependencies().map(|x| x.name),
                 srcinfo.conflicts().map(|x| x.name),
             );
@@ -315,7 +315,7 @@ pub fn build(args: BuildArgs) -> Status {
             eprintln!("📦 made file {}", pkg_file_name);
 
             {
-                alpm_wrapper.add_external_package(pkg_src_file.as_os_str().as_bytes().to_vec());
+                built_packages.add_external_package(pkg_src_file.as_os_str().as_bytes().to_vec());
             }
 
             {
