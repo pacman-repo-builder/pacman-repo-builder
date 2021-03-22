@@ -10,6 +10,7 @@ mod external_package_list;
 mod extract_pkgname_prefix;
 mod extract_value_from_line;
 mod load_failed_build_record;
+mod orphan_packages;
 mod outdated_packages;
 mod package_file_name;
 mod pair;
@@ -33,6 +34,7 @@ pub use external_package_list::{ExternalPackageList, InstallationPlan, Installat
 pub use extract_pkgname_prefix::extract_pkgname_prefix;
 pub use extract_value_from_line::extract_value_from_line;
 pub use load_failed_build_record::load_failed_build_record;
+pub use orphan_packages::orphan_packages;
 pub use outdated_packages::outdated_packages;
 pub use package_file_name::PackageFileName;
 pub use pair::Pair;
