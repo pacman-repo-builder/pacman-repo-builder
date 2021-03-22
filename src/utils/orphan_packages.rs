@@ -44,7 +44,7 @@ pub fn orphan_packages(alpm_wrapper: &AlpmWrapper) -> IndexSet<String> {
     }
 
     tree.iter()
-        .filter(|(_, dependant_list)| !dependant_list.is_empty())
+        .filter(|(_, dependant_list)| dependant_list.is_empty())
         .map(|(dependency, _)| dependency.clone())
         .collect()
 }
