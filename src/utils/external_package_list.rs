@@ -1,5 +1,5 @@
-use super::AlpmWrapper;
-use alpm::{PackageReason, SigLevel};
+use super::{orphan_packages, AlpmWrapper};
+use alpm::SigLevel;
 use indexmap::IndexSet;
 use std::{ffi::OsStr, ops::Deref, os::unix::prelude::OsStrExt};
 
@@ -138,15 +138,15 @@ impl ExternalPackageList {
             })
             .map(|pkg| pkg.name().to_string());
 
+        let orphan_packages = orphan_packages(self);
         let right_unwanted = srcinfo_conflicts
             .filter(|pkgname| {
                 // NOTE: do not use self.is_installed since it also includes providers
                 // NOTE: do not add explicitly installed packages to unwanted
-                // TODO: only add orphan packages (direct or indirect) to unwanted
 
                 self.installed_packages()
                     .find(|pkg| pkg.name() == *pkgname)
-                    .map(|pkg| pkg.reason() == PackageReason::Depend)
+                    .map(|pkg| orphan_packages.contains(pkg.name()))
                     .unwrap_or(false)
             })
             .map(ToString::to_string);
