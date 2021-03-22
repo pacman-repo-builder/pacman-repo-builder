@@ -460,7 +460,7 @@ checksum = "35c6d0420e81420c573cbdf0b3ced6cdb424434d12ffbf46dc56f0c8afc9db94"
 
 [[package]]
 name = "pacman-repo-builder"
-version = "0.0.0-rc.55"
+version = "0.0.0-rc.56"
 dependencies = [
  "alpm",
  "argh",
