@@ -1,11 +1,13 @@
-use alpm::{Alpm, Error, SigLevel};
+use alpm::{Alpm, Db, Package, SigLevel};
 use pacman::pacman_conf::get_config;
+use pipe_trait::Pipe;
+use std::iter::once;
 
 const DATABASE_PATH: &str = "/var/lib/pacman";
 
 #[derive(Debug)]
 pub struct AlpmWrapper {
-    alpm: Alpm,
+    pub(super) alpm: Alpm,
 }
 
 impl AlpmWrapper {
@@ -18,26 +20,37 @@ impl AlpmWrapper {
         AlpmWrapper { alpm }
     }
 
-    pub fn provides(&self, pkgname: &str) -> bool {
-        let by_name = self
-            .alpm
-            .syncdbs()
-            .into_iter()
-            .any(|db| match db.pkg(pkgname) {
-                Ok(_) => true,
-                Err(Error::PkgNotFound) => false,
-                Err(error) => panic!("Cannot check {:?}: {}", pkgname, error),
-            });
-
-        if by_name {
-            return true;
-        }
-
-        self.alpm
-            .syncdbs()
-            .into_iter()
-            .flat_map(|db| db.pkgs())
-            .flat_map(|pkg| pkg.provides())
-            .any(|pkg| pkg.name() == pkgname)
+    pub fn is_provided(&self, pkgname: &str) -> bool {
+        self.is_installed(pkgname) || self.is_available(pkgname)
     }
+
+    pub fn is_installed(&self, pkgname: &str) -> bool {
+        does_db_list_provide(self.alpm.localdb().pipe(once), pkgname)
+    }
+
+    pub fn is_available(&self, pkgname: &str) -> bool {
+        does_db_list_provide(self.alpm.syncdbs(), pkgname)
+    }
+
+    pub fn installed_packages(&self) -> impl Iterator<Item = Package<'_>> {
+        self.alpm.localdb().pkgs().into_iter()
+    }
+
+    pub fn available_packages(&self) -> impl Iterator<Item = Package<'_>> {
+        self.alpm.syncdbs().into_iter().flat_map(|db| db.pkgs())
+    }
+}
+
+fn does_db_list_provide<'a>(db_list: impl IntoIterator<Item = Db<'a>>, pkgname: &str) -> bool {
+    db_list
+        .into_iter()
+        .flat_map(|db| db.pkgs())
+        .map(|pkg| {
+            (
+                pkg.name().pipe(once),
+                pkg.provides().into_iter().map(|target| target.name()),
+            )
+        })
+        .flat_map(|(names, provides)| names.chain(provides))
+        .any(|name| name == pkgname)
 }

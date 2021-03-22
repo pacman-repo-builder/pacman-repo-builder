@@ -72,16 +72,27 @@ impl<Text: AsRef<str>> SrcInfo<Text> {
         self.get_dependencies("makedepends")
     }
 
+    pub fn checkdepends(&self) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
+        self.get_dependencies("checkdepends")
+    }
+
     pub fn optdepends(&self) -> impl Iterator<Item = ReasonedDependency<&str, &str, &str>> {
         self.lines()
             .filter_map(line_extractor!("optdepends"))
             .map(ReasonedDependency::new)
     }
 
+    pub fn conflicts(&self) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
+        self.get_dependencies("conflicts")
+    }
+
     pub fn all_required_dependencies(
         &self,
     ) -> impl Iterator<Item = UnreasonedDependency<&str, &str>> {
-        self.depends().chain(self.makedepends())
+        let depends = self.depends();
+        let makedepends = self.makedepends();
+        let checkdepends = self.checkdepends();
+        depends.chain(makedepends).chain(checkdepends)
     }
 
     pub fn package_file_base_names(

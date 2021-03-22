@@ -5,13 +5,16 @@ use super::super::{
     status::{status_of_code, Code, Failure, Status},
     utils::{
         create_makepkg_command, load_failed_build_record, run_deref_db, CommandUtils, DbInit,
-        DbInitValue, PackageFileName,
+        DbInitValue, ExternalPackageList, InstallationPlan, PackageFileName,
     },
 };
 use command_extra::CommandExtra;
+use itertools::Itertools;
 use pipe_trait::*;
 use std::{
+    ffi::OsString,
     fs::{copy, remove_file, write},
+    os::unix::prelude::{OsStrExt, OsStringExt},
     path::Path,
     process::{Command, Stdio},
 };
@@ -60,6 +63,7 @@ pub fn build(args: BuildArgs) -> Status {
     let repository_directory = repository.parent().expect("get repository directory");
     let members: Vec<_> = manifest.resolve_members().collect();
     let mut failed_builds = Vec::new();
+    let mut built_packages = ExternalPackageList::from_env();
 
     for pkgbase in build_order {
         let DatabaseValue {
@@ -154,6 +158,94 @@ pub fn build(args: BuildArgs) -> Status {
             continue;
         }
 
+        {
+            eprintln!("🛈 Checking for missing dependencies...");
+            let InstallationPlan { wanted, unwanted } = built_packages.needed(
+                srcinfo.all_required_dependencies().map(|x| x.name),
+                srcinfo.conflicts().map(|x| x.name),
+            );
+            let has_wanted = !wanted.is_empty();
+            let has_unwanted = !unwanted.is_empty();
+            if has_wanted {
+                eprintln!(
+                    "🛈 Missing dependencies: {}",
+                    wanted.iter().map(|target| &target.name).join(" ")
+                );
+            }
+            if has_unwanted {
+                eprintln!("🛈 Conflicts: {}", unwanted.iter().join(" "));
+            }
+
+            macro_rules! spawn_and_warn {
+                ($short:literal, $command:expr) => {
+                    match $command
+                        .spawn()
+                        .and_then(|mut child| child.wait())
+                        .map(|status| status.code().unwrap_or(1))
+                    {
+                        Ok(0) => {}
+                        Ok(status) => eprintln!(
+                            "⚠ pacman {} exits with non-zero status code: {}",
+                            $short, status,
+                        ),
+                        Err(error) => eprintln!("⚠ {}", error),
+                    }
+                };
+            }
+
+            if install_missing_dependencies && has_wanted {
+                macro_rules! run_pacman {
+                    ($long:literal, $short:literal, $target:expr) => {
+                        spawn_and_warn!(
+                            $short,
+                            pacman
+                                .unwrap_or("pacman")
+                                .pipe(Command::new)
+                                .with_arg($long)
+                                .with_args($target)
+                                .with_arg("--noconfirm")
+                                .with_arg("--asdeps")
+                                .with_arg("--needed")
+                        );
+                    };
+                }
+
+                let (upgrade_targets, sync_targets): (Vec<_>, Vec<_>) = wanted
+                    .into_iter()
+                    .partition(|target| target.external.is_some());
+
+                if !upgrade_targets.is_empty() {
+                    eprintln!("🛈 Installing missing dependencies from created package files...");
+                    let upgrade_targets = upgrade_targets
+                        .into_iter()
+                        .flat_map(|target| target.external)
+                        .map(OsString::from_vec);
+                    run_pacman!("--upgrade", "-U", upgrade_targets);
+                }
+
+                if !sync_targets.is_empty() {
+                    eprintln!("🛈 Installing missing dependencies from sync database...");
+                    let sync_targets = sync_targets.into_iter().map(|target| target.name);
+                    run_pacman!("--sync", "-S", sync_targets);
+                }
+            }
+
+            if install_missing_dependencies && has_unwanted {
+                eprintln!("🛈 Removing conflicts...");
+                spawn_and_warn!(
+                    "-R",
+                    pacman
+                        .unwrap_or("pacman")
+                        .pipe(Command::new)
+                        .with_arg("--remove")
+                        .with_args(unwanted)
+                        .with_arg("--unneeded")
+                        .with_arg("--assumed-installed")
+                        .with_arg("--noconfirm")
+                );
+            }
+        }
+
         let mut build_failed = false;
         for arch in srcinfo.arch() {
             if !arch_filter.test(arch) {
@@ -223,6 +315,10 @@ pub fn build(args: BuildArgs) -> Status {
             eprintln!("📦 made file {}", pkg_file_name);
 
             {
+                built_packages.add_external_package(pkg_src_file.as_os_str().as_bytes().to_vec());
+            }
+
+            {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
                 if let Err(error) = copy(&pkg_src_file, pkg_dst_file) {
                     eprintln!("⮾ {}", error);
@@ -266,7 +362,7 @@ pub fn build(args: BuildArgs) -> Status {
     if dereference_database_symlinks {
         eprintln!();
         eprintln!();
-        eprintln!("Resolving all symlinks to repository database into real files");
+        eprintln!("🛈 Resolving all symlinks to repository database into real files");
         run_deref_db(repository_directory).map_err(|error| {
             eprintln!("⮾ {}", error);
             Failure::from(error)

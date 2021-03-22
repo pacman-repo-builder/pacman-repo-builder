@@ -69,7 +69,7 @@ impl<'a> CloneAur<'a> {
                     .all_required_dependencies()
                     .filter(|x| !contains_str(package_names.iter(), x.name))
                     .filter(|x| !contains_str(installed_dependencies.iter(), x.name))
-                    .filter(|x| !alpm.provides(x.name))
+                    .filter(|x| !alpm.is_provided(x.name))
                     .map(|x| x.name.to_string())
                     .collect();
 
