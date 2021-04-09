@@ -13,14 +13,14 @@ pub enum Code {
     FailedBuildRecordWritingFailure = 7,
 }
 
-impl Into<Status> for Code {
-    fn into(self) -> Status {
-        self.pipe(Into::<Failure>::into).into()
+impl From<Code> for Status {
+    fn from(code: Code) -> Self {
+        code.pipe(Failure::from).into()
     }
 }
 
-impl Into<NonZeroI32> for Code {
-    fn into(self) -> NonZeroI32 {
-        unsafe { NonZeroI32::new_unchecked(self as i32) }
+impl From<Code> for NonZeroI32 {
+    fn from(code: Code) -> Self {
+        unsafe { NonZeroI32::new_unchecked(code as i32) }
     }
 }

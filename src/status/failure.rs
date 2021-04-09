@@ -28,8 +28,8 @@ impl From<Code> for Failure {
     }
 }
 
-impl Into<Status> for Failure {
-    fn into(self) -> Status {
-        Err(self)
+impl From<Failure> for Status {
+    fn from(failure: Failure) -> Self {
+        Err(failure)
     }
 }

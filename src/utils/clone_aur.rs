@@ -140,7 +140,7 @@ impl Add for CloneAurEffect {
                 sum.extend(other.$name);
                 sum
             }};
-        };
+        }
 
         CloneAurEffect {
             missing_dependencies: sum_set!(missing_dependencies),
