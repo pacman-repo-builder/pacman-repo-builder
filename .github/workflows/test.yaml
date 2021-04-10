@@ -76,7 +76,7 @@ jobs:
             ${{ github.job }}-${{ matrix.os }}-${{ hashFiles('rust-toolchain') }}-${{ hashFiles('**/Cargo.lock') }}
             ${{ github.job }}-${{ matrix.os }}-${{ hashFiles('rust-toolchain') }}-
 
-      - uses: actions-rs/toolchain@v1.0.6
+      - uses: actions-rs/toolchain@v1.0.7
         with:
           profile: minimal
           components: clippy
@@ -103,7 +103,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions-rs/toolchain@v1.0.6
+      - uses: actions-rs/toolchain@v1.0.7
         with:
           profile: minimal
           components: rustfmt
