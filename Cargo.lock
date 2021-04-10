@@ -502,9 +502,9 @@ dependencies = [
 
 [[package]]
 name = "pipe-trait"
-version = "0.3.0"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac3561d8750b7d7bf48d3d4f612e1809d9f4ddd69801cfa8fdd8910b21c282b8"
+checksum = "3fd92f5561e74c246a0b7332e09d2364afb40b67d152c4520b3ba2a7d3dea5b3"
 
 [[package]]
 name = "pkg-config"
