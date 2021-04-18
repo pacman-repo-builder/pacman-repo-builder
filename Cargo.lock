@@ -2,9 +2,9 @@
 # It is not intended for manual editing.
 [[package]]
 name = "alpm"
-version = "1.1.8"
+version = "1.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "393f4db567eb8e341b765f72e8ea955881b617c2fba38590d67671959a8ab5e3"
+checksum = "58c51b4686be2990e1fd47bc4ebd0d6dc0652fb1cf70455ce6764f48052998a0"
 dependencies = [
  "alpm-sys",
  "bitflags",
