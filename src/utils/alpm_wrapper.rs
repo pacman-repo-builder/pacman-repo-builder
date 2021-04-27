@@ -1,5 +1,4 @@
 use alpm::{Alpm, Db, Package, SigLevel};
-use pacman::pacman_conf::get_config;
 use pipe_trait::Pipe;
 use std::iter::once;
 
@@ -13,7 +12,9 @@ pub struct AlpmWrapper {
 impl AlpmWrapper {
     pub fn from_env() -> Self {
         let alpm = Alpm::new("/", DATABASE_PATH).expect("get alpm database");
-        for repo in get_config().repos {
+        let pacman = pacmanconf::Config::new().expect("failed to read pacman.conf");
+
+        for repo in pacman.repos {
             alpm.register_syncdb(repo.name, SigLevel::NONE)
                 .expect("register syncdb");
         }
