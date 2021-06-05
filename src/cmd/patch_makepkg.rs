@@ -1,5 +1,5 @@
 use super::super::{
-    args::PatchMakePkgArgs,
+    args::PatchMakepkgArgs,
     status::{Code, Failure, Status},
     utils::{MakepkgPatch, MAKEPKG_PATCHES},
 };
@@ -7,8 +7,8 @@ use hex_fmt::HexFmt;
 use pipe_trait::*;
 use std::fs::{read, write};
 
-pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
-    let PatchMakePkgArgs {
+pub fn patch_makepkg(args: PatchMakepkgArgs) -> Status {
+    let PatchMakepkgArgs {
         replace,
         unsafe_ignore_unknown_changes,
     } = args;
@@ -40,7 +40,7 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
             eprintln!("⮾ makepkg had been modified by an unknown party");
             eprintln!("⮾ it is not safe to proceed");
             eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
-            return Code::UnrecognizedMakePkg.into();
+            return Code::UnrecognizedMakepkg.into();
         }
         (Err(_), true) => *MAKEPKG_PATCHES.last().unwrap(),
     };
@@ -60,7 +60,7 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
             eprintln!("⮾ makepkg had been modified by an unknown party");
             eprintln!("⮾ it is not safe to proceed");
             eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
-            return Code::UnrecognizedMakePkg.into();
+            return Code::UnrecognizedMakepkg.into();
         }
     }
 

@@ -17,7 +17,7 @@ impl App {
             Command::Sort(args) => sort(args),
             Command::Outdated(args) => outdated(args),
             Command::SyncSrcInfo(args) => sync_srcinfo(args),
-            Command::PatchMakePkg(args) => patch_makepkg(args),
+            Command::PatchMakepkg(args) => patch_makepkg(args),
             Command::DerefDb(args) => deref_db(args),
             Command::Build(args) => build(args),
             Command::Copyright(args) => copyright(args),

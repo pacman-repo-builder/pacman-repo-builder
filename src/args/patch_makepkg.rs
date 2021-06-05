@@ -6,7 +6,7 @@ use argh::*;
     name = "patch-makepkg",
     description = "Print or generate custom makepkg that allows running as root"
 )]
-pub struct PatchMakePkgArgs {
+pub struct PatchMakepkgArgs {
     #[argh(
         switch,
         description = "replace system's default makepkg with custom one"
