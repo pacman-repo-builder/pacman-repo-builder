@@ -1,5 +1,5 @@
 use command_extra::CommandExtra;
-use pacman_repo_builder::utils::CUSTOM_MAKEPKG;
+use pacman_repo_builder::utils::MAKEPKG_PATCHES;
 use pipe_trait::*;
 use std::process::Command;
 
@@ -27,12 +27,18 @@ fn output(mut command: Command) -> (String, String, bool) {
 fn print_makepkg() {
     let (stdout, stderr, success) = output(init());
     let actual_stderr_lines = stderr.lines().collect::<Vec<_>>();
-    let actual = (stdout.as_str(), actual_stderr_lines.as_slice(), success);
+    let actual = (actual_stderr_lines.as_slice(), success);
     let expected_stderr_lines: &[&str] = &[
         "",
         "# NOTE: Above is the content of custom makepkg script",
         "# NOTE: Run again with --replace flag to replace system's makepkg",
     ];
-    let expected = (CUSTOM_MAKEPKG, expected_stderr_lines, true);
+    let expected = (expected_stderr_lines, true);
+    assert!(
+        MAKEPKG_PATCHES
+            .iter()
+            .any(|patch| patch.custom_content == stdout.as_str()),
+        "find a matching makepkg patch",
+    );
     assert_eq!(actual, expected);
 }
