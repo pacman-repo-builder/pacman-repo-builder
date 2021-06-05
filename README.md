@@ -9,7 +9,7 @@ Build a custom pacman repository from a collection of PKGBUILD directories.
 
 * pacman
 * makepkg
-* libalpm.so
+* libalpm.so.13
 * libgit2.so
 
 ## Usage
