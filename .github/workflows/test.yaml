@@ -43,48 +43,16 @@ jobs:
         with:
           command: cargo test
 
+      - name: Clippy
+        uses: ./ci/github-actions/arch-run
+        with:
+          command: cargo clippy -- -D warnings
+
       - name: Enable reading of cache
         continue-on-error: true
         uses: ./ci/github-actions/arch-run
         with:
           command: chmod -R a+rwX $HOME/.cargo target
-
-  clippy_check:
-    name: Clippy
-
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache
-        uses: actions/cache@v2
-        timeout-minutes: 1
-        continue-on-error: true
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ github.job }}-${{ matrix.os }}-${{ hashFiles('rust-toolchain') }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ github.job }}-${{ matrix.os }}-${{ hashFiles('rust-toolchain') }}-${{ hashFiles('**/Cargo.lock') }}
-            ${{ github.job }}-${{ matrix.os }}-${{ hashFiles('rust-toolchain') }}-
-
-      - uses: actions-rs/toolchain@v1.0.7
-        with:
-          profile: minimal
-          components: clippy
-          override: 'true'
-          default: 'true'
-
-      - name: Use clippy to lint code
-        run: cargo clippy -- -D warnings
 
   fmt_check:
     name: Fmt
