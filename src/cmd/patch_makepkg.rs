@@ -1,11 +1,10 @@
 use super::super::{
     args::PatchMakePkgArgs,
     status::{Code, Failure, Status},
-    utils::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM},
+    utils::{MakepkgPatch, MAKEPKG_PATCHES},
 };
 use hex_fmt::HexFmt;
 use pipe_trait::*;
-use sha1::{Digest, Sha1};
 use std::fs::{read, write};
 
 pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
@@ -14,28 +13,50 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
         unsafe_ignore_unknown_changes,
     } = args;
 
-    if !unsafe_ignore_unknown_changes {
-        let mut hasher = Sha1::new();
-        let makepkg = match read("/usr/bin/makepkg") {
-            Ok(content) => content,
-            Err(error) => {
-                eprintln!("⮾ {}", error);
-                return error.pipe(Failure::from).into();
+    let makepkg = match read("/usr/bin/makepkg") {
+        Ok(content) => content,
+        Err(error) => {
+            eprintln!("⮾ {}", error);
+            return error.pipe(Failure::from).into();
+        }
+    };
+
+    let patch = match (
+        MakepkgPatch::find_patch(&MAKEPKG_PATCHES, &makepkg),
+        unsafe_ignore_unknown_changes,
+    ) {
+        (Ok(patch), _) => patch,
+        (Err(actual_hash), false) => {
+            eprintln!("🛈 sha1sum of expected default system makepkg:");
+            for patch in &MAKEPKG_PATCHES {
+                eprintln!("  → {}", HexFmt(patch.original_sha1sum));
             }
-        };
-        hasher.update(&makepkg);
-        let hash = hasher.finalize();
-        let hash = hash.as_slice();
-        if hash != ORIGINAL_MAKEPKG_SHA1SUM && hash != CUSTOM_MAKEPKG_SHA1SUM {
-            eprintln!(
-                "🛈 sha1sum of expected default system makepkg: {}",
-                HexFmt(ORIGINAL_MAKEPKG_SHA1SUM),
-            );
-            eprintln!(
-                "🛈 sha1sum of custom makepkg: {}",
-                HexFmt(CUSTOM_MAKEPKG_SHA1SUM),
-            );
-            eprintln!("🛈 sha1sum of actual system makepkg: {}", HexFmt(hash));
+            eprintln!("🛈 sha1sum of custom makepkg:");
+            for patch in &MAKEPKG_PATCHES {
+                eprintln!("  → {}", HexFmt(patch.custom_sha1sum));
+            }
+            eprintln!("🛈 sha1sum of actual system makepkg:");
+            eprintln!("  → {}", HexFmt(actual_hash));
+            eprintln!("⮾ makepkg had been modified by an unknown party");
+            eprintln!("⮾ it is not safe to proceed");
+            eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
+            return Code::UnrecognizedMakePkg.into();
+        }
+        (Err(_), true) => *MAKEPKG_PATCHES.last().unwrap(),
+    };
+
+    if !unsafe_ignore_unknown_changes {
+        if let Err(actual_hash) = MakepkgPatch::find_patch(&MAKEPKG_PATCHES, &makepkg) {
+            eprintln!("🛈 sha1sum of expected default system makepkg:");
+            for patch in &MAKEPKG_PATCHES {
+                eprintln!("  → {}", HexFmt(patch.original_sha1sum));
+            }
+            eprintln!("🛈 sha1sum of custom makepkg:");
+            for patch in &MAKEPKG_PATCHES {
+                eprintln!("  → {}", HexFmt(patch.custom_sha1sum));
+            }
+            eprintln!("🛈 sha1sum of actual system makepkg:");
+            eprintln!("  → {}", HexFmt(actual_hash));
             eprintln!("⮾ makepkg had been modified by an unknown party");
             eprintln!("⮾ it is not safe to proceed");
             eprintln!("🛈 run again with --unsafe-ignore-unknown-changes to ignore this error");
@@ -44,12 +65,12 @@ pub fn patch_makepkg(args: PatchMakePkgArgs) -> Status {
     }
 
     if replace {
-        if let Err(error) = write("/usr/bin/makepkg", CUSTOM_MAKEPKG) {
+        if let Err(error) = write("/usr/bin/makepkg", patch.custom_content) {
             eprintln!("⮾ {}", error);
             return error.pipe(Failure::from).into();
         }
     } else {
-        print!("{}", CUSTOM_MAKEPKG);
+        print!("{}", patch.custom_content);
         eprintln!();
         eprintln!("# NOTE: Above is the content of custom makepkg script");
         eprintln!("# NOTE: Run again with --replace flag to replace system's makepkg");

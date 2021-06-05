@@ -27,7 +27,7 @@ pub use clone_aur::{CloneAur, CloneAurEffect};
 pub use command_utils::CommandUtils;
 pub use copyright_terms::COPYING;
 pub use create_makepkg_command::create_makepkg_command;
-pub use custom_makepkg::{CUSTOM_MAKEPKG, CUSTOM_MAKEPKG_SHA1SUM, ORIGINAL_MAKEPKG_SHA1SUM};
+pub use custom_makepkg::{MakepkgPatch, MAKEPKG_PATCHES};
 pub use db_init::{DbInit, DbInitValue};
 pub use deserialize_multi_docs_yaml::deserialize_multi_docs_yaml;
 pub use external_package_list::{ExternalPackageList, InstallationPlan, InstallationTarget};
