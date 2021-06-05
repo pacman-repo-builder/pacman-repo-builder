@@ -15,7 +15,9 @@ impl MakepkgPatch {
         let hash = hasher.finalize();
         list.iter()
             .copied()
-            .find(|patch| patch.original_sha1sum == hash.as_slice())
+            .find(|patch| {
+                patch.original_sha1sum == hash.as_slice() || patch.custom_sha1sum == hash.as_slice()
+            })
             .ok_or(hash)
     }
 }
