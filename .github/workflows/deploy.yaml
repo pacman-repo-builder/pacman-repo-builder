@@ -9,13 +9,7 @@ jobs:
   test:
     name: Test
 
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: true
-      matrix:
-        os:
-          - ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -45,35 +39,29 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: true
-      matrix:
-        target:
-          - x86_64-unknown-linux-gnu
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Install toolchain
         uses: ./ci/github-actions/arch-run
         with:
-          command: rustup target add ${{ matrix.target }}
+          command: rustup target add x86_64-unknown-linux-gnu
 
       - name: Build
         uses: ./ci/github-actions/arch-run
         with:
-          command: cargo build --target ${{ matrix.target }} --release
+          command: cargo build --target x86_64-unknown-linux-gnu --release
 
       - name: Strip all debug symbols
         uses: ./ci/github-actions/arch-run
         with:
-          command: strip --strip-all target/${{ matrix.target }}/release/build-pacman-repo
+          command: strip --strip-all target/x86_64-unknown-linux-gnu/release/build-pacman-repo
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: build-pacman-repo-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/build-pacman-repo
+          name: build-pacman-repo-x86_64-unknown-linux-gnu
+          path: target/x86_64-unknown-linux-gnu/release/build-pacman-repo
 
   create_release:
     name: Create Release
@@ -127,19 +115,13 @@ jobs:
 
     if: needs.create_release.outputs.is_release == 'true'
 
-    strategy:
-      fail-fast: true
-      matrix:
-        target:
-          - x86_64-unknown-linux-gnu
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Download artifact
         uses: actions/download-artifact@v2.0.9
         with:
-          name: build-pacman-repo-${{ matrix.target }}
+          name: build-pacman-repo-x86_64-unknown-linux-gnu
 
       - name: Release executable (UNIX)
         uses: actions/upload-release-asset@v1.0.2
@@ -148,7 +130,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: ./build-pacman-repo
-          asset_name: build-pacman-repo-${{ matrix.target }}
+          asset_name: build-pacman-repo-x86_64-unknown-linux-gnu
           asset_content_type: application/x-pie-executable
 
   upload_checksums:
