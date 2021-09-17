@@ -466,7 +466,7 @@ dependencies = [
 
 [[package]]
 name = "pacman-repo-builder"
-version = "0.0.0-rc.60"
+version = "0.0.0-rc.61"
 dependencies = [
  "alpm",
  "argh",
