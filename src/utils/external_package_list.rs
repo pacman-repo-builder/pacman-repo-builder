@@ -108,7 +108,7 @@ impl ExternalPackageList {
                             Err(error) => {
                                 eprintln!(
                                     "⚠ Failed to load {:?} as an alpm package: {}",
-                                    OsStr::from_bytes(&filename),
+                                    OsStr::from_bytes(filename),
                                     error,
                                 );
                                 None

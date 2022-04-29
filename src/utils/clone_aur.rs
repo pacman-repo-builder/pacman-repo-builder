@@ -104,9 +104,8 @@ impl<'a> CloneAur<'a> {
         }
         .run();
 
-        assert_eq!(
+        assert!(
             next_effect.missing_dependencies.is_empty(),
-            true,
             "no remaining missing dependencies",
         );
 

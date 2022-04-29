@@ -40,7 +40,7 @@ where
             String::new()
         } else {
             match epoch.parse::<BigUint>() {
-                Err(error) => return Err(format!("invalid epoch: {}", error.to_string())),
+                Err(error) => return Err(format!("invalid epoch: {error}")),
                 Ok(value) => {
                     if value.is_zero() {
                         String::new()
@@ -52,7 +52,7 @@ where
         };
 
         write!(result, "{}-{}", pkgver.as_ref(), pkgrel.as_ref())
-            .map_err(|error| format!("fail to write pkgver and pkgrel: {}", error.to_string()))?;
+            .map_err(|error| format!("fail to write pkgver and pkgrel: {error}"))?;
 
         Ok(result)
     }
