@@ -50,7 +50,7 @@ command-extra = "^1.0.0"
 pacmanconf = "^2.0.0"
 
 [dependencies.serde]
-version = "^1.0.126"
+version = "^1.0.137"
 features = ["derive"]
 
 [dev-dependencies]
