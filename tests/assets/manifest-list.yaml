@@ -2,27 +2,27 @@
 global-settings:
   repository: repo/repo.db.tar.gz
 members:
-  - directory: foo
-  - directory: bar
-    read-build-metadata: pkgbuild
-    clean-before-build: false
-    force-rebuild: true
-    check: inherit
-    allow-failure: false
-  - directory: bar
-    install-missing-dependencies: true
-    clean-after-build: false
-    check: enabled
-    pacman: yay
-  - directory: baz
-    read-build-metadata: srcinfo
-    install-missing-dependencies: false
-    clean-before-build: true
-    clean-after-build: false
-    force-rebuild: true
-    check: disabled
-    pacman: yay
-    allow-failure: false
+- directory: foo
+- directory: bar
+  read-build-metadata: pkgbuild
+  clean-before-build: false
+  force-rebuild: true
+  check: inherit
+  allow-failure: false
+- directory: bar
+  install-missing-dependencies: true
+  clean-after-build: false
+  check: enabled
+  pacman: yay
+- directory: baz
+  read-build-metadata: srcinfo
+  install-missing-dependencies: false
+  clean-before-build: true
+  clean-after-build: false
+  force-rebuild: true
+  check: disabled
+  pacman: yay
+  allow-failure: false
 ---
 global-settings:
   repository: repo/repo.db.tar.gz
@@ -35,27 +35,27 @@ global-settings:
   pacman: pacman
   allow-failure: true
 members:
-  - directory: foo
-  - directory: bar
-    read-build-metadata: pkgbuild
-    clean-before-build: false
-    force-rebuild: true
-    check: inherit
-    allow-failure: false
-  - directory: bar
-    install-missing-dependencies: true
-    clean-after-build: false
-    check: enabled
-    pacman: yay
-  - directory: baz
-    read-build-metadata: srcinfo
-    install-missing-dependencies: false
-    clean-before-build: true
-    clean-after-build: false
-    force-rebuild: true
-    check: disabled
-    pacman: yay
-    allow-failure: false
+- directory: foo
+- directory: bar
+  read-build-metadata: pkgbuild
+  clean-before-build: false
+  force-rebuild: true
+  check: inherit
+  allow-failure: false
+- directory: bar
+  install-missing-dependencies: true
+  clean-after-build: false
+  check: enabled
+  pacman: yay
+- directory: baz
+  read-build-metadata: srcinfo
+  install-missing-dependencies: false
+  clean-before-build: true
+  clean-after-build: false
+  force-rebuild: true
+  check: disabled
+  pacman: yay
+  allow-failure: false
 ---
 global-settings:
   repository: repo/repo.db.tar.gz
@@ -63,33 +63,33 @@ global-settings:
   clean-before-build: true
   force-rebuild: false
   arch-filter:
-    - x86_64
-    - i686
+  - x86_64
+  - i686
   check: enabled
   packager: Bob <bob@example.com>
   dereference-database-symlinks: false
 members:
-  - directory: foo
-  - directory: bar
-    read-build-metadata: pkgbuild
-    clean-before-build: false
-    force-rebuild: true
-    check: inherit
-    allow-failure: false
-  - directory: bar
-    install-missing-dependencies: true
-    clean-after-build: false
-    check: enabled
-    pacman: yay
-  - directory: baz
-    read-build-metadata: srcinfo
-    install-missing-dependencies: false
-    clean-before-build: true
-    clean-after-build: false
-    force-rebuild: true
-    check: disabled
-    pacman: yay
-    allow-failure: false
+- directory: foo
+- directory: bar
+  read-build-metadata: pkgbuild
+  clean-before-build: false
+  force-rebuild: true
+  check: inherit
+  allow-failure: false
+- directory: bar
+  install-missing-dependencies: true
+  clean-after-build: false
+  check: enabled
+  pacman: yay
+- directory: baz
+  read-build-metadata: srcinfo
+  install-missing-dependencies: false
+  clean-before-build: true
+  clean-after-build: false
+  force-rebuild: true
+  check: disabled
+  pacman: yay
+  allow-failure: false
 ---
 global-settings:
   repository: repo/repo.db.tar.gz
@@ -101,32 +101,32 @@ global-settings:
   clean-after-build: false
   force-rebuild: true
   arch-filter:
-    - x86_64
-    - i686
+  - x86_64
+  - i686
   check: disabled
   pacman: pacman
   packager: Bob <bob@example.com>
   allow-failure: true
   dereference-database-symlinks: true
 members:
-  - directory: foo
-  - directory: bar
-    read-build-metadata: pkgbuild
-    clean-before-build: false
-    force-rebuild: true
-    check: inherit
-    allow-failure: false
-  - directory: bar
-    install-missing-dependencies: true
-    clean-after-build: false
-    check: enabled
-    pacman: yay
-  - directory: baz
-    read-build-metadata: srcinfo
-    install-missing-dependencies: false
-    clean-before-build: true
-    clean-after-build: false
-    force-rebuild: true
-    check: disabled
-    pacman: yay
-    allow-failure: false
+- directory: foo
+- directory: bar
+  read-build-metadata: pkgbuild
+  clean-before-build: false
+  force-rebuild: true
+  check: inherit
+  allow-failure: false
+- directory: bar
+  install-missing-dependencies: true
+  clean-after-build: false
+  check: enabled
+  pacman: yay
+- directory: baz
+  read-build-metadata: srcinfo
+  install-missing-dependencies: false
+  clean-before-build: true
+  clean-after-build: false
+  force-rebuild: true
+  check: disabled
+  pacman: yay
+  allow-failure: false

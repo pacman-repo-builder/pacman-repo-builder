@@ -1,9 +1,8 @@
----
 global-settings:
   repository: repo/repo.db.tar.gz
   read-build-metadata: pkgbuild
 members:
-  - directory: mixed/either
-  - directory: mixed/pkgbuild
-  - directory: pkgbuild-and-srcinfo/pkgbuild-and-srcinfo
-  - directory: pkgbuild-only/pkgbuild-only
+- directory: mixed/either
+- directory: mixed/pkgbuild
+- directory: pkgbuild-and-srcinfo/pkgbuild-and-srcinfo
+- directory: pkgbuild-only/pkgbuild-only

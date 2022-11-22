@@ -1,9 +1,8 @@
----
 global-settings:
   repository: repo/repo.db.tar.gz
   read-build-metadata: srcinfo
 members:
-  - directory: mixed/either
-  - directory: mixed/srcinfo
-  - directory: pkgbuild-and-srcinfo/pkgbuild-and-srcinfo
-  - directory: srcinfo-only/srcinfo-only
+- directory: mixed/either
+- directory: mixed/srcinfo
+- directory: pkgbuild-and-srcinfo/pkgbuild-and-srcinfo
+- directory: srcinfo-only/srcinfo-only

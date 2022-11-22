@@ -7,6 +7,7 @@ use pacman_repo_builder::{
     utils::{deserialize_multi_docs_yaml, serialize_iter_yaml},
 };
 use pipe_trait::*;
+use pretty_assertions::assert_eq;
 use std::path::PathBuf;
 
 fn manifest_list_yaml() -> &'static str {
