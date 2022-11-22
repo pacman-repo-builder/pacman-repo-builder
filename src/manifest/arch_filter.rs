@@ -88,9 +88,9 @@ impl OwnedArchFilter {
 fn test_filter() {
     let arch_list = ["x86_64", "i686", "any"];
     let any = OwnedArchFilter::Any;
-    let x86_64 = OwnedArchFilter::from_str_iter(&["x86_64"]).unwrap();
-    let i686 = OwnedArchFilter::from_str_iter(&["i686"]).unwrap();
-    let x86_64_i686 = OwnedArchFilter::from_str_iter(&["x86_64", "i686"]).unwrap();
+    let x86_64 = OwnedArchFilter::from_str_iter(["x86_64"]).unwrap();
+    let i686 = OwnedArchFilter::from_str_iter(["i686"]).unwrap();
+    let x86_64_i686 = OwnedArchFilter::from_str_iter(["x86_64", "i686"]).unwrap();
     let filter = |arch_filter: &OwnedArchFilter| -> Vec<&str> {
         arch_list
             .iter()
@@ -175,7 +175,7 @@ fn test_serialize() {
 
     let actual = serialize_iter_yaml(&[
         OwnedArchFilter::Any,
-        OwnedArchFilter::from_str_iter(&["x86_64", "i686"]).unwrap(),
+        OwnedArchFilter::from_str_iter(["x86_64", "i686"]).unwrap(),
     ])
     .unwrap();
     eprintln!("\n\nACTUAL:\n\n{}\n\n", actual.trim());
@@ -198,7 +198,7 @@ fn test_deserialize() {
     );
     let expected = (
         OwnedArchFilter::Any,
-        OwnedArchFilter::from_str_iter(&["x86_64", "i686"]).unwrap(),
+        OwnedArchFilter::from_str_iter(["x86_64", "i686"]).unwrap(),
     );
     assert_eq!(&actual, &expected);
 }
