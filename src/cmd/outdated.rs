@@ -32,9 +32,7 @@ pub fn outdated(args: OutdatedArgs) -> Status {
         .collect();
 
     let repository = manifest.global_settings.repository.as_ref();
-    let directory = if let Some(parent) = repository.parent() {
-        parent
-    } else {
+    let Some(directory) = repository.parent() else {
         eprintln!("⮾ Repository cannot be a directory: {:?}", repository);
         return Code::GenericFailure.into();
     };

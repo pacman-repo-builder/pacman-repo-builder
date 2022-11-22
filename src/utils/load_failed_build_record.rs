@@ -6,9 +6,7 @@ use std::{fs::File, io::ErrorKind};
 pub fn load_failed_build_record(
     failed_build_record: &Option<OwnedFailedBuildRecord>,
 ) -> Result<Vec<PackageFileName<String, String, String>>, String> {
-    let failed_build_record = if let Some(failed_build_record) = failed_build_record {
-        failed_build_record
-    } else {
+    let Some(failed_build_record) = failed_build_record else {
         return Ok(Default::default());
     };
 
