@@ -22,7 +22,7 @@ impl MakepkgPatch {
     }
 }
 
-pub const MAKEPKG_PATCHES: [MakepkgPatch; 3] = [
+pub const MAKEPKG_PATCHES: [MakepkgPatch; 4] = [
     MakepkgPatch {
         custom_content: include_str!("./patches/makepkg5"),
         custom_sha1sum: hex!("4ca18588b27b7e10b2329fb4e636ab33208a9915"),
@@ -30,13 +30,18 @@ pub const MAKEPKG_PATCHES: [MakepkgPatch; 3] = [
     },
     MakepkgPatch {
         custom_content: include_str!("./patches/makepkg6"),
-        custom_sha1sum: hex!("a107986eaa3f6550e91708bf3236a34417896281"),
+        custom_sha1sum: hex!("88e3574f613fa145b2e20f3e84acc8c5d39e4203"),
         original_sha1sum: hex!("7823557b88e5390b38ec91a8bf931a966eda018b"),
     },
     MakepkgPatch {
         custom_content: include_str!("./patches/makepkg6"),
-        custom_sha1sum: hex!("a107986eaa3f6550e91708bf3236a34417896281"),
+        custom_sha1sum: hex!("88e3574f613fa145b2e20f3e84acc8c5d39e4203"),
         original_sha1sum: hex!("c76d418d3ddb285559e18dfeba40f1731b30acdc"),
+    },
+    MakepkgPatch {
+        custom_content: include_str!("./patches/makepkg6"),
+        custom_sha1sum: hex!("88e3574f613fa145b2e20f3e84acc8c5d39e4203"),
+        original_sha1sum: hex!("fb8197785e4985c561264af9ffcc67391e5220d6"),
     },
 ];
 
