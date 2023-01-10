@@ -11,9 +11,10 @@ use super::super::{
 use command_extra::CommandExtra;
 use itertools::Itertools;
 use pipe_trait::*;
+use reflink::reflink_or_copy;
 use std::{
     ffi::OsString,
-    fs::{copy, remove_file, write},
+    fs::{remove_file, write},
     os::unix::prelude::{OsStrExt, OsStringExt},
     path::Path,
     process::{Command, Stdio},
@@ -320,7 +321,7 @@ pub fn build(args: BuildArgs) -> Status {
 
             {
                 eprintln!("  → copy to {}/", repository_directory.to_string_lossy());
-                if let Err(error) = copy(&pkg_src_file, pkg_dst_file) {
+                if let Err(error) = reflink_or_copy(&pkg_src_file, pkg_dst_file) {
                     eprintln!("⮾ {}", error);
                     return error.pipe(Failure::from).into();
                 }

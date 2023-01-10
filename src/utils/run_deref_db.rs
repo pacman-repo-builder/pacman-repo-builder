@@ -1,5 +1,6 @@
+use reflink::reflink_or_copy;
 use std::{
-    fs::{canonicalize, copy, read_dir, remove_file},
+    fs::{canonicalize, read_dir, remove_file},
     io,
     path::Path,
 };
@@ -26,7 +27,7 @@ pub fn run_deref_db(repository_directory: &Path) -> Result<(), io::Error> {
         eprintln!("  → Delete {:?}", &link_path);
         remove_file(&link_path)?;
         eprintln!("  → Copy {:?} to {:?}", link_target, &link_path);
-        copy(link_target, link_path)?;
+        reflink_or_copy(link_target, link_path)?;
     }
 
     Ok(())
