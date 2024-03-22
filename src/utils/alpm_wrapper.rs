@@ -33,16 +33,16 @@ impl AlpmWrapper {
         does_db_list_provide(self.alpm.syncdbs(), pkgname)
     }
 
-    pub fn installed_packages(&self) -> impl Iterator<Item = Package<'_>> {
+    pub fn installed_packages(&self) -> impl Iterator<Item = &'_ Package> {
         self.alpm.localdb().pkgs().into_iter()
     }
 
-    pub fn available_packages(&self) -> impl Iterator<Item = Package<'_>> {
+    pub fn available_packages(&self) -> impl Iterator<Item = &'_ Package> {
         self.alpm.syncdbs().into_iter().flat_map(|db| db.pkgs())
     }
 }
 
-fn does_db_list_provide<'a>(db_list: impl IntoIterator<Item = Db<'a>>, pkgname: &str) -> bool {
+fn does_db_list_provide<'a>(db_list: impl IntoIterator<Item = &'a Db>, pkgname: &str) -> bool {
     db_list
         .into_iter()
         .flat_map(|db| db.pkgs())

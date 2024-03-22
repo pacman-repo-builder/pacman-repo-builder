@@ -32,7 +32,7 @@ pub fn orphan_packages(alpm_wrapper: &AlpmWrapper) -> IndexSet<String> {
 
         for dependency in tree.keys().cloned().collect::<Vec<_>>() {
             for dependant_list in tree.values_mut() {
-                if dependant_list.remove(&dependency) {
+                if dependant_list.swap_remove(&dependency) {
                     end_loop = false;
                 }
             }
