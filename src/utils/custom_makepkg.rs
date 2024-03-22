@@ -10,9 +10,7 @@ pub struct MakepkgPatch {
 
 impl MakepkgPatch {
     pub fn find_patch(list: &[Self], original_content: &[u8]) -> Result<Self, Output<Sha1>> {
-        let mut hasher = Sha1::new();
-        hasher.update(original_content);
-        let hash = hasher.finalize();
+        let hash = Sha1::digest(original_content);
         list.iter()
             .copied()
             .find(|patch| {
@@ -60,9 +58,7 @@ fn test_custom_makepkg_sha1sum() {
         ..
     } in MAKEPKG_PATCHES.iter().copied()
     {
-        let mut hasher = Sha1::new();
-        hasher.update(custom_content);
-        let actual = hasher.finalize();
+        let actual = Sha1::digest(custom_content);
         eprintln!("expect: {}", HexFmt(&custom_sha1sum));
         eprintln!("actual: {}", HexFmt(actual.as_slice()));
         assert_eq!(actual.as_slice(), &custom_sha1sum);
