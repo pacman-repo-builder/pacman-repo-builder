@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
-use smart_default::SmartDefault;
 use std::str::FromStr;
 
-#[derive(Debug, SmartDefault, Serialize, Deserialize, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Eq, PartialEq, Copy, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub enum TriState {
     Enabled,
